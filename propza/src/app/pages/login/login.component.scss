@@ -1,0 +1,31 @@
+.login {
+  max-width: 380px;
+  margin: 48px auto;
+  padding: 24px;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+h1 {
+  color: var(--primary);
+  font-family: var(--font-heading);
+}
+label {
+  display: block;
+  margin: 12px 0;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+button {
+  margin-top: 12px;
+  background: var(--primary);
+  color: #fff;
+  border: 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+.error { color: #b91c1c; }
+

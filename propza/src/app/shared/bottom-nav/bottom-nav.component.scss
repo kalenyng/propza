@@ -1,0 +1,22 @@
+.nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  margin: 0 16px;
+  background: var(--primary);
+  border-radius: 16px;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-around;
+}
+.tab {
+  background: transparent;
+  border: none;
+  color: #d1fae5;
+  font-size: 28px;
+}
+.tab.active {
+  color: #ffffff;
+}
+

@@ -1,0 +1,691 @@
+// Design Tokens - Matching Home Component
+$color-primary: #3b82f6;
+$color-success: #16a34a;
+$color-warning: #f59e0b;
+$color-danger: #dc2626;
+$color-neutral: #6b7280;
+$color-text-primary: #111827;
+$color-text-secondary: #4b5563;
+$color-text-muted: #6b7280;
+$color-bg: #ffffff;
+$color-bg-secondary: #f9fafb;
+$color-border: #e5e7eb;
+
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 20px;
+$spacing-xl: 24px;
+
+$font-size-xxl: 28px;
+$font-size-xl: 24px;
+$font-size-lg: 20px;
+$font-size-md: 16px;
+$font-size-sm: 14px;
+$font-size-xs: 12px;
+$line-height: 1.4;
+
+$border-radius: 12px;
+$border-radius-sm: 8px;
+$shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+
+// Container
+.detail-container {
+  min-height: 100vh;
+  background: $color-bg-secondary;
+  padding-bottom: 80px;
+}
+
+// Loading State
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: $spacing-md;
+
+  p {
+    color: $color-text-muted;
+    font-size: $font-size-md;
+  }
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid $color-border;
+  border-top-color: $color-text-primary;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Header
+.header {
+  background: $color-bg;
+  padding: $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: $shadow;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: $color-text-secondary;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $color-bg-secondary;
+    color: $color-text-primary;
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  color: $color-text-secondary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $color-bg-secondary;
+    border-color: $color-text-secondary;
+    color: $color-text-primary;
+  }
+
+  &.danger:hover {
+    background: rgba($color-danger, 0.1);
+    border-color: $color-danger;
+    color: $color-danger;
+  }
+}
+
+// Content
+.content {
+  padding: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// Title Section
+.title-section {
+  background: $color-bg;
+  padding: $spacing-lg;
+  border-radius: $border-radius;
+  box-shadow: $shadow;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-md;
+}
+
+.property-title {
+  font-size: $font-size-xxl;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0;
+  line-height: $line-height;
+  flex: 1;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  flex-shrink: 0;
+
+  &.occupied {
+    background: rgba(22, 163, 74, 0.1);
+    color: $color-success;
+    
+    .status-dot {
+      background: $color-success;
+    }
+  }
+
+  &.vacant {
+    background: rgba(107, 114, 128, 0.1);
+    color: $color-neutral;
+    
+    .status-dot {
+      background: $color-neutral;
+    }
+  }
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+// Metrics Grid
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-md;
+}
+
+.metric-card {
+  background: $color-bg;
+  padding: $spacing-lg;
+  border-radius: $border-radius;
+  box-shadow: $shadow;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $color-text-primary;
+  line-height: $line-height;
+}
+
+// Section Card
+.section-card {
+  background: $color-bg;
+  border-radius: $border-radius;
+  box-shadow: $shadow;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid $color-border;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin: 0;
+    line-height: $line-height;
+  }
+}
+
+.section-content {
+  padding: $spacing-lg;
+}
+
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $color-text-primary;
+    border-color: $color-text-primary;
+    color: $color-bg;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// Detail Row
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $color-bg-secondary;
+  }
+}
+
+.detail-label {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: 500;
+  text-align: right;
+}
+
+// Empty State
+.empty-text {
+  font-size: $font-size-md;
+  color: $color-text-muted;
+  margin: 0;
+  font-style: italic;
+}
+
+// Notes
+.notes-text {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+// Lease Link
+.lease-link {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-secondary;
+  border-radius: $border-radius-sm;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: darken($color-bg-secondary, 3%);
+    transform: translateX(2px);
+  }
+
+  svg {
+    color: $color-text-muted;
+    flex-shrink: 0;
+  }
+}
+
+.lease-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.lease-title {
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.lease-action {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+// Edit Card
+.edit-card {
+  background: $color-bg;
+  border-radius: $border-radius;
+  padding: $spacing-lg;
+  box-shadow: $shadow;
+}
+
+.edit-title {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-lg 0;
+  line-height: $line-height;
+}
+
+// Edit Form
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-text-secondary;
+  }
+
+  input,
+  textarea {
+    padding: 12px 14px;
+    border: 1px solid $color-border;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-md;
+    color: $color-text-primary;
+    font-family: inherit;
+    background: $color-bg;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $color-text-primary;
+      box-shadow: 0 0 0 3px rgba($color-text-primary, 0.1);
+    }
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.5;
+  }
+
+  .form-helper {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    margin-top: 4px;
+    display: block;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: $spacing-sm;
+  justify-content: flex-end;
+  padding-top: $spacing-md;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 12px 24px;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-md;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: $color-text-primary;
+  color: $color-bg;
+
+  &:hover {
+    background: #000000;
+  }
+}
+
+.btn-secondary {
+  background: transparent;
+  color: $color-text-secondary;
+  border: 1px solid $color-border;
+
+  &:hover {
+    background: $color-bg-secondary;
+  }
+}
+
+// Payment Form
+.payment-form {
+  padding-top: $spacing-sm;
+}
+
+.form-subtitle {
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-md 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+select {
+  padding: 12px 14px;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-family: inherit;
+  background: $color-bg;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $color-text-primary;
+    box-shadow: 0 0 0 3px rgba($color-text-primary, 0.1);
+  }
+}
+
+// Payment List
+.payment-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.payment-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: $color-bg-secondary;
+  border-radius: $border-radius-sm;
+  gap: $spacing-md;
+}
+
+.payment-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payment-amount {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $color-text-primary;
+  line-height: $line-height;
+}
+
+.payment-meta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.payment-separator {
+  color: $color-border;
+}
+
+.payment-date,
+.payment-method {
+  font-weight: 500;
+}
+
+.payment-notes {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin: 4px 0 0 0;
+  font-style: italic;
+}
+
+.payment-check {
+  flex-shrink: 0;
+}
+
+.payment-actions {
+  display: flex;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+}
+
+.payment-action-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  color: $color-text-muted;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $color-bg;
+    border-color: $color-text-secondary;
+    color: $color-text-primary;
+  }
+
+  &.delete:hover {
+    background: rgba($color-danger, 0.1);
+    border-color: $color-danger;
+    color: $color-danger;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.payment-period {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  font-family: monospace;
+}
+
+// Responsive
+@media (max-width: 640px) {
+  .header {
+    padding: $spacing-sm;
+  }
+
+  .content {
+    padding: $spacing-sm;
+  }
+
+  .title-section {
+    padding: $spacing-md;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .property-title {
+    font-size: $font-size-xl;
+  }
+
+  .metric-card {
+    padding: $spacing-md;
+  }
+
+  .metric-value {
+    font-size: $font-size-lg;
+  }
+
+  .section-header {
+    padding: $spacing-sm $spacing-md;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+  }
+
+  .section-content {
+    padding: $spacing-md;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .detail-value {
+    text-align: left;
+  }
+
+  .edit-card {
+    padding: $spacing-md;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .payment-check {
+    align-self: flex-end;
+  }
+}
+
+// Accessibility
+.back-btn:focus,
+.icon-btn:focus,
+.btn-add:focus,
+.btn-primary:focus,
+.btn-secondary:focus {
+  outline: 2px solid $color-text-primary;
+  outline-offset: 2px;
+}

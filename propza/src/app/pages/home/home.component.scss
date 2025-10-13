@@ -1,0 +1,441 @@
+// Design Tokens
+$color-primary: #3b82f6;
+$color-success: #16a34a;
+$color-warning: #f59e0b;
+$color-danger: #dc2626;
+$color-neutral: #6b7280;
+$color-neutral-light: #9ca3af;
+$color-text-primary: #111827;
+$color-text-secondary: #4b5563;
+$color-text-muted: #6b7280;
+$color-bg: #ffffff;
+$color-bg-secondary: #f9fafb;
+$color-border: #e5e7eb;
+
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 20px;
+$spacing-xl: 24px;
+
+$font-size-xl: 24px;
+$font-size-lg: 20px;
+$font-size-md: 16px;
+$font-size-sm: 14px;
+$font-size-xs: 12px;
+$line-height: 1.4;
+
+$border-radius: 12px;
+$border-radius-sm: 8px;
+$shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+
+// Container
+.home-container {
+  min-height: 100vh;
+  background: $color-bg-secondary;
+  padding-bottom: 80px;
+}
+
+// Sticky Summary Bar
+.summary-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: $color-bg;
+  padding: $spacing-md $spacing-md $spacing-sm;
+  box-shadow: $shadow;
+  margin-bottom: $spacing-md;
+}
+
+.summary-metrics {
+  display: flex;
+  gap: $spacing-xl;
+  margin-bottom: $spacing-md;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+
+.metric-label {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  line-height: $line-height;
+}
+
+.metric-value {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $color-text-primary;
+  line-height: $line-height;
+}
+
+// Filter Chips
+.filter-chips {
+  display: flex;
+  gap: $spacing-xs;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-border;
+    border-radius: 2px;
+  }
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  line-height: $line-height;
+  border: 1px solid $color-border;
+  background: $color-bg;
+  color: $color-text-secondary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: $color-bg-secondary;
+    border-color: $color-neutral-light;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
+
+  &.active {
+    background: $color-text-primary;
+    border-color: $color-text-primary;
+    color: $color-bg;
+  }
+
+  &.filter-overdue.active {
+    background: $color-danger;
+    border-color: $color-danger;
+  }
+
+  &.filter-unpaid.active {
+    background: $color-warning;
+    border-color: $color-warning;
+  }
+
+  &.filter-paid.active {
+    background: $color-success;
+    border-color: $color-success;
+  }
+
+  &.filter-vacant.active {
+    background: $color-neutral;
+    border-color: $color-neutral;
+  }
+}
+
+// Controls Bar
+.controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.section-title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0;
+  line-height: $line-height;
+}
+
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  label {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    margin: 0;
+  }
+
+  select {
+    padding: 6px 32px 6px 12px;
+    border: 1px solid $color-border;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+    background: $color-bg;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+    appearance: none;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+    }
+  }
+}
+
+// Properties List
+.properties-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding: 0 $spacing-md;
+}
+
+// Loading Skeletons
+.skeleton-card {
+  background: $color-bg;
+  border-radius: $border-radius;
+  padding: $spacing-md $spacing-lg;
+  box-shadow: $shadow;
+  min-height: 96px;
+}
+
+.skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-sm;
+}
+
+.skeleton-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.skeleton-line {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  height: 16px;
+}
+
+.skeleton-address {
+  width: 60%;
+  height: 20px;
+}
+
+.skeleton-tenant {
+  width: 40%;
+  height: 14px;
+}
+
+.skeleton-pill {
+  width: 80px;
+  height: 28px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 14px;
+}
+
+.skeleton-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.skeleton-date {
+  width: 45%;
+  height: 14px;
+}
+
+.skeleton-amount {
+  width: 30%;
+  height: 20px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl * 2;
+  text-align: center;
+  background: $color-bg;
+  border-radius: $border-radius;
+  margin: $spacing-xl 0;
+}
+
+.empty-icon {
+  color: $color-neutral-light;
+  margin-bottom: $spacing-md;
+}
+
+.empty-title {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-xs 0;
+  line-height: $line-height;
+}
+
+.empty-description {
+  font-size: $font-size-md;
+  color: $color-text-muted;
+  margin: 0 0 $spacing-lg 0;
+  line-height: $line-height;
+}
+
+.btn-add-property {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: 12px $spacing-lg;
+  background: $color-text-primary;
+  color: $color-bg;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-md;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #000000;
+    transform: translateY(-1px);
+    box-shadow: $shadow-lg;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Floating Action Button (when properties exist)
+.fab-add {
+  position: fixed;
+  bottom: 120px;
+  right: $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 28px;
+  background: $color-text-primary;
+  color: $color-bg;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 5;
+  font-size: $font-size-md;
+  font-weight: 600;
+
+  &:hover {
+    background: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+// Responsive
+@media (max-width: 640px) {
+  .summary-bar {
+    padding: $spacing-sm;
+  }
+
+  .summary-metrics {
+    gap: $spacing-md;
+  }
+
+  .metric {
+    min-width: 120px;
+  }
+
+  .metric-value {
+    font-size: $font-size-lg;
+  }
+
+  .controls-bar {
+    padding: 0 $spacing-sm;
+  }
+
+  .properties-list {
+    padding: 0 $spacing-sm;
+  }
+
+  .fab-add {
+    bottom: 100px;
+    right: $spacing-sm;
+  }
+}
+
+// Accessibility - Additional focus styles
+.btn-add-property:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.fab-add:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 6px 16px rgba(59, 130, 246, 0.5);
+}
+
+.sort-control select:focus {
+  outline: none;
+  border-color: $color-primary;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+// Print styles
+@media print {
+  .summary-bar {
+    position: static;
+  }
+
+  .filter-chips,
+  .sort-control,
+  .fab-add,
+  .btn-add-property {
+    display: none;
+  }
+}

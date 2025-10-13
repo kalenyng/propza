@@ -1,0 +1,15 @@
+<div class="login">
+  <h1>Sign in to Propza</h1>
+  <form (ngSubmit)="submit()">
+    <label>
+      Email
+      <input name="email" [(ngModel)]="email" type="email" required />
+    </label>
+    <label>
+      Password
+      <input name="password" [(ngModel)]="password" type="password" required />
+    </label>
+    <button type="submit" [disabled]="loading">{{ loading ? 'Signing in…' : 'Sign In' }}</button>
+    <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+  </form>
+</div>

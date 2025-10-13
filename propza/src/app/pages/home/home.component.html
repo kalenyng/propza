@@ -1,0 +1,141 @@
+<div class="home-container">
+  <app-header-banner userName="Kalen" logoLetter="P" />
+
+  <!-- Sticky Summary Bar -->
+  <div class="summary-bar">
+    <div class="summary-metrics">
+      <div class="metric">
+        <span class="metric-label">Total Rent Due</span>
+        <span class="metric-value">{{ formatMoney(totalRentDue, 'ZAR') }}</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Collected</span>
+        <span class="metric-value">{{ percentCollected }}%</span>
+      </div>
+    </div>
+
+    <div class="filter-chips">
+      <button 
+        class="filter-chip" 
+        [class.active]="selectedFilter === 'all'"
+        (click)="setFilter('all')">
+        All ({{ getFilterCount('all') }})
+      </button>
+      <button 
+        class="filter-chip filter-overdue" 
+        [class.active]="selectedFilter === 'overdue'"
+        (click)="setFilter('overdue')">
+        Overdue ({{ getFilterCount('overdue') }})
+      </button>
+      <button 
+        class="filter-chip filter-unpaid" 
+        [class.active]="selectedFilter === 'unpaid_period'"
+        (click)="setFilter('unpaid_period')">
+        Unpaid ({{ getFilterCount('unpaid_period') }})
+      </button>
+      <button 
+        class="filter-chip filter-paid" 
+        [class.active]="selectedFilter === 'paid'"
+        (click)="setFilter('paid')">
+        Paid ({{ getFilterCount('paid') }})
+      </button>
+      <button 
+        class="filter-chip filter-vacant" 
+        [class.active]="selectedFilter === 'vacant'"
+        (click)="setFilter('vacant')">
+        Vacant ({{ getFilterCount('vacant') }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Sort Controls -->
+  <div class="controls-bar">
+    <h2 class="section-title">Properties</h2>
+    <div class="sort-control">
+      <label for="sort-select">Sort by:</label>
+      <select id="sort-select" [(ngModel)]="sortBy" (ngModelChange)="setSortBy($event)">
+        <option value="dueDate">Due Date</option>
+        <option value="amount">Amount</option>
+        <option value="status">Status</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Properties List -->
+  <div class="properties-list">
+    @if (loading) {
+      <!-- Loading Skeletons -->
+      @for (i of [1,2,3]; track i) {
+        <div class="skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-left">
+              <div class="skeleton-line skeleton-address"></div>
+              <div class="skeleton-line skeleton-tenant"></div>
+            </div>
+            <div class="skeleton-pill"></div>
+          </div>
+          <div class="skeleton-body">
+            <div class="skeleton-line skeleton-date"></div>
+            <div class="skeleton-line skeleton-amount"></div>
+          </div>
+        </div>
+      }
+    } @else if (properties.length === 0) {
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="16" width="48" height="40" rx="4" stroke="currentColor" stroke-width="3" fill="none"/>
+            <path d="M8 28H56" stroke="currentColor" stroke-width="3"/>
+            <circle cx="20" cy="38" r="3" fill="currentColor"/>
+            <circle cx="32" cy="38" r="3" fill="currentColor"/>
+            <circle cx="44" cy="38" r="3" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3 class="empty-title">No properties found</h3>
+        <p class="empty-description">
+          @if (selectedFilter === 'all') {
+            Get started by adding your first property
+          } @else {
+            No properties match the selected filter
+          }
+        </p>
+        @if (selectedFilter === 'all') {
+          <button class="btn-add-property" (click)="openAddProperty()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Add Your First Property
+          </button>
+        }
+      </div>
+    } @else {
+      <!-- Property Cards -->
+      @for (p of properties; track p.id) {
+        <app-property-card
+          [address]="p.address"
+          [tenant]="p.tenant"
+          [rent]="p.rent"
+          [status]="p.status"
+          [rentDueDay]="p.rent_due_day"
+          [nextDueDate]="p.nextDueDate"
+          [remainingAmount]="p.remainingAmount"
+          [collectedAmount]="p.collectedAmount"
+          (click)="openPropertyDetail(p.id)"
+        />
+      }
+    }
+  </div>
+
+  <!-- Add Property Button (when properties exist) -->
+  @if (properties.length > 0) {
+    <button class="fab-add" (click)="openAddProperty()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Add Property
+    </button>
+  }
+
+  <app-bottom-nav />
+</div>

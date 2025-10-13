@@ -1,0 +1,10 @@
+node_modules
+.angular
+.vscode
+*.log
+.git
+.env.local
+.env*.local
+dist
+.cache
+

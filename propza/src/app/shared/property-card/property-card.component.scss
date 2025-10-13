@@ -1,0 +1,51 @@
+.card {
+  position: relative;                  /* anchor for absolute children */
+  background: #f3f4f6;
+  border-radius: 16px;
+  padding: 14px 48px 14px 18px;        /* extra right space for chevron/status */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* left column */
+.left { display: flex; flex-direction: column; gap: 2px; }
+.address { font-weight: 700; font-size: 1rem; color: #111827; }
+.tenant  { font-weight: 600; font-size: .9rem; color: #1f2937; }
+.rent    { font-size: .85rem; color: #525252; }
+.rent-due {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 2px;
+}
+.rent-due.overdue {
+  color: #dc2626;
+}
+
+/* STATUS = top-right */
+.status {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: .85rem;
+}
+.status.overdue { color: #dc2626; }
+.status.vacant { color: #6b7280; }
+.status .dot { width: 10px; height: 10px; border-radius: 50%; background: #16a34a; }
+.status.overdue .dot { background: #dc2626; }
+.status.vacant .dot { background: #9ca3af; }
+
+/* CHEVRON = perfectly center-right */
+.chevron {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #6b7280;
+}
