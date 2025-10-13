@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/propza/browser",
   "github": {
     "silent": false
   },
