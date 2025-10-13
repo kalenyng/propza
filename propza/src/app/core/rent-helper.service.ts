@@ -319,9 +319,9 @@ export class RentHelperService {
       paid: 'success',
       partially_paid: 'partial',
       upcoming: 'info',
-      due_soon: 'warning-light',
+      due_soon: 'info',
       due_today: 'warning',
-      grace: 'warning-dark',
+      grace: 'warning',
       overdue: 'danger'
     };
     return colors[status];
