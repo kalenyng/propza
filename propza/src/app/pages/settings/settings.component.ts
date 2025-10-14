@@ -6,7 +6,6 @@ import { BottomNavComponent } from '../../shared/bottom-nav/bottom-nav.component
 import { TranslationService, Language } from '../../core/translation.service';
 import { AuthService } from '../../core/auth.service';
 import { FormsModule } from '@angular/forms';
-import { ThemeService } from '../../core/theme.service';
 
 @Component({
   selector: 'app-settings',
@@ -19,8 +18,7 @@ export class SettingsComponent {
   constructor(
     public translate: TranslationService,
     private auth: AuthService,
-    private router: Router,
-    public theme: ThemeService
+    private router: Router
   ) {}
 
   // Profile form model
