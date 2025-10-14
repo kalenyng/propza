@@ -33,7 +33,20 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 // Container
 .home-container {
   min-height: 100vh;
-  background: $color-bg-secondary;
+  background: var(--primary);
+  padding-bottom: 0;
+}
+
+// Main Content with Rounded White Background
+.main-content {
+  background: $color-bg;
+  border-radius: 20px 20px 0 0;
+  margin-top: -20px;
+  position: relative;
+  z-index: 50;
+  min-height: calc(100vh + 20px);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  padding-top: 40px;
   padding-bottom: 80px;
 }
 
@@ -41,10 +54,9 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 .summary-bar {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
   background: $color-bg;
   padding: $spacing-md $spacing-md $spacing-sm;
-  box-shadow: $shadow;
   margin-bottom: $spacing-md;
 }
 
@@ -356,7 +368,7 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   transition: all 0.2s ease;
-  z-index: 5;
+  z-index: 50;
   font-size: $font-size-md;
   font-weight: 600;
 

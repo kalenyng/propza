@@ -1,8 +1,10 @@
 <div class="home-container">
   <app-header-banner userName="Kalen" logoLetter="P" />
 
-  <!-- Sticky Summary Bar -->
-  <div class="summary-bar">
+  <!-- Main Content with Rounded White Background -->
+  <div class="main-content">
+    <!-- Sticky Summary Bar -->
+    <div class="summary-bar">
     <div class="summary-metrics">
       <div class="metric">
         <span class="metric-label">Total Rent Due</span>
@@ -127,15 +129,16 @@
     }
   </div>
 
-  <!-- Add Property Button (when properties exist) -->
-  @if (properties.length > 0) {
-    <button class="fab-add" (click)="openAddProperty()">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Add Property
-    </button>
-  }
+    <!-- Add Property Button (when properties exist) -->
+    @if (properties.length > 0) {
+      <button class="fab-add" (click)="openAddProperty()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Add Property
+      </button>
+    }
+  </div>
 
   <app-bottom-nav />
 </div>

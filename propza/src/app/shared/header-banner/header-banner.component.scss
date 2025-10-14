@@ -1,8 +1,11 @@
 .banner {
+  position: sticky;
+  top: 0;
+  z-index: 5;
   background: var(--primary);
   color: #fff;
-  border-radius: 0px 0px 15px 15px;
-  padding: 20px 28px;
+  border-radius: 0px;
+  padding: 30px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
