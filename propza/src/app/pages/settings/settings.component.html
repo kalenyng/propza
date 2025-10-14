@@ -30,20 +30,25 @@
       <h3>{{ translate.t('settings.account') }}</h3>
       
       <div class="settings-list">
-        <button class="setting-item" disabled>
-          <span class="setting-label">{{ translate.t('settings.profile') }}</span>
-          <span class="setting-badge">Coming soon</span>
-        </button>
-        
-        <button class="setting-item" disabled>
-          <span class="setting-label">{{ translate.t('settings.changePassword') }}</span>
-          <span class="setting-badge">Coming soon</span>
-        </button>
-        
-        <button class="setting-item" disabled>
-          <span class="setting-label">{{ translate.t('settings.deleteAccount') }}</span>
-          <span class="setting-badge">Coming soon</span>
-        </button>
+        <!-- Profile Form -->
+        <div class="setting-item setting-form">
+          <div class="form-row">
+            <label>Full name</label>
+            <input [(ngModel)]="fullName" placeholder="Your full name" />
+          </div>
+          <div class="form-row">
+            <label>Email</label>
+            <input [(ngModel)]="email" type="email" placeholder="you@example.com" />
+          </div>
+          <div class="form-actions">
+            <button class="btn-primary" (click)="saveProfile()">{{ translate.t('button.save') }}</button>
+            <button class="btn-secondary" (click)="sendResetLink()">{{ translate.t('settings.changePassword') }}</button>
+          </div>
+          <div class="form-messages">
+            <span class="msg ok" *ngIf="message">{{ message }}</span>
+            <span class="msg err" *ngIf="error">{{ error }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -52,15 +57,17 @@
       <h3>{{ translate.t('settings.preferences') }}</h3>
       
       <div class="settings-list">
-        <button class="setting-item" disabled>
+        <!-- Theme toggle (coming soon) -->
+        <div class="setting-item" disabled>
           <span class="setting-label">{{ translate.t('settings.theme') }}</span>
           <span class="setting-badge">Coming soon</span>
-        </button>
+        </div>
         
-        <button class="setting-item" disabled>
+        <!-- Notifications placeholder (simple toggle future) -->
+        <div class="setting-item" disabled>
           <span class="setting-label">{{ translate.t('settings.notifications') }}</span>
-          <span class="setting-badge">Coming soon</span>
-        </button>
+          <span class="setting-badge">Soon</span>
+        </div>
       </div>
     </div>
 
@@ -69,6 +76,7 @@
       <button class="btn-sign-out" (click)="signOut()">
         {{ translate.t('button.signOut') }}
       </button>
+      <button class="btn-danger" (click)="confirmDelete()">Delete account</button>
     </div>
   </div>
 

@@ -114,11 +114,70 @@
   }
 }
 
+.setting-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    input {
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #374151;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 8px;
+
+    .btn-primary {
+      padding: 10px 12px;
+      background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .btn-secondary {
+      padding: 10px 12px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      color: #374151;
+      font-weight: 600;
+    }
+  }
+
+  .form-messages {
+    .msg {
+      font-size: 13px;
+    }
+    .ok { color: #16a34a; }
+    .err { color: #dc2626; }
+  }
+}
+
 // Sign Out Section
 .sign-out-section {
   margin-top: 40px;
   padding-top: 24px;
   border-top: 1px solid #e5e7eb;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
 .btn-sign-out {
@@ -140,6 +199,24 @@
 
   &:active {
     transform: translateY(1px);
+  }
+}
+
+.btn-danger {
+  width: 100%;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 2px solid #dc2626;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #dc2626;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #dc2626;
+    color: #ffffff;
   }
 }
 
