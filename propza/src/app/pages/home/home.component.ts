@@ -6,6 +6,7 @@ import { PropertyCardComponent } from '../../shared/property-card/property-card.
 import { BottomNavComponent } from '../../shared/bottom-nav/bottom-nav.component';
 import { SupabaseService } from '../../core/supabase.service';
 import { RentHelperService, RentStatus } from '../../core/rent-helper.service';
+import { TranslationService } from '../../core/translation.service';
 
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddPropertyModalComponent } from '../../shared/add-property-modal/add-property-modal.component';
@@ -58,7 +59,8 @@ export class HomeComponent {
     private supabaseService: SupabaseService, 
     private modal: NgbModal,
     private router: Router,
-    private rentHelper: RentHelperService
+    private rentHelper: RentHelperService,
+    public translate: TranslationService
   ) {}
 
   async ngOnInit(): Promise<void> {

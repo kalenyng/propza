@@ -1,0 +1,25 @@
+<div class="tenants-container">
+  <app-header-banner logoLetter="P" />
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="content-header">
+      <h1>{{ translate.t('tenants.allTenants') }}</h1>
+    </div>
+
+    <!-- Coming Soon Message -->
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="30" r="12" stroke="currentColor" stroke-width="3" fill="none"/>
+          <path d="M20 65C20 55 28 48 40 48C52 48 60 55 60 65" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2>{{ translate.t('tenants.title') }}</h2>
+      <p>{{ translate.t('tenants.noTenants') }}</p>
+      <p class="coming-soon">Coming soon - Manage all your tenants in one place</p>
+    </div>
+  </div>
+
+  <app-bottom-nav />
+</div>

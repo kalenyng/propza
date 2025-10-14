@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';     // ⬅️ add this
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],             // ⬅️ add CommonModule here
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']             // ⬅️ also note the plural: styleUrls
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
   email = '';
@@ -30,5 +30,18 @@ export class LoginComponent {
     } else {
       this.router.navigateByUrl('/');
     }
+  }
+
+  async signInWithGoogle(): Promise<void> {
+    this.loading = true;
+    this.errorMsg = '';
+    
+    const error = await this.auth.signInWithGoogle();
+    
+    if (error) {
+      this.errorMsg = error.message;
+      this.loading = false;
+    }
+    // No need to handle success - Supabase will redirect automatically
   }
 }

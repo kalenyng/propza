@@ -38,6 +38,34 @@ export class AuthService {
     return error ?? null;
   }
 
+  async signInWithGoogle(): Promise<AuthError | null> {
+    const { error } = await this.supabase.supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
+      }
+    });
+    return error ?? null;
+  }
+
+  async signUp(email: string, password: string, firstName?: string, fullName?: string): Promise<{ error: AuthError | null }> {
+    const { error } = await this.supabase.supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: {
+          first_name: firstName || '',
+          full_name: fullName || ''
+        }
+      }
+    });
+    return { error: error ?? null };
+  }
+
   async signOut(): Promise<AuthError | null> {
     const { error } = await this.supabase.supabase.auth.signOut();
     return error ?? null;

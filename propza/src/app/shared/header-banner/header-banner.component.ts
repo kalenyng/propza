@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-header-banner',
@@ -13,7 +14,25 @@ export class HeaderBannerComponent implements OnInit {
   
   greeting: string = '';
 
+  constructor(private auth: AuthService) {}
+
   ngOnInit(): void {
+    this.loadUserName();
+  }
+
+  private async loadUserName(): Promise<void> {
+    const user = this.auth.user();
+    
+    if (user) {
+      // Try to get name from user metadata (for both email signup and Google sign-in)
+      const firstName = user.user_metadata?.['first_name'] || 
+                       user.user_metadata?.['full_name']?.split(' ')[0] ||
+                       user.user_metadata?.['name']?.split(' ')[0] || // Google provides 'name'
+                       '';
+      
+      this.userName = firstName;
+    }
+    
     this.greeting = this.getTimeBasedGreeting();
   }
 

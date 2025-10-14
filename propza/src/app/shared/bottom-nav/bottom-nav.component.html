@@ -1,5 +1,28 @@
 <nav class="nav">
-  <button class="tab active" aria-label="Home">🏠</button>
-  <button class="tab" aria-label="Tenants">👤</button>
-  <button class="tab" aria-label="Tasks">📝</button>
+  <!-- Home -->
+  <button 
+    class="tab" 
+    [class.active]="isActive('/')"
+    routerLink="/"
+    aria-label="Home">
+    🏠
+  </button>
+  
+  <!-- Tenants -->
+  <button 
+    class="tab" 
+    [class.active]="isActive('/tenants')"
+    routerLink="/tenants"
+    aria-label="Tenants">
+    👥
+  </button>
+  
+  <!-- Settings -->
+  <button 
+    class="tab" 
+    [class.active]="isActive('/settings')"
+    routerLink="/settings"
+    aria-label="Settings">
+    ⚙️
+  </button>
 </nav>

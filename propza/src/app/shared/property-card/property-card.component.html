@@ -9,7 +9,7 @@
     <div class="card-right">
       <div class="status-pill" [attr.data-color]="statusColor">
         <span class="status-dot"></span>
-        <span class="status-label">{{ statusLabel }}</span>
+        <span class="status-label">{{ i18nStatusLabel }}</span>
       </div>
     </div>
   </div>
@@ -18,12 +18,12 @@
     <div class="card-bottom-left">
       @if (nextDueDate && status !== 'vacant') {
         <p class="due-date" [class.overdue]="status === 'overdue'">
-          {{ dueDateLabel }} {{ nextDueDate | date:'dd MMM yyyy' }}
+          {{ duePrefix }} {{ nextDueDate | date:'dd MMM yyyy' }}
         </p>
       }
       @if (status === 'partially_paid' && remainingAmount && remainingAmount > 0) {
         <p class="remaining-amount">
-          {{ remainingAmount | currency:'ZAR':'symbol':'1.0-0' }} remaining
+          {{ remainingAmount | currency:'ZAR':'symbol':'1.0-0' }} {{ translate.t('property.remaining') }}
         </p>
       }
     </div>

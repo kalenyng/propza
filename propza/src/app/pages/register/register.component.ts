@@ -1,17 +1,18 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
+  fullName = '';
   email = '';
   password = '';
   loading = false;
@@ -25,18 +26,31 @@ export class RegisterComponent {
     this.errorMsg = '';
     this.message = '';
 
-    const { error } = await this.auth.supabase.supabase.auth.signUp({
-      email: this.email,
-      password: this.password
-    });
+    // Extract first name from full name (everything before first space)
+    const firstName = this.fullName.trim().split(' ')[0];
+
+    const { error } = await this.auth.signUp(this.email, this.password, firstName, this.fullName);
 
     this.loading = false;
 
     if (error) {
       this.errorMsg = error.message;
     } else {
-      this.message = 'Account created! You can now log in.';
-      setTimeout(() => this.router.navigateByUrl('/login'), 1500);
+      this.message = 'Account created! Check your email to confirm.';
+      setTimeout(() => this.router.navigateByUrl('/login'), 2000);
     }
+  }
+
+  async signInWithGoogle(): Promise<void> {
+    this.loading = true;
+    this.errorMsg = '';
+    
+    const error = await this.auth.signInWithGoogle();
+    
+    if (error) {
+      this.errorMsg = error.message;
+      this.loading = false;
+    }
+    // No need to handle success - Supabase will redirect automatically
   }
 }

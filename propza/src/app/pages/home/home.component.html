@@ -1,5 +1,5 @@
 <div class="home-container">
-  <app-header-banner userName="Kalen" logoLetter="P" />
+  <app-header-banner logoLetter="P" />
 
   <!-- Main Content with Rounded White Background -->
   <div class="main-content">
@@ -7,11 +7,11 @@
     <div class="summary-bar">
     <div class="summary-metrics">
       <div class="metric">
-        <span class="metric-label">Total Rent Due</span>
+        <span class="metric-label">{{ translate.t('dashboard.totalRent') }}</span>
         <span class="metric-value">{{ formatMoney(totalRentDue, 'ZAR') }}</span>
       </div>
       <div class="metric">
-        <span class="metric-label">Collected</span>
+        <span class="metric-label">{{ translate.t('dashboard.collected') }}</span>
         <span class="metric-value">{{ percentCollected }}%</span>
       </div>
     </div>
@@ -21,44 +21,44 @@
         class="filter-chip" 
         [class.active]="selectedFilter === 'all'"
         (click)="setFilter('all')">
-        All ({{ getFilterCount('all') }})
+        {{ translate.t('filter.all') }} ({{ getFilterCount('all') }})
       </button>
       <button 
         class="filter-chip filter-overdue" 
         [class.active]="selectedFilter === 'overdue'"
         (click)="setFilter('overdue')">
-        Overdue ({{ getFilterCount('overdue') }})
+        {{ translate.t('status.overdue') }} ({{ getFilterCount('overdue') }})
       </button>
       <button 
         class="filter-chip filter-unpaid" 
         [class.active]="selectedFilter === 'unpaid_period'"
         (click)="setFilter('unpaid_period')">
-        Unpaid ({{ getFilterCount('unpaid_period') }})
+        {{ translate.t('filter.unpaid') }} ({{ getFilterCount('unpaid_period') }})
       </button>
       <button 
         class="filter-chip filter-paid" 
         [class.active]="selectedFilter === 'paid'"
         (click)="setFilter('paid')">
-        Paid ({{ getFilterCount('paid') }})
+        {{ translate.t('status.paid') }} ({{ getFilterCount('paid') }})
       </button>
       <button 
         class="filter-chip filter-vacant" 
         [class.active]="selectedFilter === 'vacant'"
         (click)="setFilter('vacant')">
-        Vacant ({{ getFilterCount('vacant') }})
+        {{ translate.t('status.vacant') }} ({{ getFilterCount('vacant') }})
       </button>
     </div>
   </div>
 
   <!-- Sort Controls -->
   <div class="controls-bar">
-    <h2 class="section-title">Properties</h2>
+    <h2 class="section-title">{{ translate.t('dashboard.properties') }}</h2>
     <div class="sort-control">
-      <label for="sort-select">Sort by:</label>
+      <label for="sort-select">{{ translate.t('dashboard.sortBy') }}</label>
       <select id="sort-select" [(ngModel)]="sortBy" (ngModelChange)="setSortBy($event)">
-        <option value="dueDate">Due Date</option>
-        <option value="amount">Amount</option>
-        <option value="status">Status</option>
+        <option value="dueDate">{{ translate.t('dashboard.dueDate') }}</option>
+        <option value="amount">{{ translate.t('dashboard.amount') }}</option>
+        <option value="status">{{ translate.t('dashboard.status') }}</option>
       </select>
     </div>
   </div>
@@ -94,12 +94,12 @@
             <circle cx="44" cy="38" r="3" fill="currentColor"/>
           </svg>
         </div>
-        <h3 class="empty-title">No properties found</h3>
+        <h3 class="empty-title">{{ translate.t('empty.noProperties') }}</h3>
         <p class="empty-description">
           @if (selectedFilter === 'all') {
-            Get started by adding your first property
+            {{ translate.t('empty.getStarted') }}
           } @else {
-            No properties match the selected filter
+            {{ translate.t('empty.noMatches') }}
           }
         </p>
         @if (selectedFilter === 'all') {
@@ -107,7 +107,7 @@
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            Add Your First Property
+            {{ translate.t('button.addProperty') }}
           </button>
         }
       </div>

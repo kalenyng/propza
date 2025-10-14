@@ -1,0 +1,76 @@
+<div class="settings-container">
+  <app-header-banner logoLetter="P" />
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="content-header">
+      <h1>{{ translate.t('settings.title') }}</h1>
+    </div>
+
+    <!-- Language Section -->
+    <div class="settings-section">
+      <h3>{{ translate.t('settings.language') }}</h3>
+      <p class="section-description">{{ translate.t('settings.languageDescription') }}</p>
+
+      <div class="settings-list">
+        <div class="setting-item setting-select">
+          <span class="setting-label">{{ translate.t('settings.language') }}</span>
+          <select class="language-select" (change)="changeLanguage($any($event.target).value)">
+            <option value="en" [selected]="translate.currentLanguage() === 'en'">English</option>
+            <option value="af" [selected]="translate.currentLanguage() === 'af'">Afrikaans</option>
+            <option value="zu" [selected]="translate.currentLanguage() === 'zu'">isiZulu</option>
+            <option value="xh" [selected]="translate.currentLanguage() === 'xh'">isiXhosa</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Section -->
+    <div class="settings-section">
+      <h3>{{ translate.t('settings.account') }}</h3>
+      
+      <div class="settings-list">
+        <button class="setting-item" disabled>
+          <span class="setting-label">{{ translate.t('settings.profile') }}</span>
+          <span class="setting-badge">Coming soon</span>
+        </button>
+        
+        <button class="setting-item" disabled>
+          <span class="setting-label">{{ translate.t('settings.changePassword') }}</span>
+          <span class="setting-badge">Coming soon</span>
+        </button>
+        
+        <button class="setting-item" disabled>
+          <span class="setting-label">{{ translate.t('settings.deleteAccount') }}</span>
+          <span class="setting-badge">Coming soon</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Preferences Section -->
+    <div class="settings-section">
+      <h3>{{ translate.t('settings.preferences') }}</h3>
+      
+      <div class="settings-list">
+        <button class="setting-item" disabled>
+          <span class="setting-label">{{ translate.t('settings.theme') }}</span>
+          <span class="setting-badge">Coming soon</span>
+        </button>
+        
+        <button class="setting-item" disabled>
+          <span class="setting-label">{{ translate.t('settings.notifications') }}</span>
+          <span class="setting-badge">Coming soon</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sign Out Button -->
+    <div class="sign-out-section">
+      <button class="btn-sign-out" (click)="signOut()">
+        {{ translate.t('button.signOut') }}
+      </button>
+    </div>
+  </div>
+
+  <app-bottom-nav />
+</div>
