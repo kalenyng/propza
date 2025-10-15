@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subject, combineLatest } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { HeaderBannerComponent } from '../../shared/header-banner/header-banner.component';
 import { PropertyCardComponent } from '../../shared/property-card/property-card.component';
 import { BottomNavComponent } from '../../shared/bottom-nav/bottom-nav.component';
-import { SupabaseService } from '../../core/supabase.service';
+import { PropertyService } from '../../core/property.service';
 import { RentHelperService, RentStatus } from '../../core/rent-helper.service';
 import { TranslationService } from '../../core/translation.service';
 
@@ -41,7 +43,7 @@ type PropertyVM = {
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, OnDestroy {
   allProperties: PropertyVM[] = [];
   properties: PropertyVM[] = [];
   totalRentDue = 0;
@@ -54,205 +56,41 @@ export class HomeComponent {
   selectedFilter: PropertyStatus | 'all' | 'unpaid_period' = 'all';
   sortBy: 'dueDate' | 'amount' | 'status' = 'dueDate';
   paymentsMap: Map<string, number> = new Map(); // Maps (propertyId-period) to sum of payments
+  
+  private destroy$ = new Subject<void>();
 
   constructor(
-    private supabaseService: SupabaseService, 
+    private propertyService: PropertyService,
     private modal: NgbModal,
     private router: Router,
     private rentHelper: RentHelperService,
     public translate: TranslationService
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.reloadProperties();
-  }
-
-  async reloadProperties(): Promise<void> {
-    this.loading = true;
-    const { data: userData } = await this.supabaseService.supabase.auth.getUser();
-    const userId = userData.user?.id;
-    if (!userId) {
-      this.allProperties = [];
-      this.properties = [];
-      this.activeCount = 0;
-      this.overdueCount = 0;
-      this.totalRentDue = 0;
-      this.totalRentExpected = 0;
-      this.percentCollected = 0;
-      this.loading = false;
-      return;
-    }
-
-    // Fetch properties with tenancies
-    const { data, error } = await this.supabaseService.supabase
-      .from('properties')
-      .select(`
-        id,
-        address,
-        tenant,
-        rent_amount,
-        currency,
-        tenancies (
-          start_date,
-          end_date,
-          rent_due_day
-        )
-      `)
-      .eq('owner_id', userId)
-      .limit(50);
-
-    if (error) {
-      console.error('Load properties error:', error);
-      this.allProperties = [];
-      this.properties = [];
-      this.activeCount = 0;
-      this.overdueCount = 0;
-      this.totalRentDue = 0;
-      this.totalRentExpected = 0;
-      this.percentCollected = 0;
-      this.loading = false;
-      return;
-    }
-
-    if (data && data.length) {
-      const currency = data[0].currency || 'ZAR';
-      
-      // Fetch payments for previous, current, and next month (to handle carryover)
-      const propertyIds = data.map((p: any) => p.id);
-      const today = new Date();
-      const currentPeriod = this.rentHelper.getCurrentPeriod();
-      
-      const prevMonth = new Date(today);
-      prevMonth.setMonth(prevMonth.getMonth() - 1);
-      const prevPeriod = this.rentHelper.periodKey(prevMonth);
-      
-      const nextMonth = new Date(today);
-      nextMonth.setMonth(nextMonth.getMonth() + 1);
-      const nextPeriod = this.rentHelper.periodKey(nextMonth);
-      
-      const { data: payments } = await this.supabaseService.supabase
-        .from('payments')
-        .select('property_id, period, amount')
-        .in('property_id', propertyIds)
-        .in('period', [prevPeriod, currentPeriod, nextPeriod]);
-
-      // Build payments map - sum amounts per (property_id, period)
-      this.paymentsMap.clear();
-      if (payments) {
-        payments.forEach((p: any) => {
-          const key = `${p.property_id}-${p.period}`;
-          const currentSum = this.paymentsMap.get(key) || 0;
-          this.paymentsMap.set(key, currentSum + (Number(p.amount) || 0));
-        });
-      }
-
-      // Map properties with status calculation
-      this.allProperties = data.map((p: any) => {
-        // Get active tenancy
-        const activeTenancy = Array.isArray(p.tenancies) && p.tenancies.length > 0
-          ? p.tenancies.find((t: any) => 
-              this.rentHelper.isActive(t.start_date, t.end_date)
-            )
-          : null;
-
-        let status: PropertyStatus = 'vacant';
-        let nextDueDate: Date | undefined;
-        let periodKey: string | undefined;
-        let daysUntilDue: number | undefined;
-        let collectedAmount = 0;
-        let remaining = 0;
-        let rentAmount = Number(p.rent_amount) || 0;
-
-        if (activeTenancy && activeTenancy.rent_due_day) {
-          // Calculate next due date
-          nextDueDate = this.rentHelper.nextDueDate(
-            activeTenancy.rent_due_day,
-            activeTenancy.start_date
-          );
-          
-          daysUntilDue = this.rentHelper.daysUntilDue(nextDueDate);
-          
-          // Get the CURRENT rent period we're in (not the next one)
-          const currentRentPeriod = this.rentHelper.getCurrentRentPeriod(activeTenancy.rent_due_day);
-          
-          // Get payments for current period
-          const currentPaymentKey = `${p.id}-${currentRentPeriod}`;
-          const currentPeriodPayments = this.paymentsMap.get(currentPaymentKey) || 0;
-          
-          // Get overpayment from previous period (carryover)
-          const prevMonth = new Date(today);
-          prevMonth.setMonth(prevMonth.getMonth() - 1);
-          const prevPeriod = this.rentHelper.periodKey(prevMonth);
-          const prevPaymentKey = `${p.id}-${prevPeriod}`;
-          const prevPeriodPayments = this.paymentsMap.get(prevPaymentKey) || 0;
-          const prevOverpayment = this.rentHelper.getOverpayment(prevPeriodPayments, rentAmount);
-          
-          // Total collected = current period payments + previous overpayment
-          collectedAmount = currentPeriodPayments + prevOverpayment;
-          remaining = this.rentHelper.getRemaining(collectedAmount, rentAmount);
-          
-          periodKey = currentRentPeriod;
-          
-          // Calculate status with partial payment support and carryover
-          status = this.rentHelper.statusFor(
-            true, 
-            nextDueDate, 
-            collectedAmount,
-            rentAmount
-          );
-        }
-
-        return {
-          id: p.id,
-          address: p.address,
-          tenant: p.tenant || '',
-          rent: this.formatMoney(p.rent_amount, currency) + '/mo',
-          rentAmount,
-          status,
-          rent_due_day: activeTenancy?.rent_due_day,
-          nextDueDate,
-          periodKey,
-          daysUntilDue,
-          collectedAmount,
-          remainingAmount: remaining
-        };
+  ngOnInit(): void {
+    // Subscribe to properties and payments observables
+    combineLatest([
+      this.propertyService.properties$,
+      this.propertyService.payments$,
+      this.propertyService.loading$
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([properties, payments, loading]) => {
+        this.loading = loading;
+        this.processPropertiesData(properties, payments);
       });
 
-      // Calculate metrics
-      const activeProperties = this.allProperties.filter(p => p.status !== 'vacant');
-      this.activeCount = activeProperties.length;
-      this.overdueCount = this.allProperties.filter(p => p.status === 'overdue').length;
-      
-      // Total rent due this month (sum of REMAINING amounts for current month)
-      this.totalRentDue = this.allProperties
-        .filter(p => {
-          if (p.status === 'vacant' || !p.nextDueDate) {
-            return false;
-          }
-          return this.rentHelper.isDueThisMonth(p.nextDueDate);
-        })
-        .reduce((sum, p) => sum + (p.remainingAmount || 0), 0);
-      
-      // Total expected this month (all rent amounts for properties due this month)
-      this.totalRentExpected = this.allProperties
-        .filter(p => {
-          if (p.status === 'vacant' || !p.nextDueDate) {
-            return false;
-          }
-          return this.rentHelper.isDueThisMonth(p.nextDueDate);
-        })
-        .reduce((sum, p) => sum + p.rentAmount, 0);
-      
-      // Calculate % collected
-      if (this.totalRentExpected > 0) {
-        const collected = this.totalRentExpected - this.totalRentDue;
-        this.percentCollected = Math.round((collected / this.totalRentExpected) * 100);
-      } else {
-        this.percentCollected = 0;
-      }
+    // Initial load
+    this.propertyService.refreshAll();
+  }
 
-      this.applyFiltersAndSort();
-    } else {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private processPropertiesData(data: any[], payments: any[]): void {
+    if (!data || data.length === 0) {
       this.allProperties = [];
       this.properties = [];
       this.activeCount = 0;
@@ -260,9 +98,122 @@ export class HomeComponent {
       this.totalRentDue = 0;
       this.totalRentExpected = 0;
       this.percentCollected = 0;
+      return;
     }
+
+    const currency = data[0].currency || 'ZAR';
+    const today = new Date();
+
+    // Build payments map - sum amounts per (property_id, period)
+    this.paymentsMap.clear();
+    if (payments) {
+      payments.forEach((p: any) => {
+        const key = `${p.property_id}-${p.period}`;
+        const currentSum = this.paymentsMap.get(key) || 0;
+        this.paymentsMap.set(key, currentSum + (Number(p.amount) || 0));
+      });
+    }
+
+    // Map properties with status calculation
+    this.allProperties = data.map((p: any) => {
+      // Get active tenant
+      const activeTenant = Array.isArray(p.tenants) && p.tenants.length > 0
+        ? p.tenants[0] // Get the first (and should be only) tenant
+        : null;
+
+      let status: PropertyStatus = 'vacant';
+      let nextDueDate: Date | undefined;
+      let periodKey: string | undefined;
+      let daysUntilDue: number | undefined;
+      let collectedAmount = 0;
+      let remaining = 0;
+      let rentAmount = Number(p.rent_amount) || 0;
+
+      if (activeTenant && p.status === 'occupied') {
+        // Use tenant's rent due date
+        nextDueDate = new Date(activeTenant.rent_due_date);
+        daysUntilDue = this.rentHelper.daysUntilDue(nextDueDate);
+        
+        // Get the CURRENT rent period we're in (not the next one)
+        const currentRentPeriod = this.rentHelper.getCurrentRentPeriod(nextDueDate.getDate());
+        
+        // Get payments for current period
+        const currentPaymentKey = `${p.id}-${currentRentPeriod}`;
+        const currentPeriodPayments = this.paymentsMap.get(currentPaymentKey) || 0;
+        
+        // Get overpayment from previous period (carryover)
+        const prevMonth = new Date(today);
+        prevMonth.setMonth(prevMonth.getMonth() - 1);
+        const prevPeriod = this.rentHelper.periodKey(prevMonth);
+        const prevPaymentKey = `${p.id}-${prevPeriod}`;
+        const prevPeriodPayments = this.paymentsMap.get(prevPaymentKey) || 0;
+        const prevOverpayment = this.rentHelper.getOverpayment(prevPeriodPayments, rentAmount);
+        
+        // Total collected = current period payments + previous overpayment
+        collectedAmount = currentPeriodPayments + prevOverpayment;
+        remaining = this.rentHelper.getRemaining(collectedAmount, rentAmount);
+        
+        periodKey = currentRentPeriod;
+        
+        // Calculate status dynamically based on due date and payments
+        status = this.rentHelper.statusFor(
+          true,              // tenancy is active
+          nextDueDate,       // next due date
+          collectedAmount,   // total collected (including carryover)
+          rentAmount         // expected rent amount
+        );
+      }
+
+      return {
+        id: p.id,
+        address: p.address,
+        tenant: p.tenant || '',
+        rent: this.formatMoney(p.rent_amount, currency) + '/mo',
+        rentAmount,
+        status,
+        rent_due_day: activeTenant ? nextDueDate?.getDate() : undefined,
+        nextDueDate,
+        periodKey,
+        daysUntilDue,
+        collectedAmount,
+        remainingAmount: remaining
+      };
+    });
+
+    // Calculate metrics
+    const activeProperties = this.allProperties.filter(p => p.status !== 'vacant');
+    this.activeCount = activeProperties.length;
+    this.overdueCount = this.allProperties.filter(p => p.status === 'overdue').length;
     
-    this.loading = false;
+    // Total rent due this month (sum of REMAINING amounts for current month)
+    this.totalRentDue = this.allProperties
+      .filter(p => {
+        if (p.status === 'vacant' || !p.nextDueDate) {
+          return false;
+        }
+        return this.rentHelper.isDueThisMonth(p.nextDueDate);
+      })
+      .reduce((sum, p) => sum + (p.remainingAmount || 0), 0);
+    
+    // Total expected this month (all rent amounts for properties due this month)
+    this.totalRentExpected = this.allProperties
+      .filter(p => {
+        if (p.status === 'vacant' || !p.nextDueDate) {
+          return false;
+        }
+        return this.rentHelper.isDueThisMonth(p.nextDueDate);
+      })
+      .reduce((sum, p) => sum + p.rentAmount, 0);
+    
+    // Calculate % collected
+    if (this.totalRentExpected > 0) {
+      const collected = this.totalRentExpected - this.totalRentDue;
+      this.percentCollected = Math.round((collected / this.totalRentExpected) * 100);
+    } else {
+      this.percentCollected = 0;
+    }
+
+    this.applyFiltersAndSort();
   }
 
   applyFiltersAndSort(): void {
@@ -331,7 +282,9 @@ export class HomeComponent {
   openAddProperty(): void {
     const ref = this.modal.open(AddPropertyModalComponent, { size: 'lg', backdrop: 'static' });
     ref.result
-      .then((ok) => { if (ok) this.reloadProperties(); })
+      .then((ok) => { 
+        // No need to manually reload - the service observables will handle it
+      })
       .catch(() => {});
   }
 

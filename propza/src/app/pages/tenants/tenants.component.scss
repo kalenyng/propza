@@ -2,6 +2,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
   padding-bottom: 0;
+  position: relative;
 }
 
 .main-content {
@@ -13,7 +14,7 @@
   z-index: 50;
   min-height: calc(100vh + 20px);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  padding: 40px 24px 80px;
+  padding: 40px 24px 120px; // Increased bottom padding for floating button
 }
 
 .content-header {
@@ -27,10 +28,149 @@
   }
 }
 
-:host-context(.dark-theme) {
-  .content-header h1 {
-    color: #f1f5f9;
+
+// Controls Section
+.controls-section {
+  margin-bottom: 32px;
+
+  .search-container {
+    position: relative;
+    margin-bottom: 16px;
+
+    .search-input {
+      width: 100%;
+      padding: 12px 16px 12px 48px;
+      border: 1px solid rgba(229, 231, 235, 0.3);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: #16a34a;
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+      }
+
+      &::placeholder {
+        color: color-mix(in srgb, var(--text) 50%, #888 50%);
+      }
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: color-mix(in srgb, var(--text) 50%, #888 50%);
+      pointer-events: none;
+    }
   }
+
+  // Filter chips - using global styles from styles.scss
+  .filter-chips {
+    // Global styles handle all filter chip styling
+  }
+}
+
+// Loading Skeletons (matching Home page)
+.skeleton-card {
+  background: var(--card);
+  border: 1px solid rgba(229, 231, 235, 0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  min-height: 96px;
+  margin-bottom: 12px;
+}
+
+.skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.skeleton-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-line {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  height: 16px;
+}
+
+.skeleton-name {
+  width: 140px;
+  height: 18px;
+}
+
+.skeleton-property {
+  width: 180px;
+  height: 14px;
+}
+
+.skeleton-pill {
+  width: 80px;
+  height: 28px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 14px;
+}
+
+.skeleton-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.skeleton-date {
+  width: 45%;
+  height: 14px;
+}
+
+.skeleton-amount {
+  width: 30%;
+  height: 20px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Dark theme overrides for skeletons
+:host-context(.dark-theme) {
+  .skeleton-card {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .skeleton-line {
+    background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+  }
+
+  .skeleton-pill {
+    background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+  }
+}
+
+// Tenants Grid
+.tenants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
 }
 
 // Empty State
@@ -53,24 +193,134 @@
   color: #9ca3af;
 }
 
-.empty-state h2 {
-  font-size: 24px;
+.empty-title {
+  font-size: 20px;
   font-weight: 600;
   color: var(--text);
   margin: 0 0 12px;
 }
 
-.empty-state p {
-  font-size: 16px;
+.empty-description {
+  font-size: 15px;
   color: color-mix(in srgb, var(--text) 70%, #888 30%);
-  margin: 0 0 8px;
+  margin: 0;
   line-height: 1.5;
 }
 
-.coming-soon {
-  font-size: 14px !important;
-  color: #9ca3af !important;
-  font-style: italic;
-  margin-top: 16px !important;
+// Floating Add Button (matching Home page style)
+.add-tenant-btn {
+  position: fixed;
+  bottom: 120px; // Above bottom nav (matching home page)
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 50;
+  font-size: 16px;
+  font-weight: 600;
+
+  &:hover {
+    background: linear-gradient(135deg, #0a2f23 0%, #15803d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+// Dark theme overrides
+:host-context(.dark-theme) {
+  .content-header h1 {
+    color: #f1f5f9;
+  }
+
+  .summary-bar {
+    background: var(--card);
+    border-color: rgba(229, 231, 235, 0.1);
+  }
+
+  .search-container .search-input {
+    background: var(--card);
+    border-color: rgba(229, 231, 235, 0.1);
+
+    &::placeholder {
+      color: color-mix(in srgb, var(--text) 40%, #888 60%);
+    }
+  }
+
+  .filter-chips .filter-chip {
+    background: var(--card);
+    border-color: rgba(229, 231, 235, 0.1);
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
+
+    &:hover {
+      background: color-mix(in srgb, var(--card) 90%, #fff 10%);
+      border-color: rgba(209, 213, 219, 0.2);
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .main-content {
+    padding: 32px 16px 120px;
+  }
+
+  .content-header {
+    h1 {
+      font-size: 24px;
+    }
+  }
+
+  .summary-bar .summary-metrics {
+    gap: 16px;
+
+    .metric {
+      .metric-label {
+        font-size: 11px;
+      }
+
+      .metric-value {
+        font-size: 18px;
+      }
+    }
+  }
+
+  .tenants-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .add-tenant-btn {
+    bottom: 100px;
+    right: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-chips {
+    gap: 6px;
+
+    .filter-chip {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+  }
 }
 

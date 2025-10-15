@@ -3,23 +3,102 @@
 
   <!-- Main Content -->
   <div class="main-content">
+    <!-- Header with Title -->
     <div class="content-header">
       <h1>{{ translate.t('tenants.allTenants') }}</h1>
     </div>
 
-    <!-- Coming Soon Message -->
-    <div class="empty-state">
-      <div class="empty-icon">
-        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="40" cy="30" r="12" stroke="currentColor" stroke-width="3" fill="none"/>
-          <path d="M20 65C20 55 28 48 40 48C52 48 60 55 60 65" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    <!-- Search and Filters -->
+    <div class="controls-section">
+      <!-- Search Input -->
+      <div class="search-container">
+        <input
+          type="text"
+          class="search-input"
+          [placeholder]="translate.t('tenants.searchPlaceholder')"
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
         </svg>
       </div>
-      <h2>{{ translate.t('tenants.title') }}</h2>
-      <p>{{ translate.t('tenants.noTenants') }}</p>
-      <p class="coming-soon">Coming soon - Manage all your tenants in one place</p>
+
+      <!-- Filter Chips -->
+      <div class="filter-chips">
+        <button
+          class="filter-chip"
+          [class.active]="selectedFilter === 'all'"
+          (click)="setFilter('all')">
+          All ({{ getFilterCount('all') }})
+        </button>
+        <button
+          class="filter-chip filter-overdue"
+          [class.active]="selectedFilter === 'overdue'"
+          (click)="setFilter('overdue')">
+          Overdue ({{ getFilterCount('overdue') }})
+        </button>
+      </div>
+    </div>
+
+
+    <!-- Tenant Cards Grid -->
+    <div class="tenants-grid">
+      @if (loading) {
+        <!-- Loading Skeletons -->
+        @for (i of [1,2,3]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton-header">
+              <div class="skeleton-left">
+                <div class="skeleton-line skeleton-name"></div>
+                <div class="skeleton-line skeleton-property"></div>
+              </div>
+              <div class="skeleton-pill"></div>
+            </div>
+            <div class="skeleton-body">
+              <div class="skeleton-line skeleton-amount"></div>
+              <div class="skeleton-line skeleton-date"></div>
+            </div>
+          </div>
+        }
+      } @else if (filteredTenants.length > 0) {
+        <!-- Tenant Cards -->
+        <div *ngFor="let tenant of filteredTenants; trackBy: trackByTenantId">
+          <app-tenant-card
+            [tenant]="tenant"
+            (cardClick)="openTenantDetails($event)">
+          </app-tenant-card>
+        </div>
+      } @else {
+        <!-- Empty State -->
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="30" r="12" stroke="currentColor" stroke-width="3" fill="none"/>
+              <path d="M20 65C20 55 28 48 40 48C52 48 60 55 60 65" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="empty-title">{{ translate.t('tenants.noTenantsFound') }}</h3>
+          <p class="empty-description">
+            @if (allTenants.length === 0) {
+              {{ translate.t('tenants.getStarted') }}
+            } @else {
+              {{ translate.t('tenants.noMatches') }}
+            }
+          </p>
+        </div>
+      }
     </div>
   </div>
+
+  <!-- Floating Add Button -->
+  <button class="add-tenant-btn" (click)="openAddTenantModal()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    <span>{{ translate.t('tenants.addTenant') }}</span>
+  </button>
 
   <app-bottom-nav />
 </div>

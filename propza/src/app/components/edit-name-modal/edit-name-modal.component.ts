@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslationService } from '../../core/translation.service';
 
 @Component({
   selector: 'app-edit-name-modal',
@@ -13,6 +14,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class EditNameModalComponent {
   activeModal = inject(NgbActiveModal);
   private fb = inject(FormBuilder);
+  translate = inject(TranslationService);
 
   form = this.fb.group({
     full_name: ['', [Validators.maxLength(200)]]

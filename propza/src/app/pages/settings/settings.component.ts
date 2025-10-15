@@ -85,6 +85,11 @@ export class SettingsComponent {
   // Preferences
   notificationsEnabled = false;
 
+  // Loading states
+  signingOut = false;
+  deletingAccount = false;
+  exportingData = false;
+
   // UI section state
   section: 'account' | 'preferences' | 'data' | 'support' = 'account';
   activePage: 'main' | 'account' | 'preferences' | 'data' | 'support' = 'main';
@@ -94,8 +99,13 @@ export class SettingsComponent {
   }
 
   async signOut(): Promise<void> {
-    await this.auth.signOut();
-    this.router.navigateByUrl('/login');
+    this.signingOut = true;
+    try {
+      await this.auth.signOut();
+      this.router.navigateByUrl('/login');
+    } finally {
+      this.signingOut = false;
+    }
   }
 
   ngOnInit(): void {
@@ -205,23 +215,29 @@ export class SettingsComponent {
   }
 
   async exportMyData(): Promise<void> {
-    await this.auth.waitForSession();
-    const user = this.auth.user();
-    if (!user) return;
+    this.exportingData = true;
 
-    const [properties, payments, tenancies] = await Promise.all([
-      this.supabase.supabase.from('properties').select('*').eq('owner_id', user.id),
-      this.supabase.supabase.from('payments').select('*').eq('owner_id', user.id).order('created_at', { ascending: false }),
-      this.supabase.supabase.from('tenancies').select('*').in('property_id', (
-        await this.supabase.supabase.from('properties').select('id').eq('owner_id', user.id)
-      ).data?.map((p: any) => p.id) || []),
-    ]);
+    try {
+      await this.auth.waitForSession();
+      const user = this.auth.user();
+      if (!user) return;
 
-    const blob = new Blob([JSON.stringify({ properties: properties.data, payments: payments.data, tenancies: tenancies.data }, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'propza-export.json'; a.click();
-    URL.revokeObjectURL(url);
+      const [properties, payments, tenancies] = await Promise.all([
+        this.supabase.supabase.from('properties').select('*').eq('owner_id', user.id),
+        this.supabase.supabase.from('payments').select('*').eq('owner_id', user.id).order('created_at', { ascending: false }),
+        this.supabase.supabase.from('tenancies').select('*').in('property_id', (
+          await this.supabase.supabase.from('properties').select('id').eq('owner_id', user.id)
+        ).data?.map((p: any) => p.id) || []),
+      ]);
+
+      const blob = new Blob([JSON.stringify({ properties: properties.data, payments: payments.data, tenancies: tenancies.data }, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'propza-export.json'; a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      this.exportingData = false;
+    }
   }
 
   contactSupport(): void {
@@ -264,12 +280,19 @@ export class SettingsComponent {
   async confirmDelete(): Promise<void> {
     const ok = window.confirm('This will permanently delete your account and data. Are you sure?');
     if (!ok) return;
-    const err = await this.auth.deleteAccount();
-    if (err) {
-      this.error = err;
-      return;
+
+    this.deletingAccount = true;
+
+    try {
+      const err = await this.auth.deleteAccount();
+      if (err) {
+        this.error = err;
+        return;
+      }
+      await this.auth.signOut();
+      this.router.navigateByUrl('/register');
+    } finally {
+      this.deletingAccount = false;
     }
-    await this.auth.signOut();
-    this.router.navigateByUrl('/register');
   }
 }

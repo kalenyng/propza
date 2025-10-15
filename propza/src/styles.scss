@@ -20,8 +20,13 @@
 /* Importing Bootstrap SCSS file before theme-dependent rules so our rules override */
 @import 'bootstrap/scss/bootstrap';
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 html, body {
   font-family: var(--font-sans);
+  overscroll-behavior: none;
 }
 
 body {
@@ -32,4 +37,267 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+}
+
+/* ============================================
+   UNIFIED BUTTON STYLES (Rounded Look)
+   ============================================ */
+
+// Primary Button - Green gradient
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Secondary Button - Outlined
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1.5px solid rgba(229, 231, 235, 0.3);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--card) 50%, transparent 50%);
+    border-color: rgba(209, 213, 219, 0.5);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--card);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Danger Button - Red
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Success Button - Green (Bootstrap style)
+.btn-success {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background: #16a34a;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #15803d;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Outline Secondary (for cancel/dismiss)
+.btn-outline-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1.5px solid rgba(229, 231, 235, 0.3);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--card) 50%, transparent 50%);
+    border-color: rgba(209, 213, 219, 0.5);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* ============================================
+   UNIFIED FILTER PILLS (Rounded, 20px)
+   ============================================ */
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border: 1px solid rgba(229, 231, 235, 0.3);
+  border-radius: 20px;
+  background: var(--card);
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: color-mix(in srgb, var(--card) 90%, #000 10%);
+    border-color: rgba(209, 213, 219, 0.4);
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+    color: white;
+    border-color: #16a34a;
+  }
+
+  &.filter-overdue.active {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: #ef4444;
+  }
+
+  &.filter-unpaid.active {
+    background: rgba(251, 146, 60, 0.15);
+    color: #ea580c;
+    border-color: #fb923c;
+  }
+
+  &.filter-paid.active {
+    background: rgba(34, 197, 94, 0.15);
+    color: #16a34a;
+    border-color: #22c55e;
+  }
+
+  &.filter-vacant.active {
+    background: rgba(156, 163, 175, 0.15);
+    color: #6b7280;
+    border-color: #9ca3af;
+  }
+}
+
+/* Dark mode overrides */
+.dark-theme {
+  .btn-secondary,
+  .btn-outline-secondary {
+    border-color: rgba(229, 231, 235, 0.2);
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(229, 231, 235, 0.3);
+    }
+  }
+
+  .filter-chip {
+    border-color: rgba(229, 231, 235, 0.2);
+
+    &:hover {
+      background: color-mix(in srgb, var(--card) 85%, #fff 15%);
+      border-color: rgba(229, 231, 235, 0.3);
+    }
+
+    &.filter-unpaid.active {
+      background: rgba(251, 146, 60, 0.2);
+      color: #fb923c;
+      border-color: rgba(251, 146, 60, 0.4);
+    }
+
+    &.filter-paid.active {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+
+    &.filter-vacant.active {
+      background: rgba(156, 163, 175, 0.2);
+      color: #9ca3af;
+      border-color: rgba(156, 163, 175, 0.4);
+    }
+
+    &.filter-overdue.active {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+  }
 }

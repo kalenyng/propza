@@ -263,21 +263,21 @@ export class RentHelperService {
       return 'partially_paid';
     }
 
-    // Step 4: No payment - calculate time-based urgency
-    const daysUntil = this.daysUntilDue(nextDue);
+  // Step 4: No payment - calculate time-based urgency
+  const daysUntil = this.daysUntilDue(nextDue);
 
-    if (daysUntil > 7) {
-      return 'upcoming';
-    } else if (daysUntil >= 1 && daysUntil <= 7) {
-      return 'due_soon';
-    } else if (daysUntil === 0) {
-      return 'due_today';
-    } else if (daysUntil >= -GRACE_PERIOD_DAYS && daysUntil < 0) {
-      return 'grace';
-    } else {
-      return 'overdue';
-    }
+  if (daysUntil > 7) {
+    return 'upcoming';      // More than 7 days away (blue)
+  } else if (daysUntil >= 4) {
+    return 'upcoming';      // 4-7 days away (blue)
+  } else if (daysUntil >= 1) {
+    return 'due_soon';      // 1-3 days away (yellow-orange)
+  } else if (daysUntil === 0) {
+    return 'due_today';     // Due today (reddish-orange)
+  } else {
+    return 'overdue';       // Past due (red)
   }
+}
 
   /**
    * Calculate remaining balance for a period (allows negative for overpayment)

@@ -151,7 +151,7 @@ $shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 
   &[data-color="neutral"] {
     background: color-mix(in srgb, #9ca3af 20%, transparent);
-    color: #d1d5db;
+    color: $color-neutral-light;
     
     .status-dot {
       background: $color-neutral-light;

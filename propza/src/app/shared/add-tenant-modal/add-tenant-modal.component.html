@@ -1,0 +1,166 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ translate.t('tenants.addNewTenant') }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="name">Full Name *</label>
+        <input
+          id="name"
+          type="text"
+          class="form-control"
+          formControlName="name"
+          placeholder="Enter tenant's full name"
+          [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched">
+        <div class="invalid-feedback" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+          Please enter a valid name
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input
+          id="email"
+          type="email"
+          class="form-control"
+          formControlName="email"
+          placeholder="tenant@example.com"
+          [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched">
+        <div class="invalid-feedback" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+          Please enter a valid email address
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number *</label>
+        <input
+          id="phone"
+          type="tel"
+          class="form-control"
+          formControlName="phone"
+          placeholder="+27 71 234 5678"
+          [class.is-invalid]="form.get('phone')?.invalid && form.get('phone')?.touched">
+        <div class="invalid-feedback" *ngIf="form.get('phone')?.invalid && form.get('phone')?.touched">
+          Please enter a valid South African phone number
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="property">Property *</label>
+        <select
+          id="property"
+          class="form-control"
+          formControlName="propertyId"
+          [class.is-invalid]="form.get('propertyId')?.invalid && form.get('propertyId')?.touched">
+          <option value="">Select a property</option>
+          <option *ngFor="let property of vacantProperties" [value]="property.id">
+            {{ property.name || property.address }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="form.get('propertyId')?.invalid && form.get('propertyId')?.touched">
+          Please select a property
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="rentAmount">Rent Amount (ZAR) *</label>
+        <input
+          id="rentAmount"
+          type="number"
+          class="form-control"
+          formControlName="rentAmount"
+          placeholder="8500"
+          min="1"
+          [class.is-invalid]="form.get('rentAmount')?.invalid && form.get('rentAmount')?.touched"
+          readonly>
+        <div class="form-help">Auto-filled from selected property</div>
+        <div class="invalid-feedback" *ngIf="form.get('rentAmount')?.invalid && form.get('rentAmount')?.touched">
+          Please enter a valid rent amount
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="deposit">Security Deposit (ZAR)</label>
+        <input
+          id="deposit"
+          type="number"
+          class="form-control"
+          formControlName="deposit"
+          placeholder="8500"
+          min="0">
+        <div class="form-help">Optional - record the security deposit amount</div>
+      </div>
+
+      <div class="form-group full-width">
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="firstMonthPaid" formControlName="firstMonthPaid">
+          <label for="firstMonthPaid" class="checkbox-label">First month's rent has been paid</label>
+        </div>
+        <div class="form-help">
+          Check this if the tenant has already paid the first month's rent. This will create a payment record.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="rentDueDate">Rent Due Date *</label>
+        <input
+          id="rentDueDate"
+          type="date"
+          class="form-control"
+          formControlName="rentDueDate"
+          [class.is-invalid]="form.get('rentDueDate')?.invalid && form.get('rentDueDate')?.touched">
+        <div class="invalid-feedback" *ngIf="form.get('rentDueDate')?.invalid && form.get('rentDueDate')?.touched">
+          Please select rent due date
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="leaseStart">Lease Start Date *</label>
+        <input
+          id="leaseStart"
+          type="date"
+          class="form-control"
+          formControlName="leaseStartDate"
+          [class.is-invalid]="form.get('leaseStartDate')?.invalid && form.get('leaseStartDate')?.touched">
+        <div class="invalid-feedback" *ngIf="form.get('leaseStartDate')?.invalid && form.get('leaseStartDate')?.touched">
+          Please select lease start date
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="leaseEnd">Lease End Date (Optional)</label>
+        <input
+          id="leaseEnd"
+          type="date"
+          class="form-control"
+          formControlName="leaseEndDate">
+        <div class="form-help">Leave blank for open-ended lease</div>
+      </div>
+
+      <div class="form-group full-width">
+        <label for="notes">Notes (Optional)</label>
+        <textarea
+          id="notes"
+          class="form-control"
+          formControlName="notes"
+          placeholder="Any additional notes about the tenant..."
+          rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="saving">{{ translate.t('button.cancel') }}</button>
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || saving">
+        @if (saving) {
+          <span class="spinner"></span>
+          <span>{{ translate.t('loading.saving') }}</span>
+        } @else {
+          <span>{{ translate.t('button.addTenant') }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

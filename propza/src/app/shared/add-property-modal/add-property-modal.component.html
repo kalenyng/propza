@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h5 class="modal-title">Add Property</h5>
+  <h5 class="modal-title">{{ translate.t('property.addProperty') }}</h5>
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
 </div>
 
@@ -67,6 +67,22 @@
         </div>
       </div>
 
+      <!-- Tenant email -->
+      <div class="mb-3">
+        <label class="form-label" for="tenantEmail">Tenant Email</label>
+        <input
+          id="tenantEmail"
+          type="email"
+          class="form-control"
+          [class.is-invalid]="form.get('tenant_email')?.invalid && form.get('tenant_email')?.touched"
+          formControlName="tenant_email"
+          placeholder="tenant@example.com"
+        />
+        <div class="invalid-feedback" *ngIf="form.get('tenant_email')?.errors?.['email']">
+          Please enter a valid email address.
+        </div>
+      </div>
+
       <!-- Lease upload -->
       <div class="mb-3">
         <label class="form-label">Upload lease (PDF or image)</label>
@@ -121,9 +137,14 @@
 
     <!-- Buttons -->
     <div class="d-flex gap-2 justify-content-end">
-      <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Cancel</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()" [disabled]="loading">{{ translate.t('button.cancel') }}</button>
       <button class="btn btn-success" type="submit" [disabled]="loading || form.invalid">
-        {{ loading ? 'Saving…' : 'Save' }}
+        @if (loading) {
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          <span>{{ translate.t('loading.saving') }}</span>
+        } @else {
+          <span>{{ translate.t('button.saveProperty') }}</span>
+        }
       </button>
     </div>
   </form>

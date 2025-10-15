@@ -1,6 +1,5 @@
 -- Create payments table for tracking rent payments per period
--- Note: This table references properties table which is created in migration 002
--- If properties table doesn't exist yet, this will fail - ensure properties is created first
+-- This table references the properties table created in migration 001
 CREATE TABLE IF NOT EXISTS payments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   property_id UUID NOT NULL REFERENCES public.properties(id) ON DELETE CASCADE,
@@ -26,4 +25,3 @@ CREATE INDEX IF NOT EXISTS idx_payments_paid_at ON payments(paid_at DESC);
 COMMENT ON TABLE payments IS 'Tracks rent payments per property per period (YYYY-MM)';
 COMMENT ON COLUMN payments.period IS 'Payment period in YYYY-MM format';
 COMMENT ON CONSTRAINT unique_property_period ON payments IS 'Prevents double-payment for same property in same period';
-

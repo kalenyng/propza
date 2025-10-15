@@ -8,13 +8,13 @@
     <!-- MAIN PAGE -->
     <div class="settings-page main" *ngIf="activePage==='main'">
       <div class="content-header">
-        <h1>Settings</h1>
+        <h1>{{ translate.t('settings.title') }}</h1>
       </div>
       <ul class="settings-list main-list">
-        <li (click)="goTo('account')">Account</li>
-        <li (click)="goTo('preferences')">Preferences</li>
-        <li (click)="goTo('data')">Data</li>
-        <li (click)="goTo('support')">Support</li>
+        <li (click)="goTo('account')">{{ translate.t('settings.account') }}</li>
+        <li (click)="goTo('preferences')">{{ translate.t('settings.preferences') }}</li>
+        <li (click)="goTo('data')">{{ translate.t('settings.data') }}</li>
+        <li (click)="goTo('support')">{{ translate.t('settings.support') }}</li>
       </ul>
     </div>
 
@@ -22,24 +22,38 @@
     <div class="settings-page subpage" *ngIf="activePage==='account'">
       <div class="page-header">
         <button class="back-btn" (click)="goTo('main')">←</button>
-        <h3>Account Settings</h3>
+        <h3>{{ translate.t('settings.accountSettings') }}</h3>
       </div>
       <div class="settings-card">
         <div class="settings-list">
           <div class="setting-item setting-row">
             <span class="setting-text">{{ displayName || (firstName + ' ' + lastName) }}</span>
-            <button class="btn-primary btn-compact" (click)="openEditName()">Edit Name</button>
+            <button class="btn-primary btn-compact" (click)="openEditName()">{{ translate.t('settings.editName') }}</button>
           </div>
           <div class="setting-item setting-row">
             <span class="setting-text">{{ userEmail }}</span>
           </div>
           <div class="setting-item">
-            <span class="setting-label">Member since</span>
+            <span class="setting-label">{{ translate.t('settings.memberSince') }}</span>
             <span>{{ createdAt }}</span>
           </div>
           <div class="setting-item settings-actions">
-            <button class="btn-sign-out" (click)="signOut()">{{ translate.t('button.signOut') }}</button>
-            <button class="btn-danger" (click)="confirmDelete()">Delete account</button>
+            <button class="btn-sign-out" (click)="signOut()" [disabled]="signingOut || deletingAccount">
+              @if (signingOut) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span>{{ translate.t('loading.signingOut') }}</span>
+              } @else {
+                <span>{{ translate.t('button.signOut') }}</span>
+              }
+            </button>
+            <button class="btn-danger" (click)="confirmDelete()" [disabled]="signingOut || deletingAccount">
+              @if (deletingAccount) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span>{{ translate.t('loading.deleting') }}</span>
+              } @else {
+                <span>{{ translate.t('settings.deleteAccount') }}</span>
+              }
+            </button>
           </div>
         </div>
       </div>
@@ -49,19 +63,19 @@
     <div class="settings-page subpage" *ngIf="activePage==='preferences'">
       <div class="page-header">
         <button class="back-btn" (click)="goTo('main')">←</button>
-        <h3>Preferences</h3>
+        <h3>{{ translate.t('settings.preferences') }}</h3>
       </div>
       <div class="settings-card">
         <div class="settings-list">
           <div class="setting-item setting-select">
-            <span class="setting-label">Theme</span>
+            <span class="setting-label">{{ translate.t('settings.theme') }}</span>
             <select class="language-select" [(ngModel)]="selectedTheme" (ngModelChange)="onThemeChange($event)">
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
+              <option value="light">{{ translate.t('settings.themeLight') }}</option>
+              <option value="dark">{{ translate.t('settings.themeDark') }}</option>
             </select>
           </div>
           <div class="setting-item setting-select">
-            <span class="setting-label">Language</span>
+            <span class="setting-label">{{ translate.t('settings.language') }}</span>
             <select class="language-select" (change)="changeLanguage($any($event.target).value)">
               <option value="en" [selected]="translate.currentLanguage() === 'en'">English</option>
               <option value="af" [selected]="translate.currentLanguage() === 'af'">Afrikaans</option>
@@ -71,8 +85,8 @@
           </div>
           <div class="setting-item">
             <div class="setting-label-group">
-              <span class="setting-label">Email me payment reminders and tenant updates</span>
-              <span class="coming-soon-label">Coming Soon</span>
+              <span class="setting-label">{{ translate.t('settings.emailNotifications') }}</span>
+              <span class="coming-soon-label">{{ translate.t('settings.comingSoon') }}</span>
             </div>
             <label class="switch">
               <input type="checkbox" [checked]="notificationsEnabled" (change)="toggleNotifications()" disabled />
@@ -87,12 +101,19 @@
     <div class="settings-page subpage" *ngIf="activePage==='data'">
       <div class="page-header">
         <button class="back-btn" (click)="goTo('main')">←</button>
-        <h3>Data</h3>
+        <h3>{{ translate.t('settings.data') }}</h3>
       </div>
       <div class="settings-card">
         <div class="settings-list">
           <div class="setting-item settings-actions">
-            <button class="btn-primary" (click)="exportMyData()">Export My Data</button>
+            <button class="btn-primary" (click)="exportMyData()" [disabled]="exportingData">
+              @if (exportingData) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span>{{ translate.t('loading.exporting') }}</span>
+              } @else {
+                <span>{{ translate.t('settings.exportData') }}</span>
+              }
+            </button>
           </div>
         </div>
       </div>
@@ -102,13 +123,13 @@
     <div class="settings-page subpage" *ngIf="activePage==='support'">
       <div class="page-header">
         <button class="back-btn" (click)="goTo('main')">←</button>
-        <h3>Support</h3>
+        <h3>{{ translate.t('settings.support') }}</h3>
       </div>
       <div class="settings-card">
         <div class="settings-list">
           <div class="setting-item settings-actions">
-            <button class="btn-primary" (click)="contactSupport()">Contact Support</button>
-            <button class="btn-secondary" (click)="sendFeedback()">Send Feedback</button>
+            <button class="btn-primary" (click)="contactSupport()">{{ translate.t('settings.contactSupport') }}</button>
+            <button class="btn-secondary" (click)="sendFeedback()">{{ translate.t('settings.sendFeedback') }}</button>
           </div>
         </div>
       </div>

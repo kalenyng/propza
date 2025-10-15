@@ -89,10 +89,9 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   line-height: $line-height;
 }
 
-// Filter Chips
+// Filter Chips - using global styles from styles.scss
+// Additional overflow handling for horizontal scroll on mobile
 .filter-chips {
-  display: flex;
-  gap: $spacing-xs;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 4px;
@@ -104,58 +103,6 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   &::-webkit-scrollbar-thumb {
     background: $color-border;
     border-radius: 2px;
-  }
-}
-
-.filter-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: $font-size-sm;
-  font-weight: 500;
-  line-height: $line-height;
-  border: 1px solid rgba(229, 231, 235, 0.2);
-  background: var(--card);
-  color: var(--text);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-
-  &:hover {
-    background: color-mix(in srgb, var(--card) 92%, #000 8%);
-    border-color: rgba(209, 213, 219, 0.3);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-  }
-
-  &.active {
-    background: $color-text-primary;
-    border-color: $color-text-primary;
-    color: $color-bg;
-  }
-
-  &.filter-overdue.active {
-    background: $color-danger;
-    border-color: $color-danger;
-  }
-
-  &.filter-unpaid.active {
-    background: $color-warning;
-    border-color: $color-warning;
-  }
-
-  &.filter-paid.active {
-    background: $color-success;
-    border-color: $color-success;
-  }
-
-  &.filter-vacant.active {
-    background: $color-neutral;
-    border-color: $color-neutral;
   }
 }
 
