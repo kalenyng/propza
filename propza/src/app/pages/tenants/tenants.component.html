@@ -73,7 +73,7 @@
         <!-- Empty State -->
         <div class="empty-state">
           <div class="empty-icon">
-            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="64" height="64" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="40" cy="30" r="12" stroke="currentColor" stroke-width="3" fill="none"/>
               <path d="M20 65C20 55 28 48 40 48C52 48 60 55 60 65" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
             </svg>
@@ -86,19 +86,29 @@
               {{ translate.t('tenants.noMatches') }}
             }
           </p>
+          @if (allTenants.length === 0) {
+            <button class="btn-add-tenant-empty" (click)="openAddTenantModal()">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              {{ translate.t('tenants.addTenant') }}
+            </button>
+          }
         </div>
       }
     </div>
   </div>
 
-  <!-- Floating Add Button -->
-  <button class="add-tenant-btn" (click)="openAddTenantModal()">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <line x1="12" y1="5" x2="12" y2="19"/>
-      <line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-    <span>{{ translate.t('tenants.addTenant') }}</span>
-  </button>
+  <!-- Floating Add Button (when tenants exist) -->
+  @if (allTenants.length > 0) {
+    <button class="add-tenant-btn" (click)="openAddTenantModal()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      <span>{{ translate.t('tenants.addTenant') }}</span>
+    </button>
+  }
 
   <app-bottom-nav />
 </div>

@@ -149,23 +149,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-content: flex-end;
 }
 
-.language-select {
-  padding: 10px 12px;
-  border: 1px solid rgba(229, 231, 235, 0.2);
-  border-radius: 12px;
-  font-size: 14px;
-  color: var(--text);
-  background: var(--bg);
-  cursor: pointer;
-  appearance: none;
-
-  &:focus {
-    outline: none;
-    border-color: rgba(209, 213, 219, 0.3);
-  }
-}
+// Selects use global styles from styles.scss
 
 // Disabled state for notification toggle
 .setting-item input[disabled] {
@@ -346,17 +333,18 @@
   gap: 8px;
 }
 
-// Custom button styles for settings actions
-.btn-sign-out {
-  width: 100%;
-  // Uses global .btn-secondary as base, with custom width
-}
-
-// .btn-danger uses global styles from styles.scss
+// Custom button widths for settings actions
 .settings-actions {
-  .btn-sign-out,
+  .btn-primary,
+  .btn-secondary,
   .btn-danger {
     width: 100%;
+    
+    // Ensure equal height
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

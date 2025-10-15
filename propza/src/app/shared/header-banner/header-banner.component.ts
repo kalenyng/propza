@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject, effect } from '@angular/core';
 import { AuthService } from '../../core/auth.service';
+import { TranslationService } from '../../core/translation.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -16,7 +17,15 @@ export class HeaderBannerComponent implements OnInit {
   
   greeting: string = '';
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService) {
+    // Use effect to reactively update greeting when language changes
+    effect(() => {
+      const lang = this.translate.currentLanguage(); // Read the signal
+      this.greeting = this.getTimeBasedGreeting();
+    });
+  }
+  
+  translate = inject(TranslationService);
 
   ngOnInit(): void {
     this.loadUserName();
@@ -41,93 +50,23 @@ export class HeaderBannerComponent implements OnInit {
   private getTimeBasedGreeting(): string {
     const now = new Date();
     const hour = now.getHours();
-    let timeGreeting = '';
-    let timePeriod = '';
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+    const lang = this.translate.currentLanguage();
 
-    // Morning greetings (5 AM - 11:59 AM)
+    // Determine time period
+    let timePeriod: 'morning' | 'afternoon' | 'evening' = 'morning';
     if (hour >= 5 && hour < 12) {
       timePeriod = 'morning';
-      const morningGreetings = [
-        'Good morning',
-        'Morning',
-        'Sawubona',
-        'Goeie môre',
-        'Hello',
-        'Hey there',
-        'Rise and shine',
-        'Hi',
-        'Greetings'
-      ];
-      timeGreeting = this.getRandomGreeting(morningGreetings, timePeriod);
-    } 
-    // Afternoon greetings (12 PM - 4:59 PM)
-    else if (hour >= 12 && hour < 17) {
+    } else if (hour >= 12 && hour < 17) {
       timePeriod = 'afternoon';
-      const afternoonGreetings = [
-        'Good afternoon',
-        'Afternoon',
-        'Sawubona',
-        'Goeie middag',
-        'Hello',
-        'Hey',
-        'Howzit',
-        'Hi there',
-        'Greetings',
-        'Welcome'
-      ];
-      timeGreeting = this.getRandomGreeting(afternoonGreetings, timePeriod);
-    } 
-    // Evening greetings (5 PM - 9:59 PM)
-    else if (hour >= 17 && hour < 22) {
+    } else {
       timePeriod = 'evening';
-      const eveningGreetings = [
-        'Good evening',
-        'Evening',
-        'Sawubona',
-        'Goeie naand',
-        'Hello',
-        'Hey',
-        'Welcome back',
-        'Hi',
-        'Howzit'
-      ];
-      timeGreeting = this.getRandomGreeting(eveningGreetings, timePeriod);
-    } 
-    // Night greetings (10 PM - 4:59 AM)
-    else {
-      timePeriod = 'night';
-      const nightGreetings = [
-        'Good night',
-        'Evening',
-        'Sawubona',
-        'Goeienag',
-        'Hello',
-        'Hey',
-        'Working late',
-        'Late night',
-        'Still here'
-      ];
-      timeGreeting = this.getRandomGreeting(nightGreetings, timePeriod);
     }
 
-    return this.userName ? `${timeGreeting}, ${this.userName}` : timeGreeting;
-  }
+    // Get the greeting key for this day and time
+    const greetingKey = `greeting.${timePeriod}.day${dayOfWeek}`;
+    const greeting = this.translate.t(greetingKey);
 
-  private getRandomGreeting(greetings: string[], timePeriod: string): string {
-    // Use date + time period based seed for unique greeting per time slot per day
-    const today = new Date();
-    const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-    
-    // Add time period offset to get different greeting for each time slot
-    const timePeriodOffset = {
-      'morning': 0,
-      'afternoon': 1000,
-      'evening': 2000,
-      'night': 3000
-    }[timePeriod] || 0;
-    
-    const seed = dateSeed + timePeriodOffset;
-    const index = seed % greetings.length;
-    return greetings[index];
+    return this.userName ? `${greeting}, ${this.userName}` : greeting;
   }
 }

@@ -38,7 +38,7 @@
             <span>{{ createdAt }}</span>
           </div>
           <div class="setting-item settings-actions">
-            <button class="btn-sign-out" (click)="signOut()" [disabled]="signingOut || deletingAccount">
+            <button class="btn-primary" (click)="signOut()" [disabled]="signingOut || deletingAccount">
               @if (signingOut) {
                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                 <span>{{ translate.t('loading.signingOut') }}</span>
