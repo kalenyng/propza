@@ -32,7 +32,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 // Container
 .detail-container {
   min-height: 100vh;
-  background: $color-bg-secondary;
+  background: var(--bg);
   padding-bottom: 80px;
 }
 
@@ -46,7 +46,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   gap: $spacing-md;
 
   p {
-    color: $color-text-muted;
+    color: color-mix(in srgb, var(--text) 70%, #888 30%);
     font-size: $font-size-md;
   }
 }
@@ -54,8 +54,8 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid $color-border;
-  border-top-color: $color-text-primary;
+  border: 3px solid rgba(229, 231, 235, 0.2);
+  border-top-color: var(--text);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -67,6 +67,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 // Header
 .header {
   background: $color-bg;
+  background: var(--card);
   padding: $spacing-md;
   display: flex;
   align-items: center;
@@ -83,7 +84,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   gap: 6px;
   background: transparent;
   border: none;
-  color: $color-text-secondary;
+  color: var(--text);
   cursor: pointer;
   padding: 6px 12px;
   border-radius: $border-radius-sm;
@@ -92,8 +93,8 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
 
   &:hover {
-    background: $color-bg-secondary;
-    color: $color-text-primary;
+    background: var(--card);
+    color: var(--text);
   }
 }
 
@@ -109,16 +110,16 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: 1px solid $color-border;
+  border: 1px solid rgba(229, 231, 235, 0.2);
   border-radius: $border-radius-sm;
-  color: $color-text-secondary;
+  color: var(--text);
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: $color-bg-secondary;
-    border-color: $color-text-secondary;
-    color: $color-text-primary;
+    background: var(--card);
+    border-color: rgba(209, 213, 219, 0.3);
+    color: var(--text);
   }
 
   &.danger:hover {
@@ -138,7 +139,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 
 // Title Section
 .title-section {
-  background: $color-bg;
+  background: var(--card);
   padding: $spacing-lg;
   border-radius: $border-radius;
   box-shadow: $shadow;
@@ -151,7 +152,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 .property-title {
   font-size: $font-size-xxl;
   font-weight: 700;
-  color: $color-text-primary;
+  color: var(--text);
   margin: 0;
   line-height: $line-height;
   flex: 1;
@@ -201,7 +202,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .metric-card {
-  background: $color-bg;
+  background: var(--card);
   padding: $spacing-lg;
   border-radius: $border-radius;
   box-shadow: $shadow;
@@ -212,20 +213,20 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 
 .metric-label {
   font-size: $font-size-sm;
-  color: $color-text-muted;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
   font-weight: 500;
 }
 
 .metric-value {
   font-size: $font-size-xl;
   font-weight: 700;
-  color: $color-text-primary;
+  color: var(--text);
   line-height: $line-height;
 }
 
 // Section Card
 .section-card {
-  background: $color-bg;
+  background: var(--card);
   border-radius: $border-radius;
   box-shadow: $shadow;
   overflow: hidden;
@@ -233,7 +234,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 
 .section-header {
   padding: $spacing-md $spacing-lg;
-  border-bottom: 1px solid $color-border;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.2);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -241,7 +242,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   h2 {
     font-size: $font-size-lg;
     font-weight: 600;
-    color: $color-text-primary;
+    color: var(--text);
     margin: 0;
     line-height: $line-height;
   }
@@ -257,18 +258,18 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   gap: 6px;
   padding: 6px 14px;
   background: transparent;
-  border: 1px solid $color-border;
+  border: 1px solid rgba(229, 231, 235, 0.2);
   border-radius: $border-radius-sm;
-  color: $color-text-secondary;
+  color: var(--text);
   font-size: $font-size-sm;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: $color-text-primary;
-    border-color: $color-text-primary;
-    color: $color-bg;
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
   }
 
   svg {
@@ -285,19 +286,19 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   padding: $spacing-sm 0;
 
   &:not(:last-child) {
-    border-bottom: 1px solid $color-bg-secondary;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.12);
   }
 }
 
 .detail-label {
   font-size: $font-size-sm;
-  color: $color-text-muted;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
   font-weight: 500;
 }
 
 .detail-value {
   font-size: $font-size-md;
-  color: $color-text-primary;
+  color: var(--text);
   font-weight: 500;
   text-align: right;
 }
@@ -305,7 +306,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 // Empty State
 .empty-text {
   font-size: $font-size-md;
-  color: $color-text-muted;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
   margin: 0;
   font-style: italic;
 }
@@ -313,7 +314,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 // Notes
 .notes-text {
   font-size: $font-size-md;
-  color: $color-text-secondary;
+  color: color-mix(in srgb, var(--text) 85%, #888 15%);
   line-height: 1.6;
   white-space: pre-wrap;
   margin: 0;
@@ -325,18 +326,18 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   align-items: center;
   gap: $spacing-md;
   padding: $spacing-md;
-  background: $color-bg-secondary;
+  background: var(--card);
   border-radius: $border-radius-sm;
   text-decoration: none;
   transition: all 0.2s ease;
 
   &:hover {
-    background: darken($color-bg-secondary, 3%);
+    background: color-mix(in srgb, var(--card) 92%, #000 8%);
     transform: translateX(2px);
   }
 
   svg {
-    color: $color-text-muted;
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
     flex-shrink: 0;
   }
 }
@@ -351,7 +352,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 .lease-title {
   font-size: $font-size-md;
   font-weight: 600;
-  color: $color-text-primary;
+  color: var(--text);
 }
 
 .lease-action {
@@ -361,7 +362,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 
 // Edit Card
 .edit-card {
-  background: $color-bg;
+  background: var(--card);
   border-radius: $border-radius;
   padding: $spacing-lg;
   box-shadow: $shadow;
@@ -370,7 +371,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 .edit-title {
   font-size: $font-size-xl;
   font-weight: 700;
-  color: $color-text-primary;
+  color: var(--text);
   margin: 0 0 $spacing-lg 0;
   line-height: $line-height;
 }
@@ -390,28 +391,28 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   label {
     font-size: $font-size-sm;
     font-weight: 500;
-    color: $color-text-secondary;
+    color: color-mix(in srgb, var(--text) 75%, #888 25%);
   }
 
   input,
   textarea {
     padding: 12px 14px;
-    border: 1px solid $color-border;
+    border: 1px solid rgba(229, 231, 235, 0.2);
     border-radius: $border-radius-sm;
     font-size: $font-size-md;
-    color: $color-text-primary;
+    color: var(--text);
     font-family: inherit;
-    background: $color-bg;
+    background: var(--card);
     transition: all 0.2s ease;
 
     &:focus {
       outline: none;
-      border-color: $color-text-primary;
-      box-shadow: 0 0 0 3px rgba($color-text-primary, 0.1);
+      border-color: var(--text);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
     }
 
     &::placeholder {
-      color: $color-text-muted;
+      color: color-mix(in srgb, var(--text) 65%, #888 35%);
     }
   }
 
@@ -423,7 +424,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 
   .form-helper {
     font-size: $font-size-xs;
-    color: $color-text-muted;
+    color: color-mix(in srgb, var(--text) 65%, #888 35%);
     margin-top: 4px;
     display: block;
   }
@@ -448,21 +449,21 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .btn-primary {
-  background: $color-text-primary;
-  color: $color-bg;
+  background: var(--text);
+  color: var(--bg);
 
   &:hover {
-    background: #000000;
+    background: color-mix(in srgb, var(--text) 85%, #000 15%);
   }
 }
 
 .btn-secondary {
   background: transparent;
-  color: $color-text-secondary;
-  border: 1px solid $color-border;
+  color: var(--text);
+  border: 1px solid rgba(229, 231, 235, 0.2);
 
   &:hover {
-    background: $color-bg-secondary;
+    background: var(--card);
   }
 }
 
@@ -487,19 +488,19 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 
 select {
   padding: 12px 14px;
-  border: 1px solid $color-border;
+  border: 1px solid rgba(229, 231, 235, 0.2);
   border-radius: $border-radius-sm;
   font-size: $font-size-md;
-  color: $color-text-primary;
+  color: var(--text);
   font-family: inherit;
-  background: $color-bg;
+  background: var(--card);
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:focus {
     outline: none;
-    border-color: $color-text-primary;
-    box-shadow: 0 0 0 3px rgba($color-text-primary, 0.1);
+    border-color: var(--text);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -515,7 +516,7 @@ select {
   align-items: flex-start;
   justify-content: space-between;
   padding: $spacing-md;
-  background: $color-bg-secondary;
+  background: var(--card);
   border-radius: $border-radius-sm;
   gap: $spacing-md;
 }
@@ -530,7 +531,7 @@ select {
 .payment-amount {
   font-size: $font-size-lg;
   font-weight: 700;
-  color: $color-text-primary;
+  color: var(--text);
   line-height: $line-height;
 }
 
@@ -539,11 +540,11 @@ select {
   align-items: center;
   gap: $spacing-xs;
   font-size: $font-size-sm;
-  color: $color-text-muted;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
 }
 
 .payment-separator {
-  color: $color-border;
+  color: rgba(229, 231, 235, 0.3);
 }
 
 .payment-date,
@@ -575,16 +576,16 @@ select {
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: 1px solid $color-border;
+  border: 1px solid rgba(229, 231, 235, 0.2);
   border-radius: $border-radius-sm;
-  color: $color-text-muted;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: $color-bg;
-    border-color: $color-text-secondary;
-    color: $color-text-primary;
+    background: var(--card);
+    border-color: rgba(209, 213, 219, 0.3);
+    color: var(--text);
   }
 
   &.delete:hover {
@@ -601,7 +602,7 @@ select {
 
 .payment-period {
   font-size: $font-size-xs;
-  color: $color-text-muted;
+  color: color-mix(in srgb, var(--text) 65%, #888 35%);
   font-family: monospace;
 }
 
@@ -686,6 +687,6 @@ select {
 .btn-add:focus,
 .btn-primary:focus,
 .btn-secondary:focus {
-  outline: 2px solid $color-text-primary;
+  outline: 2px solid var(--text);
   outline-offset: 2px;
 }

@@ -1,0 +1,29 @@
+.modal-header {
+  background: var(--card);
+  color: var(--text);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.2);
+}
+
+.modal-title { color: var(--text); }
+
+.modal-body { background: var(--bg); color: var(--text); }
+
+.form-label { color: var(--text); }
+
+.form-control {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid rgba(229, 231, 235, 0.2);
+  &::placeholder {
+    color: color-mix(in srgb, var(--text) 65%, #888 35%);
+  }
+}
+
+.btn-outline-secondary { color: var(--text); border-color: rgba(229, 231, 235, 0.3); }
+
+:host-context(.dark-theme) {
+  .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+

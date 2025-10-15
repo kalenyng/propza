@@ -8,7 +8,7 @@
 }
 
 .auth-card {
-  background: white;
+  background: var(--card);
   border-radius: 16px;
   padding: 40px;
   max-width: 440px;
@@ -33,7 +33,7 @@
   h1 {
     font-size: 28px;
     font-weight: 700;
-    color: #111827;
+    color: var(--text);
     margin: 0 0 4px;
   }
 
@@ -47,7 +47,7 @@
 h2 {
   font-size: 20px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text);
   margin: 0 0 24px;
   text-align: center;
 }
@@ -56,12 +56,12 @@ h2 {
 .btn-google {
   width: 100%;
   padding: 12px 16px;
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--bg);
+  border: 1px solid rgba(229, 231, 235, 0.2);
   border-radius: 8px;
   font-size: 15px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,8 +70,8 @@ h2 {
   transition: all 0.2s;
 
   &:hover:not(:disabled) {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: color-mix(in srgb, var(--bg) 92%, #000 8%);
+    border-color: rgba(209, 213, 219, 0.3);
   }
 
   &:disabled {
@@ -97,13 +97,13 @@ h2 {
     right: 0;
     top: 50%;
     height: 1px;
-    background: #e5e7eb;
+    background: rgba(229, 231, 235, 0.2);
   }
 
   span {
-    background: white;
+    background: var(--card);
     padding: 0 12px;
-    color: #9ca3af;
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
     font-size: 14px;
     position: relative;
     z-index: 1;
@@ -122,27 +122,29 @@ form {
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #374151;
+    color: var(--text);
     margin-bottom: 6px;
   }
 
   input {
     width: 100%;
     padding: 12px 16px;
-    border: 1px solid #d1d5db;
+    border: 1px solid rgba(229, 231, 235, 0.2);
     border-radius: 8px;
     font-size: 15px;
     transition: all 0.2s;
     box-sizing: border-box;
+    background: var(--bg);
+    color: var(--text);
 
     &:focus {
       outline: none;
-      border-color: #16a34a;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+      border-color: rgba(209, 213, 219, 0.3);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
     }
 
     &::placeholder {
-      color: #9ca3af;
+      color: color-mix(in srgb, var(--text) 60%, #888 40%);
     }
   }
 }
@@ -155,7 +157,7 @@ form {
   border-radius: 8px;
   font-size: 15px;
   font-weight: 600;
-  color: white;
+  color: #ffffff;
   cursor: pointer;
   transition: all 0.2s;
 
@@ -188,7 +190,7 @@ form {
 .footer-link {
   text-align: center;
   font-size: 14px;
-  color: #6b7280;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
   margin-top: 24px;
 
   a {

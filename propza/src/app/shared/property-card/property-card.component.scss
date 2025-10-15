@@ -28,7 +28,7 @@ $shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 // Property Card Component
 .property-card {
   position: relative;
-  background: $color-bg-card;
+  background: var(--card);
   border-radius: $border-radius;
   padding: $spacing-md $spacing-lg;
   box-shadow: $shadow;
@@ -40,8 +40,8 @@ $shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   &:hover {
     box-shadow: $shadow-hover;
     transform: translateY(-2px);
-    border-color: $color-border;
-    background: $color-bg-hover;
+    border-color: rgba(229, 231, 235, 0.2);
+    background: color-mix(in srgb, var(--card) 92%, #000 8%);
   }
 
   &:active {
@@ -67,7 +67,7 @@ $shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   font-size: $font-size-lg;
   font-weight: 600;
   line-height: $line-height;
-  color: $color-text-primary;
+  color: var(--text);
   margin: 0;
   margin-bottom: 2px;
 }
@@ -75,7 +75,7 @@ $shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 .tenant {
   font-size: $font-size-sm;
   line-height: $line-height;
-  color: $color-text-muted;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
   margin: 0;
 }
 
@@ -96,8 +96,8 @@ $shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   line-height: $line-height;
 
   &[data-color="success"] {
-    background: rgba(22, 163, 74, 0.1);
-    color: $color-success;
+    background: color-mix(in srgb, #10b981 20%, transparent);
+    color: #34d399;
     
     .status-dot {
       background: $color-success;
@@ -150,8 +150,8 @@ $shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 
   &[data-color="neutral"] {
-    background: rgba(107, 114, 128, 0.1);
-    color: $color-neutral;
+    background: color-mix(in srgb, #9ca3af 20%, transparent);
+    color: #d1d5db;
     
     .status-dot {
       background: $color-neutral-light;
@@ -186,7 +186,7 @@ $shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 .due-date {
   font-size: $font-size-sm;
   line-height: $line-height;
-  color: $color-text-secondary;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
   margin: 0;
 
   &.overdue {
@@ -213,7 +213,7 @@ $shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   font-size: $font-size-lg;
   font-weight: 600;
   line-height: $line-height;
-  color: $color-text-primary;
+  color: var(--text);
   margin: 0;
 
   &.vacant {

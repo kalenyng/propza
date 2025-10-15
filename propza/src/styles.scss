@@ -5,13 +5,31 @@
   --font-heading: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial;
 }
 
+:root {
+  --bg: #ffffff;
+  --text: #111;
+  --card: #f7f7f7;
+}
+
+.dark-theme {
+  --bg: #121212;
+  --text: #eeeeee;
+  --card: #1e1e1e;
+}
+
+/* Importing Bootstrap SCSS file before theme-dependent rules so our rules override */
+@import 'bootstrap/scss/bootstrap';
+
 html, body {
   font-family: var(--font-sans);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
-
-/* Importing Bootstrap SCSS file. */
-@import 'bootstrap/scss/bootstrap';

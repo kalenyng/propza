@@ -1,16 +1,18 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AuthService } from '../../core/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header-banner',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './header-banner.component.html',
   styleUrl: './header-banner.component.scss'
 })
 export class HeaderBannerComponent implements OnInit {
   @Input() userName: string = '';
   @Input() logoLetter: string = 'P';
+  @Input() subtitle: string = '';
   
   greeting: string = '';
 

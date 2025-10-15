@@ -13,6 +13,6 @@
   color: var(--primary);
 }
 .subtitle {
-  color: #525252;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
 }
 

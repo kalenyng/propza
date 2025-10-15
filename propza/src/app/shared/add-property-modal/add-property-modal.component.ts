@@ -22,7 +22,6 @@ export class AddPropertyModalComponent {
   form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],
     rent_amount: [null as number | null, [Validators.required, Validators.min(0)]],
-    payment_frequency: ['monthly', [Validators.required]],
     occupied: [false, [Validators.required]],
     tenant: [''],
     tenancy_start: [null as string | null],

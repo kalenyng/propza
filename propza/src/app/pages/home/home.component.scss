@@ -39,7 +39,8 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 
 // Main Content with Rounded White Background
 .main-content {
-  background: $color-bg;
+  background: var(--bg);
+  color: var(--text);
   border-radius: 20px 20px 0 0;
   margin-top: -20px;
   position: relative;
@@ -55,7 +56,7 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   position: sticky;
   top: 0;
   z-index: 20;
-  background: $color-bg;
+  background: var(--bg);
   padding: $spacing-md $spacing-md $spacing-sm;
   margin-bottom: $spacing-md;
 }
@@ -84,7 +85,7 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 .metric-value {
   font-size: $font-size-xl;
   font-weight: 700;
-  color: $color-text-primary;
+  color: var(--text);
   line-height: $line-height;
 }
 
@@ -114,16 +115,16 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   font-size: $font-size-sm;
   font-weight: 500;
   line-height: $line-height;
-  border: 1px solid $color-border;
-  background: $color-bg;
-  color: $color-text-secondary;
+  border: 1px solid rgba(229, 231, 235, 0.2);
+  background: var(--card);
+  color: var(--text);
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 
   &:hover {
-    background: $color-bg-secondary;
-    border-color: $color-neutral-light;
+    background: color-mix(in srgb, var(--card) 92%, #000 8%);
+    border-color: rgba(209, 213, 219, 0.3);
   }
 
   &:focus {
@@ -170,9 +171,15 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 .section-title {
   font-size: $font-size-lg;
   font-weight: 700;
-  color: $color-text-primary;
+  color: var(--text);
   margin: 0;
   line-height: $line-height;
+}
+
+:host-context(.dark-theme) {
+  .section-title {
+    color: #f1f5f9;
+  }
 }
 
 .sort-control {
@@ -187,21 +194,18 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 
   select {
-    padding: 6px 32px 6px 12px;
-    border: 1px solid $color-border;
-    border-radius: $border-radius-sm;
+    padding: 10px 12px;
+    border: 1px solid rgba(229, 231, 235, 0.2);
+    border-radius: 8px;
     font-size: $font-size-sm;
-    color: $color-text-primary;
-    background: $color-bg;
-    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
+    color: var(--text);
+    background: var(--bg);
     cursor: pointer;
     appearance: none;
 
     &:focus {
       outline: none;
-      border-color: $color-primary;
+      border-color: rgba(209, 213, 219, 0.3);
     }
   }
 }
@@ -216,7 +220,8 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 
 // Loading Skeletons
 .skeleton-card {
-  background: $color-bg;
+  background: var(--card);
+  border: 1px solid rgba(229, 231, 235, 0.2);
   border-radius: $border-radius;
   padding: $spacing-md $spacing-lg;
   box-shadow: $shadow;
@@ -270,6 +275,21 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   align-items: flex-end;
 }
 
+// Dark theme overrides for skeletons
+:host-context(.dark-theme) {
+  .skeleton-card {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .skeleton-line {
+    background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+  }
+
+  .skeleton-pill {
+    background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+  }
+}
+
 .skeleton-date {
   width: 45%;
   height: 14px;
@@ -297,9 +317,11 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   justify-content: center;
   padding: $spacing-xl * 2;
   text-align: center;
-  background: $color-bg;
+  background: var(--card);
+  border: 1px solid rgba(229, 231, 235, 0.2);
   border-radius: $border-radius;
   margin: $spacing-xl 0;
+  box-shadow: $shadow;
 }
 
 .empty-icon {
@@ -310,14 +332,14 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 .empty-title {
   font-size: $font-size-lg;
   font-weight: 600;
-  color: $color-text-primary;
+  color: var(--text);
   margin: 0 0 $spacing-xs 0;
   line-height: $line-height;
 }
 
 .empty-description {
   font-size: $font-size-md;
-  color: $color-text-muted;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
   margin: 0 0 $spacing-lg 0;
   line-height: $line-height;
 }
@@ -430,6 +452,33 @@ $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
 .fab-add:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 6px 16px rgba(59, 130, 246, 0.5);
+}
+
+// Dark theme overrides within component scope
+:host-context(.dark-theme) {
+  .home-container {
+    background: var(--bg);
+  }
+
+  .btn-add-property {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: #ffffff;
+
+    &:hover {
+      background: linear-gradient(135deg, #047857 0%, #0ea5a3 100%);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    }
+  }
+
+  .fab-add {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: #ffffff;
+
+    &:hover {
+      background: linear-gradient(135deg, #047857 0%, #0ea5a3 100%);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    }
+  }
 }
 
 .sort-control select:focus {

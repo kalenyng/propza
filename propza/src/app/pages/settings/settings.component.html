@@ -1,82 +1,118 @@
-<div class="settings-container">
-  <app-header-banner logoLetter="P" />
+<div class="settings-container settings-page">
+  <app-header-banner logoLetter="P"/>
 
-  <!-- Main Content -->
+  <!-- Main content shell to match other pages -->
   <div class="main-content">
-    <div class="content-header">
-      <h1>{{ translate.t('settings.title') }}</h1>
-    </div>
-
-    <!-- Language Section -->
-    <div class="settings-section">
-      <h3>{{ translate.t('settings.language') }}</h3>
-      <p class="section-description">{{ translate.t('settings.languageDescription') }}</p>
-
-      <div class="settings-list">
-        <div class="setting-item setting-select">
-          <span class="setting-label">{{ translate.t('settings.language') }}</span>
-          <select class="language-select" (change)="changeLanguage($any($event.target).value)">
-            <option value="en" [selected]="translate.currentLanguage() === 'en'">English</option>
-            <option value="af" [selected]="translate.currentLanguage() === 'af'">Afrikaans</option>
-            <option value="zu" [selected]="translate.currentLanguage() === 'zu'">isiZulu</option>
-            <option value="xh" [selected]="translate.currentLanguage() === 'xh'">isiXhosa</option>
-          </select>
-        </div>
+    <!-- Sliding pages wrapper -->
+    <div class="settings-wrapper" [@slideAnimation]="activePage">
+    <!-- MAIN PAGE -->
+    <div class="settings-page main" *ngIf="activePage==='main'">
+      <div class="content-header">
+        <h1>Settings</h1>
       </div>
+      <ul class="settings-list main-list">
+        <li (click)="goTo('account')">Account</li>
+        <li (click)="goTo('preferences')">Preferences</li>
+        <li (click)="goTo('data')">Data</li>
+        <li (click)="goTo('support')">Support</li>
+      </ul>
     </div>
 
-    <!-- Account Section -->
-    <div class="settings-section">
-      <h3>{{ translate.t('settings.account') }}</h3>
-      
-      <div class="settings-list">
-        <!-- Profile Form -->
-        <div class="setting-item setting-form">
-          <div class="form-row">
-            <label>Full name</label>
-            <input [(ngModel)]="fullName" placeholder="Your full name" />
+    <!-- ACCOUNT PAGE -->
+    <div class="settings-page subpage" *ngIf="activePage==='account'">
+      <div class="page-header">
+        <button class="back-btn" (click)="goTo('main')">←</button>
+        <h3>Account Settings</h3>
+      </div>
+      <div class="settings-card">
+        <div class="settings-list">
+          <div class="setting-item setting-row">
+            <span class="setting-text">{{ displayName || (firstName + ' ' + lastName) }}</span>
+            <button class="btn-primary btn-compact" (click)="openEditName()">Edit Name</button>
           </div>
-          <div class="form-row">
-            <label>Email</label>
-            <input [(ngModel)]="email" type="email" placeholder="you@example.com" />
+          <div class="setting-item setting-row">
+            <span class="setting-text">{{ userEmail }}</span>
           </div>
-          <div class="form-actions">
-            <button class="btn-primary" (click)="saveProfile()">{{ translate.t('button.save') }}</button>
-            <button class="btn-secondary" (click)="sendResetLink()">{{ translate.t('settings.changePassword') }}</button>
+          <div class="setting-item">
+            <span class="setting-label">Member since</span>
+            <span>{{ createdAt }}</span>
           </div>
-          <div class="form-messages">
-            <span class="msg ok" *ngIf="message">{{ message }}</span>
-            <span class="msg err" *ngIf="error">{{ error }}</span>
+          <div class="setting-item settings-actions">
+            <button class="btn-sign-out" (click)="signOut()">{{ translate.t('button.signOut') }}</button>
+            <button class="btn-danger" (click)="confirmDelete()">Delete account</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Preferences Section -->
-    <div class="settings-section">
-      <h3>{{ translate.t('settings.preferences') }}</h3>
-      
-      <div class="settings-list">
-        <!-- Theme toggle (coming soon) -->
-        <div class="setting-item" disabled>
-          <span class="setting-label">{{ translate.t('settings.theme') }}</span>
-          <span class="setting-badge">Coming soon</span>
-        </div>
-        
-        <!-- Notifications placeholder (simple toggle future) -->
-        <div class="setting-item" disabled>
-          <span class="setting-label">{{ translate.t('settings.notifications') }}</span>
-          <span class="setting-badge">Soon</span>
+    <!-- PREFERENCES PAGE -->
+    <div class="settings-page subpage" *ngIf="activePage==='preferences'">
+      <div class="page-header">
+        <button class="back-btn" (click)="goTo('main')">←</button>
+        <h3>Preferences</h3>
+      </div>
+      <div class="settings-card">
+        <div class="settings-list">
+          <div class="setting-item setting-select">
+            <span class="setting-label">Theme</span>
+            <select class="language-select" [(ngModel)]="selectedTheme" (ngModelChange)="onThemeChange($event)">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+          <div class="setting-item setting-select">
+            <span class="setting-label">Language</span>
+            <select class="language-select" (change)="changeLanguage($any($event.target).value)">
+              <option value="en" [selected]="translate.currentLanguage() === 'en'">English</option>
+              <option value="af" [selected]="translate.currentLanguage() === 'af'">Afrikaans</option>
+              <option value="zu" [selected]="translate.currentLanguage() === 'zu'">isiZulu</option>
+              <option value="xh" [selected]="translate.currentLanguage() === 'xh'">isiXhosa</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <div class="setting-label-group">
+              <span class="setting-label">Email me payment reminders and tenant updates</span>
+              <span class="coming-soon-label">Coming Soon</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" [checked]="notificationsEnabled" (change)="toggleNotifications()" disabled />
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Sign Out Button -->
-    <div class="sign-out-section">
-      <button class="btn-sign-out" (click)="signOut()">
-        {{ translate.t('button.signOut') }}
-      </button>
-      <button class="btn-danger" (click)="confirmDelete()">Delete account</button>
+    <!-- DATA PAGE -->
+    <div class="settings-page subpage" *ngIf="activePage==='data'">
+      <div class="page-header">
+        <button class="back-btn" (click)="goTo('main')">←</button>
+        <h3>Data</h3>
+      </div>
+      <div class="settings-card">
+        <div class="settings-list">
+          <div class="setting-item settings-actions">
+            <button class="btn-primary" (click)="exportMyData()">Export My Data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPPORT PAGE -->
+    <div class="settings-page subpage" *ngIf="activePage==='support'">
+      <div class="page-header">
+        <button class="back-btn" (click)="goTo('main')">←</button>
+        <h3>Support</h3>
+      </div>
+      <div class="settings-card">
+        <div class="settings-list">
+          <div class="setting-item settings-actions">
+            <button class="btn-primary" (click)="contactSupport()">Contact Support</button>
+            <button class="btn-secondary" (click)="sendFeedback()">Send Feedback</button>
+          </div>
+        </div>
+      </div>
+    </div>
     </div>
   </div>
 
