@@ -1,20 +1,22 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { LoginComponent } from './pages/login/login.component';
-import { RegisterComponent } from './pages/register/register.component';
-import { PropertyDetailComponent } from './pages/property-detail/property-detail.component';
-import { TenantsComponent } from './pages/tenants/tenants.component';
-import { SettingsComponent } from './pages/settings/settings.component';
-import { authGuard } from './core/auth.guard';
-import { guestGuard } from './core/guest.guard';
+import { PropertyListComponent } from './features/properties/pages/property-list/home.component';
+import { LoginComponent } from './features/auth/pages/login/login.component';
+import { RegisterComponent } from './features/auth/pages/register/register.component';
+import { PropertyDetailComponent } from './features/properties/pages/property-detail/property-detail.component';
+import { TenantListComponent } from './features/tenants/pages/tenant-list/tenants.component';
+import { TenantDetailComponent } from './features/tenants/pages/tenant-detail/tenant-detail.component';
+import { SettingsComponent } from './features/settings/pages/settings/settings.component';
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
   // Default route - protected by authGuard; non-auth users redirected to /login by the guard
-  { path: '', component: HomeComponent, canActivate: [authGuard] },
+  { path: '', component: PropertyListComponent, canActivate: [authGuard] },
 
   // Protected routes
   { path: 'property/:id', component: PropertyDetailComponent, canActivate: [authGuard] },
-  { path: 'tenants', component: TenantsComponent, canActivate: [authGuard] },
+  { path: 'tenants', component: TenantListComponent, canActivate: [authGuard] },
+  { path: 'tenant/:id', component: TenantDetailComponent, canActivate: [authGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
 
   // Auth routes (guests only)

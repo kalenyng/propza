@@ -27,6 +27,7 @@
 html, body {
   font-family: var(--font-sans);
   overscroll-behavior: none;
+  -webkit-tap-highlight-color: rgba(22, 163, 74, 0.1);
 }
 
 body {
@@ -40,10 +41,46 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================
+   MODAL FIXES (Visual Artifacts Prevention)
+   ============================================ */
+
+// Global modal fixes to prevent visual artifacts
+.modal {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.modal-content {
+  overflow: hidden !important;
+  border-radius: 12px !important;
+  border: none !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+// Fix close button artifacts across all modals
+.btn-close {
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  
+  &:focus-visible {
+    outline: 2px solid var(--primary) !important;
+    outline-offset: 2px;
+  }
+}
+
+// Prevent Bootstrap modal backdrop artifacts
+.modal-backdrop {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ============================================
    UNIFIED BUTTON STYLES (Rounded Look)
    ============================================ */
 
-// Primary Button - Green gradient
+// Primary Button - Green gradient (Mobile-First)
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -58,14 +95,26 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+  // Mobile tap feedback (all devices)
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+    opacity: 0.9;
   }
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
+  // Keyboard focus for accessibility
+  &:focus-visible {
+    outline: 2px solid #16a34a;
+    outline-offset: 2px;
+  }
+
+  // Hover only for devices with hover capability (desktop)
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
   }
 
   &:disabled {
@@ -74,7 +123,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-// Secondary Button - Outlined
+// Secondary Button - Outlined (Mobile-First)
 .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -89,14 +138,26 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text);
   cursor: pointer;
   transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 
-  &:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--card) 50%, transparent 50%);
-    border-color: rgba(209, 213, 219, 0.5);
-  }
-
+  // Mobile tap feedback (all devices)
   &:active:not(:disabled) {
     background: var(--card);
+    transform: scale(0.98);
+  }
+
+  // Keyboard focus for accessibility
+  &:focus-visible {
+    outline: 2px solid rgba(22, 163, 74, 0.5);
+    outline-offset: 2px;
+  }
+
+  // Hover only for devices with hover capability (desktop)
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--card) 50%, transparent 50%);
+      border-color: rgba(209, 213, 219, 0.5);
+    }
   }
 
   &:disabled {
@@ -105,7 +166,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-// Danger Button - Red
+// Danger Button - Red (Mobile-First)
 .btn-danger {
   display: inline-flex;
   align-items: center;
@@ -120,15 +181,27 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 
-  &:hover:not(:disabled) {
-    background: #dc2626;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  // Mobile tap feedback (all devices)
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+    opacity: 0.9;
   }
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
+  // Keyboard focus for accessibility
+  &:focus-visible {
+    outline: 2px solid #ef4444;
+    outline-offset: 2px;
+  }
+
+  // Hover only for devices with hover capability (desktop)
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: #dc2626;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
   }
 
   &:disabled {
@@ -137,7 +210,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-// Success Button - Green (Bootstrap style)
+// Success Button - Green (Mobile-First)
 .btn-success {
   display: inline-flex;
   align-items: center;
@@ -152,15 +225,27 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 
-  &:hover:not(:disabled) {
-    background: #15803d;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+  // Mobile tap feedback (all devices)
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+    opacity: 0.9;
   }
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
+  // Keyboard focus for accessibility
+  &:focus-visible {
+    outline: 2px solid #16a34a;
+    outline-offset: 2px;
+  }
+
+  // Hover only for devices with hover capability (desktop)
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: #15803d;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
   }
 
   &:disabled {
@@ -169,7 +254,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-// Outline Secondary (for cancel/dismiss)
+// Outline Secondary (for cancel/dismiss) (Mobile-First)
 .btn-outline-secondary {
   display: inline-flex;
   align-items: center;
@@ -184,10 +269,26 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text);
   cursor: pointer;
   transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 
-  &:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--card) 50%, transparent 50%);
-    border-color: rgba(209, 213, 219, 0.5);
+  // Mobile tap feedback (all devices)
+  &:active:not(:disabled) {
+    background: var(--card);
+    transform: scale(0.98);
+  }
+
+  // Keyboard focus for accessibility
+  &:focus-visible {
+    outline: 2px solid rgba(22, 163, 74, 0.5);
+    outline-offset: 2px;
+  }
+
+  // Hover only for devices with hover capability (desktop)
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--card) 50%, transparent 50%);
+      border-color: rgba(209, 213, 219, 0.5);
+    }
   }
 
   &:disabled {
@@ -215,6 +316,7 @@ select,
   -moz-appearance: none;
   transition: all 0.2s ease;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  -webkit-tap-highlight-color: transparent;
   
   // Custom chevron icon
   background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
@@ -222,15 +324,24 @@ select,
   background-position: right 12px center;
   background-size: 12px;
 
-  &:hover {
-    border-color: rgba(156, 163, 175, 0.6);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  // Mobile tap feedback
+  &:active:not(:disabled) {
+    transform: scale(0.99);
   }
 
-  &:focus {
+  // Keyboard focus for accessibility
+  &:focus-visible {
     outline: none;
     border-color: #16a34a;
     box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  }
+
+  // Hover only for devices with hover capability (desktop)
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: rgba(156, 163, 175, 0.6);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
   }
 
   &:disabled {
@@ -262,10 +373,25 @@ select,
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
 
-  &:hover {
-    background: color-mix(in srgb, var(--card) 90%, #000 10%);
-    border-color: rgba(209, 213, 219, 0.4);
+  // Mobile tap feedback
+  &:active {
+    transform: scale(0.95);
+  }
+
+  // Keyboard focus for accessibility
+  &:focus-visible {
+    outline: 2px solid rgba(22, 163, 74, 0.5);
+    outline-offset: 2px;
+  }
+
+  // Hover only for devices with hover capability (desktop)
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: color-mix(in srgb, var(--card) 90%, #000 10%);
+      border-color: rgba(209, 213, 219, 0.4);
+    }
   }
 
   &.active {
@@ -309,15 +435,18 @@ select,
     // Lighter chevron for dark mode
     background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23aaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 
-    &:hover {
-      border-color: rgba(156, 163, 175, 0.5);
-      background-color: rgba(255, 255, 255, 0.05);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    }
-
-    &:focus {
+    &:focus-visible {
       border-color: #16a34a;
       box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+    }
+
+    // Hover only for devices with hover capability (desktop)
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:disabled) {
+        border-color: rgba(156, 163, 175, 0.5);
+        background-color: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
     }
   }
 
@@ -325,18 +454,24 @@ select,
   .btn-outline-secondary {
     border-color: rgba(229, 231, 235, 0.2);
 
-    &:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(229, 231, 235, 0.3);
+    // Hover only for devices with hover capability (desktop)
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(229, 231, 235, 0.3);
+      }
     }
   }
 
   .filter-chip {
     border-color: rgba(229, 231, 235, 0.2);
 
-    &:hover {
-      background: color-mix(in srgb, var(--card) 85%, #fff 15%);
-      border-color: rgba(229, 231, 235, 0.3);
+    // Hover only for devices with hover capability (desktop)
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: color-mix(in srgb, var(--card) 85%, #fff 15%);
+        border-color: rgba(229, 231, 235, 0.3);
+      }
     }
 
     &.filter-unpaid.active {

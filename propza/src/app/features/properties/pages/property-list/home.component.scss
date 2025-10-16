@@ -1,0 +1,454 @@
+// Design Tokens
+$color-primary: #3b82f6;
+$color-success: #16a34a;
+$color-warning: #f59e0b;
+$color-danger: #dc2626;
+$color-neutral: #6b7280;
+$color-neutral-light: #9ca3af;
+$color-text-primary: #111827;
+$color-text-secondary: #4b5563;
+$color-text-muted: #6b7280;
+$color-bg: #ffffff;
+$color-bg-secondary: #f9fafb;
+$color-border: #e5e7eb;
+
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 20px;
+$spacing-xl: 24px;
+
+$font-size-xl: 24px;
+$font-size-lg: 20px;
+$font-size-md: 16px;
+$font-size-sm: 14px;
+$font-size-xs: 12px;
+$line-height: 1.4;
+
+$border-radius: 12px;
+$border-radius-sm: 8px;
+$shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+
+// Container
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  padding-bottom: 0;
+}
+
+// Main Content with Rounded White Background
+.main-content {
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 20px 20px 0 0;
+  margin-top: -20px;
+  position: relative;
+  z-index: 50;
+  min-height: calc(100vh + 20px);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+
+// Sticky Summary Bar
+.summary-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  padding: $spacing-md $spacing-md $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.summary-metrics {
+  display: flex;
+  gap: $spacing-xl;
+  margin-bottom: $spacing-md;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+
+.metric-label {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  line-height: $line-height;
+}
+
+.metric-value {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: var(--text);
+  line-height: $line-height;
+}
+
+// Filter Chips - using global styles from styles.scss
+// Additional overflow handling for horizontal scroll on mobile
+.filter-chips {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-border;
+    border-radius: 2px;
+  }
+}
+
+// Controls Bar
+.controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.section-title {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  line-height: $line-height;
+}
+
+:host-context(.dark-theme) {
+  .section-title {
+    color: #f1f5f9;
+  }
+}
+
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  label {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    margin: 0;
+  }
+
+  select {
+    // Uses global select styles from styles.scss
+  }
+}
+
+// Properties List
+.properties-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding: 0 $spacing-md;
+}
+
+// Loading Skeletons
+.skeleton-card {
+  background: var(--card);
+  border: 1px solid rgba(229, 231, 235, 0.2);
+  border-radius: $border-radius;
+  padding: $spacing-md $spacing-lg;
+  box-shadow: $shadow;
+  min-height: 96px;
+}
+
+.skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-sm;
+}
+
+.skeleton-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.skeleton-line {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  height: 16px;
+}
+
+.skeleton-address {
+  width: 60%;
+  height: 20px;
+}
+
+.skeleton-tenant {
+  width: 40%;
+  height: 14px;
+}
+
+.skeleton-pill {
+  width: 80px;
+  height: 28px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 14px;
+}
+
+.skeleton-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+// Dark theme overrides for skeletons
+:host-context(.dark-theme) {
+  .skeleton-card {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .skeleton-line {
+    background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+  }
+
+  .skeleton-pill {
+    background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+  }
+}
+
+.skeleton-date {
+  width: 45%;
+  height: 14px;
+}
+
+.skeleton-amount {
+  width: 30%;
+  height: 20px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl * 2;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid rgba(229, 231, 235, 0.2);
+  border-radius: $border-radius;
+  margin: $spacing-xl 0;
+  box-shadow: $shadow;
+}
+
+.empty-icon {
+  color: $color-neutral-light;
+  margin-bottom: $spacing-md;
+}
+
+.empty-title {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 $spacing-xs 0;
+  line-height: $line-height;
+}
+
+.empty-description {
+  font-size: $font-size-md;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
+  margin: 0 0 $spacing-lg 0;
+  line-height: $line-height;
+}
+
+.btn-add-property {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: 12px $spacing-lg;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  color: $color-bg;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-md;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  // Mobile tap feedback (all devices)
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+
+  // Keyboard focus for accessibility
+  &:focus-visible {
+    outline: 2px solid #16a34a;
+    outline-offset: 2px;
+  }
+
+  // Hover only for devices with hover capability (desktop)
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: linear-gradient(135deg, #0a2f23 0%, #15803d 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Floating Action Button (when properties exist) (Mobile-First)
+.fab-add {
+  position: fixed;
+  bottom: 120px;
+  right: $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  color: $color-bg;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 50;
+  font-size: $font-size-md;
+  font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+
+  // Mobile tap feedback (all devices)
+  &:active {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+
+  // Keyboard focus for accessibility
+  &:focus-visible {
+    outline: 2px solid #16a34a;
+    outline-offset: 2px;
+  }
+
+  // Hover only for devices with hover capability (desktop)
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: linear-gradient(135deg, #0a2f23 0%, #15803d 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+    }
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+// Responsive
+@media (max-width: 640px) {
+  .summary-bar {
+    padding: $spacing-sm;
+  }
+
+  .summary-metrics {
+    gap: $spacing-md;
+  }
+
+  .metric {
+    min-width: 120px;
+  }
+
+  .metric-value {
+    font-size: $font-size-lg;
+  }
+
+  .controls-bar {
+    padding: 0 $spacing-sm;
+  }
+
+  .properties-list {
+    padding: 0 $spacing-sm;
+  }
+
+  .fab-add {
+    bottom: 100px;
+    right: $spacing-sm;
+  }
+}
+
+// Focus styles now handled inline with :focus-visible
+
+// Dark theme overrides within component scope
+:host-context(.dark-theme) {
+  .home-container {
+    background: var(--bg);
+  }
+
+  .btn-add-property {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: #ffffff;
+
+    // Hover only for devices with hover capability (desktop)
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: linear-gradient(135deg, #047857 0%, #0ea5a3 100%);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+      }
+    }
+  }
+
+  .fab-add {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: #ffffff;
+
+    // Hover only for devices with hover capability (desktop)
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: linear-gradient(135deg, #047857 0%, #0ea5a3 100%);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+      }
+    }
+  }
+}
+
+// Sort control uses global select styles
+
+// Print styles
+@media print {
+  .summary-bar {
+    position: static;
+  }
+
+  .filter-chips,
+  .sort-control,
+  .fab-add,
+  .btn-add-property {
+    display: none;
+  }
+}

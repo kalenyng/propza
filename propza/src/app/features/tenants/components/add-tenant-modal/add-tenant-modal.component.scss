@@ -1,0 +1,360 @@
+.modal-header {
+  border-bottom: 1px solid rgba(229, 231, 235, 0.2);
+  padding: 1.5rem;
+
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .btn-close {
+    background: none !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-size: 1.5rem;
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
+    cursor: pointer;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+
+    // Mobile tap feedback
+    &:active {
+      transform: scale(0.9);
+    }
+
+    // Focus for accessibility
+    &:focus-visible {
+      outline: 2px solid var(--primary) !important;
+      outline-offset: 2px;
+    }
+
+    // Hover only for devices with hover capability (desktop)
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--text);
+      }
+    }
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+// Safari rendering fix
+:host {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+// Ensure modal content has proper styling
+:host ::ng-deep .modal-content {
+  overflow: hidden;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      padding: 0.75rem;
+      border: 1px solid rgba(229, 231, 235, 0.3);
+      border-radius: 0.5rem;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.875rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+      &:focus-visible {
+        outline: none;
+        border-color: #16a34a;
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+      }
+
+      &::placeholder {
+        color: color-mix(in srgb, var(--text) 50%, #888 50%);
+      }
+
+      &.is-invalid {
+        border-color: #dc2626;
+
+        &:focus-visible {
+          border-color: #dc2626;
+          box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+      }
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+    }
+
+    .form-help {
+      font-size: 0.75rem;
+      color: color-mix(in srgb, var(--text) 60%, #888 40%);
+      margin-top: 0.25rem;
+    }
+
+    .invalid-feedback {
+      font-size: 0.75rem;
+      color: #dc2626;
+      margin-top: 0.25rem;
+    }
+  }
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #16a34a;
+  }
+
+  .checkbox-label {
+    flex: 1;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    margin: 0;
+    user-select: none;
+  }
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(229, 231, 235, 0.2);
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+
+    &.btn-primary {
+      background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+      color: white;
+      -webkit-tap-highlight-color: transparent;
+
+      // Mobile tap feedback
+      &:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+
+      // Hover only for devices with hover capability (desktop)
+      @media (hover: hover) and (pointer: fine) {
+        &:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+        }
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    &.btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid rgba(229, 231, 235, 0.2);
+      -webkit-tap-highlight-color: transparent;
+
+      // Mobile tap feedback
+      &:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+
+      // Hover only for devices with hover capability (desktop)
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background: color-mix(in srgb, var(--bg) 90%, #000 10%);
+          border-color: rgba(209, 213, 219, 0.3);
+        }
+      }
+    }
+  }
+}
+
+// Dark theme overrides
+:host-context(.dark-theme) {
+  .modal-header {
+    background: var(--card);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+
+    .modal-title {
+      color: var(--text);
+    }
+  }
+
+  .modal-body {
+    background: var(--bg);
+  }
+
+  .btn-close {
+    color: color-mix(in srgb, var(--text) 70%, #fff 30%);
+    
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--text);
+      }
+    }
+  }
+
+  .form-grid .form-group {
+    label {
+      color: var(--text);
+    }
+
+    .form-control {
+      background: var(--card);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+
+      &::placeholder {
+        color: color-mix(in srgb, var(--text) 40%, #888 60%);
+      }
+
+      &:focus-visible {
+        border-color: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+      }
+    }
+
+    select.form-control {
+      background: var(--card);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+
+      option {
+        background: var(--card);
+        color: var(--text);
+      }
+    }
+
+    .form-help {
+      color: color-mix(in srgb, var(--text) 50%, #888 50%);
+    }
+
+    .invalid-feedback {
+      color: #fca5a5;
+    }
+
+    .checkbox-wrapper {
+      input[type="checkbox"] {
+        accent-color: #22c55e;
+      }
+
+      .checkbox-label {
+        color: var(--text);
+      }
+    }
+  }
+
+  .form-actions {
+    border-top-color: rgba(255, 255, 255, 0.1);
+
+    .btn {
+      &.btn-primary {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        
+        @media (hover: hover) and (pointer: fine) {
+          &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+          }
+        }
+      }
+
+      &.btn-secondary {
+        background: var(--card);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+
+        @media (hover: hover) and (pointer: fine) {
+          &:hover:not(:disabled) {
+            background: color-mix(in srgb, var(--card) 90%, #fff 10%);
+            border-color: rgba(255, 255, 255, 0.2);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    .btn {
+      width: 100%;
+    }
+  }
+}

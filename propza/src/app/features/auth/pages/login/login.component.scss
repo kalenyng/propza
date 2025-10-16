@@ -1,0 +1,236 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  padding: 20px;
+}
+
+.auth-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 32px;
+
+  .brand-image {
+    width: 84px;
+    height: 84px;
+    object-fit: contain;
+    border-radius: 16px;
+    display: block;
+    margin: 0 auto 12px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 4px;
+  }
+
+  .tagline {
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 24px;
+  text-align: center;
+}
+
+// Google Button
+.btn-google {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1px solid rgba(229, 231, 235, 0.2);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--bg) 92%, #000 8%);
+    border-color: rgba(209, 213, 219, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// Divider
+.divider {
+  margin: 24px 0;
+  text-align: center;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: rgba(229, 231, 235, 0.2);
+  }
+
+  span {
+    background: var(--card);
+    padding: 0 12px;
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Form
+form {
+  margin-bottom: 16px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(229, 231, 235, 0.2);
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    background: var(--bg);
+    color: var(--text);
+
+    &:focus-visible {
+      outline: none;
+      border-color: rgba(209, 213, 219, 0.3);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+
+    &::placeholder {
+      color: color-mix(in srgb, var(--text) 60%, #888 40%);
+    }
+  }
+}
+
+// Use global .btn-primary from styles.scss
+.btn-primary {
+  width: 100%; // Custom width for login page
+}
+
+// Messages
+.message {
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  margin: 16px 0;
+
+  &.error {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+// Footer
+.footer-link {
+  text-align: center;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
+  margin-top: 24px;
+
+  a {
+    color: #16a34a;
+    font-weight: 500;
+    text-decoration: none;
+    margin-left: 4px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Dark mode overrides
+:host-context(.dark-theme) {
+  .auth-card {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  .btn-google {
+    border-color: rgba(229, 231, 235, 0.15);
+    
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(229, 231, 235, 0.25);
+    }
+  }
+
+  input {
+    border-color: rgba(229, 231, 235, 0.15);
+    
+    &:focus-visible {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+    }
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.35);
+    }
+  }
+
+  .message.error {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+  }
+
+  .footer-link a {
+    color: #22c55e;
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 24px;
+  }
+
+  .brand h1 {
+    font-size: 24px;
+  }
+}

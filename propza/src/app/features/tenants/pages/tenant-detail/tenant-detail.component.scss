@@ -1,0 +1,582 @@
+// Design Tokens - Matching Property Detail
+$color-primary: #3b82f6;
+$color-success: #16a34a;
+$color-warning: #f59e0b;
+$color-danger: #dc2626;
+$color-neutral: #6b7280;
+$color-text-primary: #111827;
+$color-text-secondary: #4b5563;
+$color-text-muted: #6b7280;
+$color-bg: #ffffff;
+$color-bg-secondary: #f9fafb;
+$color-border: #e5e7eb;
+
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 20px;
+$spacing-xl: 24px;
+
+$font-size-xxl: 28px;
+$font-size-xl: 24px;
+$font-size-lg: 20px;
+$font-size-md: 16px;
+$font-size-sm: 14px;
+$font-size-xs: 12px;
+$line-height: 1.4;
+
+$border-radius: 12px;
+$border-radius-sm: 8px;
+$shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+
+// Container
+.detail-container {
+  min-height: 100vh;
+  background: var(--bg);
+  padding-bottom: 80px;
+}
+
+// Loading State
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: $spacing-md;
+
+  p {
+    color: color-mix(in srgb, var(--text) 70%, #888 30%);
+    font-size: $font-size-md;
+  }
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(229, 231, 235, 0.2);
+  border-top-color: var(--text);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Error State
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: $spacing-md;
+
+  p {
+    color: color-mix(in srgb, var(--text) 70%, #888 30%);
+    font-size: $font-size-lg;
+  }
+}
+
+// Header
+.header {
+  background: var(--card);
+  padding: $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: $shadow;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: color-mix(in srgb, var(--card) 92%, #000 8%);
+    }
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(229, 231, 235, 0.2);
+  border-radius: $border-radius-sm;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: color-mix(in srgb, var(--card) 92%, #000 8%);
+      border-color: rgba(209, 213, 219, 0.3);
+    }
+
+    &.danger:hover {
+      background: rgba($color-danger, 0.1);
+      border-color: $color-danger;
+      color: $color-danger;
+    }
+  }
+}
+
+// Content
+.content {
+  padding: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// Title Section
+.title-section {
+  background: var(--card);
+  padding: $spacing-lg;
+  border-radius: $border-radius;
+  box-shadow: $shadow;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-md;
+}
+
+.tenant-title {
+  font-size: $font-size-xxl;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  line-height: $line-height;
+  flex: 1;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  flex-shrink: 0;
+
+  &.success {
+    background: rgba(22, 163, 74, 0.1);
+    color: $color-success;
+    
+    .status-dot {
+      background: $color-success;
+    }
+  }
+
+  &.danger {
+    background: rgba(220, 38, 38, 0.1);
+    color: $color-danger;
+    
+    .status-dot {
+      background: $color-danger;
+    }
+  }
+
+  &.warning,
+  &.warning-light {
+    background: rgba(245, 158, 11, 0.1);
+    color: $color-warning;
+    
+    .status-dot {
+      background: $color-warning;
+    }
+  }
+
+  &.neutral {
+    background: rgba(107, 114, 128, 0.1);
+    color: $color-neutral;
+    
+    .status-dot {
+      background: $color-neutral;
+    }
+  }
+
+  &.info {
+    background: rgba(59, 130, 246, 0.1);
+    color: $color-primary;
+    
+    .status-dot {
+      background: $color-primary;
+    }
+  }
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+// Metrics Grid
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-md;
+}
+
+.metric-card {
+  background: var(--card);
+  padding: $spacing-lg;
+  border-radius: $border-radius;
+  box-shadow: $shadow;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: $font-size-sm;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: var(--text);
+  line-height: $line-height;
+}
+
+// Section Card
+.section-card {
+  background: var(--card);
+  border-radius: $border-radius;
+  box-shadow: $shadow;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+    line-height: $line-height;
+  }
+}
+
+.section-content {
+  padding: $spacing-lg;
+}
+
+// Detail Grid
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-md;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: $font-size-sm;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: $font-size-md;
+  color: var(--text);
+  font-weight: 500;
+}
+
+// Empty State
+.empty-payments {
+  text-align: center;
+  padding: $spacing-xl;
+  
+  p {
+    font-size: $font-size-md;
+    color: color-mix(in srgb, var(--text) 70%, #888 30%);
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+// Notes
+.notes-text {
+  font-size: $font-size-md;
+  color: color-mix(in srgb, var(--text) 85%, #888 15%);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+// Payment List
+.payments-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.payment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: color-mix(in srgb, var(--bg) 98%, #000 2%);
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba(229, 231, 235, 0.2);
+  gap: $spacing-md;
+}
+
+.payment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payment-date {
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.payment-method {
+  font-size: $font-size-sm;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
+  text-transform: capitalize;
+}
+
+.payment-amount-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.payment-amount {
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.payment-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: $font-size-xs;
+  font-weight: 600;
+
+  &.paid {
+    background: rgba(22, 163, 74, 0.1);
+    color: $color-success;
+  }
+}
+
+// Edit Form
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-md;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--text) 75%, #888 25%);
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 12px 14px;
+    border: 1px solid rgba(229, 231, 235, 0.2);
+    border-radius: $border-radius-sm;
+    font-size: $font-size-md;
+    color: var(--text);
+    font-family: inherit;
+    background: var(--card);
+    transition: all 0.2s ease;
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--text);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+
+    &::placeholder {
+      color: color-mix(in srgb, var(--text) 65%, #888 35%);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: $spacing-sm;
+  justify-content: flex-end;
+  padding-top: $spacing-md;
+}
+
+// Dark Theme Overrides
+:host-context(.dark-theme) {
+  .header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .section-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .payment-item {
+    background: color-mix(in srgb, var(--card) 95%, #fff 5%);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .icon-btn {
+    border-color: rgba(255, 255, 255, 0.1);
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+
+  .form-group {
+    input,
+    textarea,
+    select {
+      border-color: rgba(255, 255, 255, 0.1);
+
+      &:focus-visible {
+        border-color: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 640px) {
+  .header {
+    padding: $spacing-sm;
+  }
+
+  .content {
+    padding: $spacing-sm;
+  }
+
+  .title-section {
+    padding: $spacing-md;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tenant-title {
+    font-size: $font-size-xl;
+  }
+
+  .metric-card {
+    padding: $spacing-md;
+  }
+
+  .metric-value {
+    font-size: $font-size-lg;
+  }
+
+  .section-header {
+    padding: $spacing-sm $spacing-md;
+  }
+
+  .section-content {
+    padding: $spacing-md;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .payment-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .payment-amount-info {
+    align-items: flex-start;
+    width: 100%;
+  }
+}
+
