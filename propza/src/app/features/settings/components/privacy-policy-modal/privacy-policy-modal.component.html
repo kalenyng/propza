@@ -1,0 +1,38 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ translate.t('support.privacyPolicy') }}</h4>
+  <button type="button" class="btn-close" (click)="close()" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="privacy-content">
+    <h5>{{ translate.t('privacy.lastUpdated') }}</h5>
+    <p>{{ translate.t('privacy.lastUpdatedDate') }}</p>
+    
+    <h5>{{ translate.t('privacy.dataCollection') }}</h5>
+    <p>{{ translate.t('privacy.dataCollectionDescription') }}</p>
+    
+    <h5>{{ translate.t('privacy.dataUsage') }}</h5>
+    <p>{{ translate.t('privacy.dataUsageDescription') }}</p>
+    
+    <h5>{{ translate.t('privacy.dataSharing') }}</h5>
+    <p>{{ translate.t('privacy.dataSharingDescription') }}</p>
+    
+    <h5>{{ translate.t('privacy.dataSecurity') }}</h5>
+    <p>{{ translate.t('privacy.dataSecurityDescription') }}</p>
+    
+    <h5>{{ translate.t('privacy.userRights') }}</h5>
+    <p>{{ translate.t('privacy.userRightsDescription') }}</p>
+    
+    <h5>{{ translate.t('privacy.contact') }}</h5>
+    <p>{{ translate.t('privacy.contactDescription') }}</p>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="close()">
+    {{ translate.t('button.close') }}
+  </button>
+</div>
+

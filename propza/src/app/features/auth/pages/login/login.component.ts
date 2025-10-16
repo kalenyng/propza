@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../../../core/services/auth.service';
+import { PasswordResetModalComponent } from '../../../settings/components/password-reset-modal/password-reset-modal.component';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +19,11 @@ export class LoginComponent {
   loading = false;
   errorMsg = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService, 
+    private router: Router,
+    private modal: NgbModal
+  ) {}
 
   async submit(): Promise<void> {
     this.loading = true;
@@ -43,5 +49,13 @@ export class LoginComponent {
       this.loading = false;
     }
     // No need to handle success - Supabase will redirect automatically
+  }
+
+  openForgotPassword(): void {
+    this.modal.open(PasswordResetModalComponent, {
+      size: 'md',
+      centered: true,
+      windowClass: 'modal-zoom'
+    });
   }
 }

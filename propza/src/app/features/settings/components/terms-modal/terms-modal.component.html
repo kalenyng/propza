@@ -1,0 +1,47 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ translate.t('support.termsAndConditions') }}</h4>
+  <button type="button" class="btn-close" (click)="close()" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="terms-content">
+    <h5>{{ translate.t('terms.lastUpdated') }}</h5>
+    <p>{{ translate.t('terms.lastUpdatedDate') }}</p>
+    
+    <h5>{{ translate.t('terms.acceptance') }}</h5>
+    <p>{{ translate.t('terms.acceptanceDescription') }}</p>
+    
+    <h5>{{ translate.t('terms.serviceDescription') }}</h5>
+    <p>{{ translate.t('terms.serviceDescriptionText') }}</p>
+    
+    <h5>{{ translate.t('terms.userObligations') }}</h5>
+    <p>{{ translate.t('terms.userObligationsDescription') }}</p>
+    
+    <h5>{{ translate.t('terms.prohibitedUses') }}</h5>
+    <p>{{ translate.t('terms.prohibitedUsesDescription') }}</p>
+    
+    <h5>{{ translate.t('terms.intellectualProperty') }}</h5>
+    <p>{{ translate.t('terms.intellectualPropertyDescription') }}</p>
+    
+    <h5>{{ translate.t('terms.liability') }}</h5>
+    <p>{{ translate.t('terms.liabilityDescription') }}</p>
+    
+    <h5>{{ translate.t('terms.termination') }}</h5>
+    <p>{{ translate.t('terms.terminationDescription') }}</p>
+    
+    <h5>{{ translate.t('terms.governingLaw') }}</h5>
+    <p>{{ translate.t('terms.governingLawDescription') }}</p>
+    
+    <h5>{{ translate.t('terms.contact') }}</h5>
+    <p>{{ translate.t('terms.contactDescription') }}</p>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="close()">
+    {{ translate.t('button.close') }}
+  </button>
+</div>
+

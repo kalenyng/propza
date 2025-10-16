@@ -1,0 +1,60 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ translate.t('settings.sendFeedback') }}</h4>
+  <button type="button" class="btn-close" (click)="close()" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form (ngSubmit)="submitFeedback()" #feedbackForm="ngForm">
+    <div class="form-group">
+      <label for="feedbackText">{{ translate.t('feedback.message') }}</label>
+      <textarea
+        id="feedbackText"
+        name="feedbackText"
+        [(ngModel)]="feedbackText"
+        class="form-control"
+        rows="4"
+        placeholder="{{ translate.t('feedback.placeholder') }}"
+        required
+        #textField="ngModel">
+      </textarea>
+      <div class="invalid-feedback" *ngIf="textField.invalid && textField.touched">
+        {{ translate.t('feedback.messageRequired') }}
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="feedbackType">{{ translate.t('feedback.type') }}</label>
+      <select
+        id="feedbackType"
+        name="feedbackType"
+        [(ngModel)]="feedbackType"
+        class="form-control">
+        <option value="general">{{ translate.t('feedback.typeGeneral') }}</option>
+        <option value="bug">{{ translate.t('feedback.typeBug') }}</option>
+        <option value="feature">{{ translate.t('feedback.typeFeature') }}</option>
+        <option value="improvement">{{ translate.t('feedback.typeImprovement') }}</option>
+      </select>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">
+    {{ translate.t('button.cancel') }}
+  </button>
+  <button 
+    type="button" 
+    class="btn btn-primary" 
+    (click)="submitFeedback()"
+    [disabled]="feedbackForm.invalid || submitting">
+    @if (submitting) {
+      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      {{ translate.t('loading.sending') }}
+    } @else {
+      {{ translate.t('button.submit') }}
+    }
+  </button>
+</div>
+

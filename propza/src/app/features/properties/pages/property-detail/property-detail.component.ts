@@ -86,6 +86,12 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     this.propertyId = this.route.snapshot.paramMap.get('id') || '';
     
     if (this.propertyId) {
+      // Check if we have cached data - if so, show it immediately
+      const cachedProperty = this.propertyService.getPropertyById(this.propertyId);
+      if (cachedProperty) {
+        this.loading = false;
+      }
+
       // Subscribe to property changes
       this.propertyService.properties$
         .pipe(takeUntil(this.destroy$))
@@ -93,6 +99,7 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
           const prop = properties.find(p => p.id === this.propertyId);
           if (prop) {
             this.updatePropertyData(prop);
+            this.loading = false; // Hide loading when we get data
           }
         });
 
@@ -103,12 +110,7 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
           this.payments = payments.filter(p => p.property_id === this.propertyId);
         });
 
-      // Subscribe to loading state
-      this.propertyService.loading$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(loading => {
-          this.loading = loading;
-        });
+      // Don't subscribe to global loading$ - use local loading state only
 
       // Initial load
       this.loadPropertyDetails();

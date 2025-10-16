@@ -1,3 +1,4 @@
+// Modal structure styling - close button now uses global styles
 .modal-header {
   background: var(--card);
   color: var(--text);
@@ -8,50 +9,10 @@
   color: var(--text);
 }
 
-.btn-close {
-  background: none !important;
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-  filter: invert(0);
-  cursor: pointer;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-
-  // Mobile tap feedback
-  &:active {
-    transform: scale(0.9);
-  }
-
-  // Focus for accessibility
-  &:focus-visible {
-    outline: 2px solid var(--primary) !important;
-    outline-offset: 2px;
-  }
-
-  // Hover only for devices with hover capability (desktop)
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-}
-
 :host-context(.dark-theme) {
   .modal-header {
     background: var(--card);
     border-bottom-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .btn-close {
-    filter: invert(1);
-    opacity: 0.8;
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        opacity: 1;
-      }
-    }
   }
 
   .modal-title {
@@ -172,4 +133,3 @@
   color: var(--text);
   border-color: rgba(229, 231, 235, 0.3);
 }
-

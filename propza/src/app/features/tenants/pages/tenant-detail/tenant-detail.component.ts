@@ -67,6 +67,12 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
     this.tenantId = this.route.snapshot.paramMap.get('id') || '';
     
     if (this.tenantId) {
+      // Check if we have cached data - if so, show it immediately
+      const cachedTenant = this.tenantService.getTenantById(this.tenantId);
+      if (cachedTenant) {
+        this.loading = false;
+      }
+
       // Subscribe to tenant changes
       this.tenantService.tenants$
         .pipe(takeUntil(this.destroy$))
@@ -74,6 +80,7 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
           const tenant = tenants.find(t => t.id === this.tenantId);
           if (tenant) {
             this.updateTenantData(tenant);
+            this.loading = false; // Hide loading when we get data
           }
         });
 
@@ -99,12 +106,7 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
           }
         });
 
-      // Subscribe to loading state
-      this.tenantService.loading$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(loading => {
-          this.loading = loading;
-        });
+      // Don't subscribe to global loading$ - use local loading state only
 
       // Fetch payments
       this.fetchPayments();

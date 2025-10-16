@@ -1,6 +1,8 @@
 <div class="modal-header">
   <h5 class="modal-title">{{ translate.t('tenants.addNewTenant') }}</h5>
-  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>
 
 <div class="modal-body">
@@ -105,7 +107,7 @@
       </div>
 
       <div class="form-group">
-        <label for="rentDueDate">Rent Due Date *</label>
+        <label for="rentDueDate">Next Rent Due Date *</label>
         <input
           id="rentDueDate"
           type="date"

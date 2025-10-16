@@ -1,0 +1,61 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ translate.t('support.featureRequest') }}</h4>
+  <button type="button" class="btn-close" (click)="close()" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form (ngSubmit)="submitRequest()" #featureForm="ngForm">
+    <div class="form-group">
+      <label for="featureTitle">{{ translate.t('featureRequest.title') }}</label>
+      <input
+        type="text"
+        id="featureTitle"
+        name="featureTitle"
+        [(ngModel)]="featureTitle"
+        class="form-control"
+        placeholder="{{ translate.t('featureRequest.titlePlaceholder') }}"
+        required
+        #titleField="ngModel">
+      <div class="invalid-feedback" *ngIf="titleField.invalid && titleField.touched">
+        {{ translate.t('featureRequest.titleRequired') }}
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="featureDescription">{{ translate.t('featureRequest.description') }}</label>
+      <textarea
+        id="featureDescription"
+        name="featureDescription"
+        [(ngModel)]="featureDescription"
+        class="form-control"
+        rows="5"
+        placeholder="{{ translate.t('featureRequest.descriptionPlaceholder') }}"
+        required
+        #descriptionField="ngModel">
+      </textarea>
+      <div class="invalid-feedback" *ngIf="descriptionField.invalid && descriptionField.touched">
+        {{ translate.t('featureRequest.descriptionRequired') }}
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">
+    {{ translate.t('button.cancel') }}
+  </button>
+  <button 
+    type="button" 
+    class="btn btn-primary" 
+    (click)="submitRequest()"
+    [disabled]="featureForm.invalid || submitting">
+    @if (submitting) {
+      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      {{ translate.t('loading.sending') }}
+    } @else {
+      {{ translate.t('button.submit') }}
+    }
+  </button>
+</div>

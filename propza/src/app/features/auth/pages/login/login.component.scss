@@ -38,9 +38,11 @@
   }
 
   .tagline {
-    color: color-mix(in srgb, var(--text) 60%, #888 40%);
-    font-size: 14px;
+    color: color-mix(in srgb, var(--text) 60%, #000000 40%);
+    font-size: 15px;
+    font-weight: 500;
     margin: 0;
+    letter-spacing: 0.3px;
   }
 }
 
@@ -118,12 +120,38 @@ form {
 .form-group {
   margin-bottom: 20px;
 
+  .password-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
   label {
     display: block;
     font-size: 14px;
     font-weight: 500;
     color: var(--text);
     margin-bottom: 6px;
+  }
+
+  .forgot-password {
+    font-size: 13px;
+    color: #16a34a;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #15803d;
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #16a34a;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
   }
 
   input {
@@ -144,7 +172,7 @@ form {
     }
 
     &::placeholder {
-      color: color-mix(in srgb, var(--text) 60%, #888 40%);
+      color: color-mix(in srgb, var(--text) 40%, transparent 60%);
     }
   }
 }
@@ -192,6 +220,10 @@ form {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
   }
 
+  .brand .tagline {
+    color: #22c55e;
+  }
+
   .btn-google {
     border-color: rgba(229, 231, 235, 0.15);
     
@@ -221,6 +253,14 @@ form {
 
   .footer-link a {
     color: #22c55e;
+  }
+
+  .forgot-password {
+    color: #22c55e;
+
+    &:hover {
+      color: #10b981;
+    }
   }
 }
 

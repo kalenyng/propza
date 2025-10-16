@@ -1,0 +1,45 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ translate.t('support.bugReport') }}</h4>
+  <button type="button" class="btn-close" (click)="close()" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form (ngSubmit)="submitReport()" #bugForm="ngForm">
+    <div class="form-group">
+      <label for="bugDescription">{{ translate.t('bugReport.description') }}</label>
+      <textarea
+        id="bugDescription"
+        name="bugDescription"
+        [(ngModel)]="bugDescription"
+        class="form-control"
+        rows="6"
+        placeholder="{{ translate.t('bugReport.descriptionPlaceholder') }}"
+        required
+        #descriptionField="ngModel">
+      </textarea>
+      <div class="invalid-feedback" *ngIf="descriptionField.invalid && descriptionField.touched">
+        {{ translate.t('bugReport.descriptionRequired') }}
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">
+    {{ translate.t('button.cancel') }}
+  </button>
+  <button 
+    type="button" 
+    class="btn btn-primary" 
+    (click)="submitReport()"
+    [disabled]="bugForm.invalid || submitting">
+    @if (submitting) {
+      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      {{ translate.t('loading.sending') }}
+    } @else {
+      {{ translate.t('button.submit') }}
+    }
+  </button>
+</div>

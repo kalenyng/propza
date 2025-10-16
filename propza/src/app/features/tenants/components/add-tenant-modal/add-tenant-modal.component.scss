@@ -8,36 +8,8 @@
     color: var(--text);
     margin: 0;
   }
-
-  .btn-close {
-    background: none !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    font-size: 1.5rem;
-    color: color-mix(in srgb, var(--text) 60%, #888 40%);
-    cursor: pointer;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
-
-    // Mobile tap feedback
-    &:active {
-      transform: scale(0.9);
-    }
-
-    // Focus for accessibility
-    &:focus-visible {
-      outline: 2px solid var(--primary) !important;
-      outline-offset: 2px;
-    }
-
-    // Hover only for devices with hover capability (desktop)
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        color: var(--text);
-      }
-    }
-  }
+  
+  // Close button now uses global styles
 }
 
 .modal-body {
@@ -252,16 +224,8 @@
   .modal-body {
     background: var(--bg);
   }
-
-  .btn-close {
-    color: color-mix(in srgb, var(--text) 70%, #fff 30%);
-    
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        color: var(--text);
-      }
-    }
-  }
+  
+  // Close button now uses global dark mode styles
 
   .form-grid .form-group {
     label {

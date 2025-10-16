@@ -1,0 +1,75 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ translate.t('settings.deleteAccount') }}</h4>
+  <button type="button" class="btn-close" (click)="close()" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="warning-box">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+      <line x1="12" y1="9" x2="12" y2="13"/>
+      <line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+    <div class="warning-content">
+      <h5>{{ translate.t('deleteAccount.warning') }}</h5>
+      <p>{{ translate.t('deleteAccount.warningDescription') }}</p>
+    </div>
+  </div>
+  
+  <form (ngSubmit)="confirmDelete()" #deleteForm="ngForm">
+    <div class="form-group">
+      <label for="confirmationText">{{ translate.t('deleteAccount.confirmationLabel') }}</label>
+      <input
+        type="text"
+        id="confirmationText"
+        name="confirmationText"
+        [(ngModel)]="confirmationText"
+        class="form-control"
+        placeholder="{{ translate.t('deleteAccount.confirmationPlaceholder') }}"
+        required
+        #textField="ngModel">
+      <div class="invalid-feedback" *ngIf="textField.invalid && textField.touched">
+        {{ translate.t('deleteAccount.confirmationRequired') }}
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <div class="checkbox-wrapper">
+        <input
+          type="checkbox"
+          id="understandConsequences"
+          name="understandConsequences"
+          [(ngModel)]="understandConsequences"
+          required
+          #checkboxField="ngModel">
+        <label for="understandConsequences" class="checkbox-label">
+          {{ translate.t('deleteAccount.understandConsequences') }}
+        </label>
+      </div>
+      <div class="invalid-feedback" *ngIf="checkboxField.invalid && checkboxField.touched">
+        {{ translate.t('deleteAccount.understandRequired') }}
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">
+    {{ translate.t('button.cancel') }}
+  </button>
+  <button 
+    type="button" 
+    class="btn btn-danger" 
+    (click)="confirmDelete()"
+    [disabled]="deleteForm.invalid || submitting || confirmationText.toLowerCase() !== 'delete'">
+    @if (submitting) {
+      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      {{ translate.t('loading.deleting') }}
+    } @else {
+      {{ translate.t('button.deleteAccount') }}
+    }
+  </button>
+</div>
+

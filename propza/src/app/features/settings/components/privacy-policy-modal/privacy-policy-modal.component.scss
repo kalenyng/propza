@@ -1,0 +1,50 @@
+.privacy-content {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 8px;
+
+  h5 {
+    margin: 24px 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  p {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: color-mix(in srgb, var(--text) 80%, #888 20%);
+    line-height: 1.6;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+  }
+}
+
+:host-context(.dark-theme) {
+  .privacy-content {
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+

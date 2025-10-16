@@ -63,10 +63,27 @@ h1, h2, h3, h4, h5, h6 {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
+  opacity: 0.6;
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--text);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  
+  &:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05) !important;
+  }
   
   &:focus-visible {
     outline: 2px solid var(--primary) !important;
     outline-offset: 2px;
+    opacity: 1;
   }
 }
 
@@ -74,6 +91,259 @@ h1, h2, h3, h4, h5, h6 {
 .modal-backdrop {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+
+// Modal header, body, footer styling
+.modal-header {
+  border-bottom: 1px solid rgba(229, 231, 235, 0.2);
+  padding: 20px 24px;
+  background: var(--bg);
+
+  .modal-title {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 18px;
+  }
+}
+
+.modal-body {
+  padding: 24px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.modal-footer {
+  border-top: 1px solid rgba(229, 231, 235, 0.2);
+  padding: 16px 24px;
+  background: var(--bg);
+}
+
+// Dark theme overrides for modal structure
+.dark-theme {
+  .modal-content {
+    background: var(--card) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    background: var(--card);
+  }
+
+  .modal-body {
+    background: var(--card);
+  }
+
+  .modal-footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+    background: var(--card);
+  }
+
+  .btn-close {
+    color: var(--text);
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+}
+
+/* ============================================
+   GLOBAL MODAL FORM STYLES
+   ============================================ */
+
+// Form groups
+.modal {
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text);
+    }
+  }
+
+  // Form controls (inputs, textareas, selects)
+  .form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(229, 231, 235, 0.3);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--text);
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus-visible {
+      outline: none;
+      border-color: #16a34a;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+
+    &.is-invalid {
+      border-color: #dc2626;
+    }
+
+    &::placeholder {
+      color: color-mix(in srgb, var(--text) 40%, transparent 60%);
+    }
+  }
+
+  // Invalid feedback
+  .invalid-feedback {
+    display: block;
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  // Info/Success/Error boxes
+  .info-box,
+  .success-box,
+  .error-box,
+  .warning-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+
+    svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    h5 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
+  .info-box {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+
+    svg {
+      color: #3b82f6;
+    }
+
+    p {
+      color: #1e40af;
+    }
+  }
+
+  .success-box {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+
+    svg {
+      color: #22c55e;
+    }
+
+    p {
+      color: #15803d;
+    }
+  }
+
+  .error-box {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+
+    svg {
+      color: #ef4444;
+    }
+
+    p {
+      color: #dc2626;
+    }
+  }
+
+  .warning-box {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+
+    svg {
+      color: #ef4444;
+    }
+
+    h5 {
+      color: #dc2626;
+    }
+
+    p {
+      color: #b91c1c;
+    }
+  }
+}
+
+// Dark theme overrides for modal forms
+.dark-theme .modal {
+  .form-control {
+    border-color: rgba(229, 231, 235, 0.1);
+    background: #2a2a2a;
+    color: var(--text);
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:focus-visible {
+      background: #2a2a2a;
+      border-color: #22c55e;
+    }
+  }
+
+  .info-box {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+
+    p {
+      color: #93c5fd;
+    }
+  }
+
+  .success-box {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.3);
+
+    p {
+      color: #86efac;
+    }
+  }
+
+  .error-box {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+
+    p {
+      color: #fca5a5;
+    }
+  }
+
+  .warning-box {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+
+    h5 {
+      color: #fca5a5;
+    }
+
+    p {
+      color: #fecaca;
+    }
+  }
 }
 
 /* ============================================
@@ -155,14 +425,26 @@ h1, h2, h3, h4, h5, h6 {
   // Hover only for devices with hover capability (desktop)
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
-      background: color-mix(in srgb, var(--card) 50%, transparent 50%);
-      border-color: rgba(209, 213, 219, 0.5);
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.2);
+      color: var(--text);
     }
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+}
+
+// Dark theme specific overrides for btn-secondary
+.dark-theme {
+  .btn-secondary {
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:disabled) {
+        color: var(--text);
+      }
+    }
   }
 }
 
@@ -363,12 +645,12 @@ select,
 .filter-chip {
   display: inline-flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border: 1px solid rgba(229, 231, 235, 0.3);
   border-radius: 20px;
   background: var(--card);
   color: color-mix(in srgb, var(--text) 70%, #888 30%);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;

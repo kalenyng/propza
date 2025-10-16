@@ -54,6 +54,7 @@ export class PropertyListComponent implements OnInit, OnDestroy {
   loading = true;
   
   selectedFilter: PropertyStatus | 'all' | 'unpaid_period' = 'all';
+  searchQuery: string = '';
   sortBy: 'dueDate' | 'amount' | 'status' = 'dueDate';
   paymentsMap: Map<string, number> = new Map(); // Maps (propertyId-period) to sum of payments
   
@@ -219,6 +220,17 @@ export class PropertyListComponent implements OnInit, OnDestroy {
   applyFiltersAndSort(): void {
     // Filter
     let filtered = [...this.allProperties];
+    
+    // Apply search filter
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(p => 
+        p.address.toLowerCase().includes(query) ||
+        (p.tenant && p.tenant.toLowerCase().includes(query))
+      );
+    }
+    
+    // Apply status filter
     if (this.selectedFilter === 'unpaid_period') {
       // Group all non-paid, non-vacant statuses
       filtered = filtered.filter(p => 
@@ -257,6 +269,10 @@ export class PropertyListComponent implements OnInit, OnDestroy {
 
   setFilter(filter: PropertyStatus | 'all' | 'unpaid_period'): void {
     this.selectedFilter = filter;
+    this.applyFiltersAndSort();
+  }
+
+  onSearchChange(): void {
     this.applyFiltersAndSort();
   }
 

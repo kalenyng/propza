@@ -11,6 +11,14 @@ import { ThemeService, Theme } from '../../../../core/services/theme.service';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EditNameModalComponent } from '../../components/edit-name-modal/edit-name-modal.component';
+import { QuickStartModalComponent } from '../../components/quick-start-modal/quick-start-modal.component';
+import { BugReportModalComponent } from '../../components/bug-report-modal/bug-report-modal.component';
+import { FeatureRequestModalComponent } from '../../components/feature-request-modal/feature-request-modal.component';
+import { PasswordResetModalComponent } from '../../components/password-reset-modal/password-reset-modal.component';
+import { PrivacyPolicyModalComponent } from '../../components/privacy-policy-modal/privacy-policy-modal.component';
+import { TermsModalComponent } from '../../components/terms-modal/terms-modal.component';
+import { FeedbackModalComponent } from '../../components/feedback-modal/feedback-modal.component';
+import { DeleteAccountModalComponent } from '../../components/delete-account-modal/delete-account-modal.component';
 
 @Component({
   selector: 'app-settings',
@@ -241,16 +249,70 @@ export class SettingsComponent {
   }
 
   contactSupport(): void {
-    window.location.href = 'mailto:support@propza.co.za';
+    const user = this.auth.user();
+    const userInfo = user ? `User ID: ${user.id}\nEmail: ${this.userEmail}` : 'User: Not logged in';
+    const subject = 'Support Request - Propza App';
+    const body = `Support Request:\n\nPlease describe your issue or question below:\n\n\n\n---\n${userInfo}\nDate: ${new Date().toLocaleString()}\nApp Version: 1.0.0`;
+    window.location.href = `mailto:kalenyoung03@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
   sendFeedback(): void {
-    const text = window.prompt('Share your feedback (we will add a proper modal soon):');
-    if (text && text.trim()) {
-      // placeholder behavior
-      console.log('User feedback:', text.trim());
-      this.message = 'Thanks for your feedback!';
-    }
+    const modalRef = this.modal.open(FeedbackModalComponent, {
+      size: 'lg',
+      centered: true,
+      windowClass: 'modal-zoom'
+    });
+    modalRef.componentInstance.userEmail = this.userEmail;
+  }
+
+  openQuickStartGuide(): void {
+    const modalRef = this.modal.open(QuickStartModalComponent, {
+      size: 'lg',
+      centered: true,
+      windowClass: 'modal-zoom'
+    });
+  }
+
+  openBugReport(): void {
+    const modalRef = this.modal.open(BugReportModalComponent, {
+      size: 'lg',
+      centered: true,
+      windowClass: 'modal-zoom'
+    });
+    modalRef.componentInstance.userEmail = this.userEmail;
+  }
+
+  openFeatureRequest(): void {
+    const modalRef = this.modal.open(FeatureRequestModalComponent, {
+      size: 'lg',
+      centered: true,
+      windowClass: 'modal-zoom'
+    });
+    modalRef.componentInstance.userEmail = this.userEmail;
+  }
+
+  openPasswordReset(): void {
+    const modalRef = this.modal.open(PasswordResetModalComponent, {
+      size: 'md',
+      centered: true,
+      windowClass: 'modal-zoom'
+    });
+  }
+
+  openPrivacyPolicy(): void {
+    const modalRef = this.modal.open(PrivacyPolicyModalComponent, {
+      size: 'lg',
+      centered: true,
+      windowClass: 'modal-zoom'
+    });
+  }
+
+  openTermsAndConditions(): void {
+    const modalRef = this.modal.open(TermsModalComponent, {
+      size: 'lg',
+      centered: true,
+      windowClass: 'modal-zoom'
+    });
   }
 
   async saveProfile(): Promise<void> {
@@ -278,21 +340,27 @@ export class SettingsComponent {
   }
 
   async confirmDelete(): Promise<void> {
-    const ok = window.confirm('This will permanently delete your account and data. Are you sure?');
-    if (!ok) return;
+    const modalRef = this.modal.open(DeleteAccountModalComponent, {
+      size: 'md',
+      centered: true,
+      windowClass: 'modal-zoom'
+    });
+    
+    // Pass the actual delete logic to the modal
+    modalRef.componentInstance.onConfirm = async () => {
+      this.deletingAccount = true;
 
-    this.deletingAccount = true;
-
-    try {
-      const err = await this.auth.deleteAccount();
-      if (err) {
-        this.error = err;
-        return;
+      try {
+        const err = await this.auth.deleteAccount();
+        if (err) {
+          this.error = err;
+          return;
+        }
+        await this.auth.signOut();
+        this.router.navigateByUrl('/register');
+      } finally {
+        this.deletingAccount = false;
       }
-      await this.auth.signOut();
-      this.router.navigateByUrl('/register');
-    } finally {
-      this.deletingAccount = false;
-    }
+    };
   }
 }

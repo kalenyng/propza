@@ -357,10 +357,130 @@
   }
 }
 
+// Support Page Styles
+.support-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.support-section {
+  background: var(--card);
+  border: 1px solid rgba(229, 231, 235, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.support-section-header {
+  margin-bottom: 16px;
+
+  h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 8px 0;
+  }
+
+  .support-description {
+    font-size: 14px;
+    color: color-mix(in srgb, var(--text) 70%, #888 30%);
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+.support-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  @media (min-width: 480px) {
+    flex-direction: row;
+    gap: 16px;
+  }
+}
+
+// Enhanced visibility for support buttons
+.btn-support {
+  border: 1.5px solid rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+      border-color: rgba(0, 0, 0, 0.25) !important;
+    }
+  }
+}
+
+// Button styles for support page
+.btn-link {
+  background: none;
+  border: none;
+  color: #16a34a;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+  text-decoration: none;
+
+  &:hover {
+    color: #15803d;
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #16a34a;
+    outline-offset: 2px;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// Button with icons
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
 // Responsive
 @media (max-width: 480px) {
   .language-options {
     grid-template-columns: 1fr;
+  }
+
+  .support-sections {
+    gap: 16px;
+  }
+
+  .support-section {
+    padding: 16px;
+  }
+
+  .support-actions {
+    flex-direction: column;
+    gap: 12px;
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+      width: 100%;
+    }
   }
 }
 
