@@ -240,7 +240,7 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   }
 
   async savePayment(): Promise<void> {
-    if (!this.property || !this.tenancy || this.paymentAmount <= 0) {
+    if (!this.property || this.paymentAmount <= 0) {
       alert('Please enter a valid payment amount');
       return;
     }
@@ -249,7 +249,11 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
 
     try {
       // Calculate the current rent period (the one we're paying for)
-      const period = this.rentHelper.getCurrentRentPeriod(this.tenancy.rent_due_day);
+      // Use tenantData rent_due_date if available, otherwise use property rent_amount as fallback
+      const rentDueDay = this.tenantData?.rent_due_date ? 
+        new Date(this.tenantData.rent_due_date).getDate() : 
+        new Date().getDate();
+      const period = this.rentHelper.getCurrentRentPeriod(rentDueDay);
 
       if (this.editingPaymentId) {
         // Update existing payment using service
@@ -279,6 +283,8 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       
       if (error.code === '42P01') {
         alert('Payments table not found. Please run the database migration first.');
+      } else if (error.message?.includes('NavigatorLockAcquireTimeoutError')) {
+        alert('Authentication timeout. Please try again.');
       } else {
         alert(`Failed to save payment: ${error.message || 'Unknown error'}`);
       }

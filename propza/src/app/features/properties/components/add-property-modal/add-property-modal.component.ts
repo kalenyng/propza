@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { RentHelperService } from '../../../../core/services/rent-helper.service';
 
 @Component({
   selector: 'app-add-property-modal',
@@ -17,6 +18,7 @@ export class AddPropertyModalComponent {
   private supa = inject(SupabaseService);
   activeModal = inject(NgbActiveModal);
   translate = inject(TranslationService);
+  private rentHelper = inject(RentHelperService);
 
   loading = false;
   leaseFile?: File;
@@ -27,15 +29,20 @@ export class AddPropertyModalComponent {
     occupied: [false, [Validators.required]],
     tenant: [''],
     tenant_email: [''],
+    tenant_phone: [''],
+    deposit: [0],
+    currentlyPaid: [false],
     tenancy_start: [null as string | null],
     next_payment_due: [null as string | null],
     tenancy_end: [null as string | null],
+    tenant_notes: [''],
   });
 
   constructor() {
     this.form.get('occupied')?.valueChanges.subscribe((occupied) => {
       const tenant = this.form.get('tenant');
       const tenantEmail = this.form.get('tenant_email');
+      const tenantPhone = this.form.get('tenant_phone');
       const start = this.form.get('tenancy_start');
       const nextDue = this.form.get('next_payment_due');
       const end = this.form.get('tenancy_end');
@@ -43,12 +50,14 @@ export class AddPropertyModalComponent {
       if (occupied) {
         tenant?.addValidators([Validators.required]);
         tenantEmail?.addValidators([Validators.email]);
+        tenantPhone?.addValidators([Validators.required]);
         start?.addValidators([Validators.required]);
         nextDue?.addValidators([Validators.required]);
         end?.clearValidators(); // make end optional
       } else {
         tenant?.clearValidators();
         tenantEmail?.clearValidators();
+        tenantPhone?.clearValidators();
         start?.clearValidators();
         nextDue?.clearValidators();
         end?.clearValidators();
@@ -56,6 +65,7 @@ export class AddPropertyModalComponent {
 
       tenant?.updateValueAndValidity();
       tenantEmail?.updateValueAndValidity();
+      tenantPhone?.updateValueAndValidity();
       start?.updateValueAndValidity();
       nextDue?.updateValueAndValidity();
       end?.updateValueAndValidity();
@@ -147,14 +157,15 @@ export class AddPropertyModalComponent {
       const { error: tenantErr } = await this.supa.supabase.from('tenants').insert({
         name: v.tenant,
         email: v.tenant_email || null,
-        phone: null, // No phone collected in form
+        phone: v.tenant_phone || null,
         property_id: prop.id,
         rent_amount: Number(v.rent_amount),
         rent_status: 'upcoming', // Default status for new tenants
         rent_due_date: v.next_payment_due,
         lease_start_date: v.tenancy_start,
         lease_end_date: v.tenancy_end || null,
-        notes: null
+        deposit_amount: Number(v.deposit) || 0,
+        notes: v.tenant_notes || null
       });
 
       if (tenantErr) {
@@ -164,6 +175,26 @@ export class AddPropertyModalComponent {
         this.loading = false;
         this.activeModal.close(true);
         return;
+      }
+
+      // 5) Create payment record if "currently paid" is checked
+      if (v.currentlyPaid) {
+        const rentDueDay = new Date(v.next_payment_due!).getDate();
+        const period = this.rentHelper.getCurrentRentPeriod(rentDueDay);
+        
+        const { error: paymentErr } = await this.supa.supabase.from('payments').insert({
+          property_id: prop.id,
+          period: period,
+          amount: Number(v.rent_amount),
+          payment_date: new Date().toISOString().split('T')[0],
+          payment_method: 'cash',
+          notes: 'Initial payment - tenant currently paid'
+        });
+
+        if (paymentErr) {
+          console.error('Payment insert error:', paymentErr);
+          alert(`Property, tenancy, and tenant created but payment record failed: ${paymentErr.message}`);
+        }
       }
     }
 

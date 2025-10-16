@@ -55,14 +55,14 @@
 
       <!-- Tenant name -->
       <div class="mb-3">
-        <label class="form-label" for="tenant">Tenant Name</label>
+        <label class="form-label" for="tenant">{{ translate.t('tenants.fullName') }} *</label>
         <input
           id="tenant"
           type="text"
           class="form-control"
           [class.is-invalid]="form.get('tenant')?.invalid && form.get('tenant')?.touched"
           formControlName="tenant"
-          placeholder="Enter tenant name"
+          placeholder="Enter tenant's full name"
         />
         <div class="invalid-feedback" *ngIf="form.get('tenant')?.errors?.['required']">
           Tenant name is required for occupied properties.
@@ -71,7 +71,7 @@
 
       <!-- Tenant email -->
       <div class="mb-3">
-        <label class="form-label" for="tenantEmail">Tenant Email</label>
+        <label class="form-label" for="tenantEmail">{{ translate.t('tenants.emailAddress') }} *</label>
         <input
           id="tenantEmail"
           type="email"
@@ -85,15 +85,56 @@
         </div>
       </div>
 
+      <!-- Tenant phone -->
+      <div class="mb-3">
+        <label class="form-label" for="tenantPhone">{{ translate.t('tenants.phoneNumber') }} *</label>
+        <input
+          id="tenantPhone"
+          type="tel"
+          class="form-control"
+          [class.is-invalid]="form.get('tenant_phone')?.invalid && form.get('tenant_phone')?.touched"
+          formControlName="tenant_phone"
+          placeholder="+27 71 234 5678"
+        />
+        <div class="invalid-feedback" *ngIf="form.get('tenant_phone')?.errors?.['required']">
+          Phone number is required.
+        </div>
+      </div>
+
+      <!-- Security deposit -->
+      <div class="mb-3">
+        <label class="form-label" for="deposit">{{ translate.t('tenants.securityDeposit') }}</label>
+        <input
+          id="deposit"
+          type="number"
+          class="form-control"
+          formControlName="deposit"
+          placeholder="8500"
+          min="0"
+        />
+        <small class="form-text text-muted">{{ translate.t('tenants.securityDepositDescription') }}</small>
+      </div>
+
+      <!-- Currently paid checkbox -->
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="currentlyPaid" formControlName="currentlyPaid">
+        <label class="form-check-label" for="currentlyPaid">
+          {{ translate.t('tenants.currentlyPaid') }}
+        </label>
+        <small class="form-text text-muted d-block">
+          {{ translate.t('tenants.currentlyPaidDescription') }}
+        </small>
+      </div>
+
       <!-- Lease upload -->
       <div class="mb-3">
-        <label class="form-label">Upload lease (PDF or image)</label>
+        <label class="form-label">{{ translate.t('tenants.leaseUpload') }}</label>
         <input type="file" class="form-control" (change)="onFileSelected($event)" accept=".pdf,image/*">
       </div>
 
-      <!-- Tenancy start -->
+      <!-- Lease start date -->
       <div class="mb-3">
-        <label class="form-label">Tenancy start date</label>
+        <label class="form-label">Lease Start Date *</label>
         <input
           type="date"
           class="form-control"
@@ -107,7 +148,7 @@
 
       <!-- Next payment due -->
       <div class="mb-3">
-        <label class="form-label">Next payment due date</label>
+        <label class="form-label">Next Payment Due Date *</label>
         <input
           type="date"
           class="form-control"
@@ -122,18 +163,26 @@
         </small>
       </div>
 
-      <!-- Tenancy end -->
+      <!-- Lease end date -->
       <div class="mb-3">
-        <label class="form-label">Tenancy end</label>
+        <label class="form-label">Lease End Date (Optional)</label>
         <input
           type="date"
           class="form-control"
-          [class.is-invalid]="form.get('tenancy_end')?.invalid && form.get('tenancy_end')?.touched"
           formControlName="tenancy_end"
         />
-        <div class="invalid-feedback" *ngIf="form.get('tenancy_end')?.errors?.['required']">
-          End date is required.
-        </div>
+        <small class="form-text text-muted">Leave blank for open-ended lease</small>
+      </div>
+
+      <!-- Notes -->
+      <div class="mb-3">
+        <label class="form-label">{{ translate.t('tenants.notes') }}</label>
+        <textarea
+          class="form-control"
+          formControlName="tenant_notes"
+          placeholder="Any additional notes about the tenant..."
+          rows="3"
+        ></textarea>
       </div>
     </ng-container>
 

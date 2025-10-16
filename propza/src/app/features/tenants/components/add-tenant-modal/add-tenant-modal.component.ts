@@ -27,6 +27,7 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
   vacantProperties: any[] = [];
   loading = false;
   saving = false;
+  selectedFile: File | null = null;
 
   constructor(
     public activeModal: NgbActiveModal
@@ -74,7 +75,7 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
     propertyId: ['', Validators.required],
     rentAmount: [0, [Validators.required, Validators.min(1)]],
     deposit: [0, [Validators.min(0)]],
-    firstMonthPaid: [false],
+    currentlyPaid: [false],
     rentDueDate: [new Date().toISOString().split('T')[0], Validators.required],
     leaseStartDate: [new Date().toISOString().split('T')[0], Validators.required],
     leaseEndDate: [''],
@@ -89,8 +90,26 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
     try {
       const formValue = this.form.value;
 
-      // Determine initial rent status based on whether first month is paid
-      const initialRentStatus = formValue.firstMonthPaid ? 'paid' : 'upcoming';
+      // Handle lease file upload if provided
+      let leaseUrl: string | null = null;
+      if (this.selectedFile) {
+        const { data: userData } = await this.supabase.supabase.auth.getUser();
+        const userId = userData.user?.id;
+        if (userId) {
+          const path = `${userId}/${Date.now()}_${this.selectedFile.name}`;
+          const upload = await this.supabase.supabase.storage.from('leases').upload(path, this.selectedFile, {
+            cacheControl: '3600', 
+            upsert: false
+          });
+          if (!upload.error) {
+            const publicUrl = this.supabase.supabase.storage.from('leases').getPublicUrl(path);
+            leaseUrl = publicUrl.data.publicUrl;
+          }
+        }
+      }
+
+      // Determine initial rent status based on whether currently paid
+      const initialRentStatus = formValue.currentlyPaid ? 'paid' : 'upcoming';
 
       // Create tenant record
       const { error: tenantErr } = await this.supabase.supabase.from('tenants').insert({
@@ -119,7 +138,8 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
         .from('properties')
         .update({
           status: 'occupied',
-          tenant: formValue.name
+          tenant: formValue.name,
+          lease_url: leaseUrl
         })
         .eq('id', formValue.propertyId);
 
@@ -130,8 +150,8 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
         return;
       }
 
-      // Create payment record if first month rent has been paid
-      if (formValue.firstMonthPaid) {
+      // Create payment record if currently paid
+      if (formValue.currentlyPaid) {
         const dueDate = new Date(formValue.rentDueDate!);
         const rentDueDay = dueDate.getDate();
         
@@ -146,7 +166,7 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
             amount: formValue.rentAmount!,
             payment_date: new Date().toISOString().split('T')[0],
             payment_method: 'initial_payment',
-            notes: 'First month rent - paid on move-in'
+            notes: 'Initial payment - tenant currently paid'
           });
 
         if (paymentErr) {
@@ -165,6 +185,10 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
     } finally {
       this.saving = false;
     }
+  }
+
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0] || null;
   }
 
   cancel(): void {

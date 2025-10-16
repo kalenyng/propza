@@ -201,6 +201,16 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 4px;
   }
 
+  // Helper text styling
+  .form-text.text-muted,
+  .form-help,
+  .form-helper {
+    color: rgba(107, 114, 128, 0.8);
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+  }
+
   // Info/Success/Error boxes
   .info-box,
   .success-box,
@@ -779,5 +789,12 @@ select,
       color: #ef4444;
       border-color: rgba(239, 68, 68, 0.4);
     }
+  }
+
+  // Helper text styling for dark mode
+  .form-text.text-muted,
+  .form-help,
+  .form-helper {
+    color: rgba(156, 163, 175, 0.8) !important;
   }
 }

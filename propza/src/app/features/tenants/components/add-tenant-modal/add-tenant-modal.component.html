@@ -98,14 +98,24 @@
 
       <div class="form-group full-width">
         <div class="checkbox-wrapper">
-          <input type="checkbox" id="firstMonthPaid" formControlName="firstMonthPaid">
-          <label for="firstMonthPaid" class="checkbox-label">First month's rent has been paid</label>
+          <input type="checkbox" id="currentlyPaid" formControlName="currentlyPaid">
+          <label for="currentlyPaid" class="checkbox-label">{{ translate.t('tenants.currentlyPaid') }}</label>
         </div>
         <div class="form-help">
-          Check this if the tenant has already paid the first month's rent. This will create a payment record.
+          {{ translate.t('tenants.currentlyPaidDescription') }}
         </div>
       </div>
 
+      <div class="form-group">
+        <label for="leaseUpload">{{ translate.t('tenants.leaseUpload') }}</label>
+        <input 
+          id="leaseUpload"
+          type="file" 
+          class="form-control" 
+          (change)="onFileSelected($event)" 
+          accept=".pdf,image/*">
+        <div class="form-help">{{ translate.t('tenants.leaseUploadDescription') }}</div>
+      </div>
       <div class="form-group">
         <label for="rentDueDate">Next Rent Due Date *</label>
         <input

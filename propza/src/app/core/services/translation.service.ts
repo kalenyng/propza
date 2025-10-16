@@ -1308,6 +1308,66 @@ export class TranslationService {
       zu: 'Kulayisha abaqashi...',
       xh: 'Kuyalayisha abaqeshi...'
     },
+    'tenants.currentlyPaid': {
+      en: 'Currently paid',
+      af: 'Tans betaal',
+      zu: 'Okwamanje ukhokhile',
+      xh: 'Ngoku ikhokhile'
+    },
+    'tenants.currentlyPaidDescription': {
+      en: 'Check this if the tenant is up to date with their rent payments. This will create a payment record for the current period.',
+      af: 'Merk dit aan as die huurder op datum is met hul huur betalings. Dit sal \'n betaling rekord vir die huidige tydperk skep.',
+      zu: 'Khetha lokhu uma umqashi esesikhathini esifanele ngokukhokha kwakhe. Lokhu kuzodala irekhodi lokukhokha lesikhathi samanje.',
+      xh: 'Khetha oku ukuba umqashi usekwxesha lokukhokha kwakhe. Oku kuza kwenza irekhodi lokukhokha lexesha langoku.'
+    },
+    'tenants.leaseUpload': {
+      en: 'Upload lease (PDF or image)',
+      af: 'Laai huurkontrak op (PDF of beeld)',
+      zu: 'Layisha inkontileka (PDF noma isithombe)',
+      xh: 'Layisha inkontileka (PDF okanye umfanekiso)'
+    },
+    'tenants.leaseUploadDescription': {
+      en: 'Optional - upload the signed lease agreement',
+      af: 'Opsioneel - laai die getekende huurkontrak op',
+      zu: 'Okukhethwayo - layisha isivumelwano se-inkontileka esisayiniwe',
+      xh: 'Okukhethwayo - layisha isivumelwano se-inkontileka esisayiniwe'
+    },
+    'tenants.securityDeposit': {
+      en: 'Security Deposit (ZAR)',
+      af: 'Sekuriteitsdeposito (ZAR)',
+      zu: 'Idiphozithi Yezokuphepha (ZAR)',
+      xh: 'Idiphozithi Yezokuphepha (ZAR)'
+    },
+    'tenants.securityDepositDescription': {
+      en: 'Optional - record the security deposit amount',
+      af: 'Opsioneel - teken die sekuriteitsdeposito bedrag aan',
+      zu: 'Okukhethwayo - rekhoda inani lediphozithi yezokuphepha',
+      xh: 'Okukhethwayo - rekhoda inani lediphozithi yezokuphepha'
+    },
+    'tenants.fullName': {
+      en: 'Full Name',
+      af: 'Volle Naam',
+      zu: 'Igama Eliphelele',
+      xh: 'Igama Eliphelele'
+    },
+    'tenants.emailAddress': {
+      en: 'Email Address',
+      af: 'E-pos Adres',
+      zu: 'Ikheli Le-imeyili',
+      xh: 'Ikheli Le-imeyili'
+    },
+    'tenants.phoneNumber': {
+      en: 'Phone Number',
+      af: 'Telefoon Nommer',
+      zu: 'Inombolo Yocingo',
+      xh: 'Inombolo Yocingo'
+    },
+    'tenants.notes': {
+      en: 'Notes (Optional)',
+      af: 'Notas (Opsioneel)',
+      zu: 'Amanothi (Okukhethwayo)',
+      xh: 'Amanothi (Okukhethwayo)'
+    },
     
     // Property Details
     'property.addProperty': {
