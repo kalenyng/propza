@@ -4,9 +4,7 @@
   color: var(--text);
 }
 
-/* ============================================
-   HERO SECTION
-   ============================================ */
+/* HERO SECTION */
 
 .hero-section {
   min-height: 100vh;
@@ -18,7 +16,6 @@
   position: relative;
   overflow: hidden;
 
-  // Subtle pattern overlay
   &::before {
     content: '';
     position: absolute;
@@ -84,9 +81,7 @@
   min-width: 180px;
 }
 
-/* ============================================
-   HOW IT WORKS SECTION
-   ============================================ */
+/* HOW IT WORKS */
 
 .how-it-works-section {
   padding: 100px 20px;
@@ -169,9 +164,7 @@
   }
 }
 
-/* ============================================
-   DEMO PREVIEW SECTION
-   ============================================ */
+/* DEMO PREVIEW */
 
 .demo-section {
   padding: 100px 20px;
@@ -326,9 +319,7 @@
   }
 }
 
-/* ============================================
-   FEATURES SECTION
-   ============================================ */
+/* FEATURES */
 
 .features-section {
   padding: 100px 20px;
@@ -394,9 +385,7 @@
   }
 }
 
-/* ============================================
-   CTA SECTION
-   ============================================ */
+/* CTA SECTION */
 
 .cta-section {
   padding: 100px 20px;
@@ -420,9 +409,7 @@
   }
 }
 
-/* ============================================
-   FOOTER
-   ============================================ */
+/* FOOTER */
 
 .landing-footer {
   padding: 60px 20px 40px;
@@ -484,9 +471,7 @@
   }
 }
 
-/* ============================================
-   ANIMATIONS
-   ============================================ */
+/* ANIMATIONS */
 
 @keyframes fadeInUp {
   from {
@@ -499,9 +484,7 @@
   }
 }
 
-/* ============================================
-   DARK MODE
-   ============================================ */
+/* DARK MODE */
 
 :host-context(.dark-theme) {
   .feature-card {
@@ -519,9 +502,7 @@
   }
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+/* RESPONSIVE */
 
 @media (max-width: 768px) {
   .hero-section {
