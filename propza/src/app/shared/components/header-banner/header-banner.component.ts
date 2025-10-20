@@ -23,17 +23,22 @@ export class HeaderBannerComponent implements OnInit {
       const lang = this.translate.currentLanguage(); // Read the signal
       this.greeting = this.getTimeBasedGreeting();
     });
+
+    // Use effect to reactively update user name when user data changes
+    effect(() => {
+      const user = this.auth.user(); // Read the signal
+      this.updateUserName(user);
+    });
   }
   
   translate = inject(TranslationService);
 
   ngOnInit(): void {
-    this.loadUserName();
+    // Initial greeting
+    this.greeting = this.getTimeBasedGreeting();
   }
 
-  private async loadUserName(): Promise<void> {
-    const user = this.auth.user();
-    
+  private updateUserName(user: any): void {
     if (user) {
       // Try to get name from user metadata (for both email signup and Google sign-in)
       const firstName = user.user_metadata?.['first_name'] || 
@@ -42,9 +47,8 @@ export class HeaderBannerComponent implements OnInit {
                        '';
       
       this.userName = firstName;
+      this.greeting = this.getTimeBasedGreeting();
     }
-    
-    this.greeting = this.getTimeBasedGreeting();
   }
 
   private getTimeBasedGreeting(): string {
