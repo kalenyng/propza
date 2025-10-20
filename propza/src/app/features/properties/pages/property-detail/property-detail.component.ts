@@ -491,7 +491,7 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       await this.propertyService.deleteProperty(this.propertyId);
 
       // Navigate away (refresh happens automatically in service)
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
     } catch (error) {
       console.error('Error deleting property:', error);
       alert('Failed to delete property');
@@ -501,7 +501,7 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/home']);
   }
 
   formatMoney(amount: number, currency: string): string {

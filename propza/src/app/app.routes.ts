@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { LandingComponent } from './features/landing/landing.component';
 import { PropertyListComponent } from './features/properties/pages/property-list/home.component';
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { RegisterComponent } from './features/auth/pages/register/register.component';
@@ -12,11 +13,14 @@ import { guestGuard } from './core/guards/guest.guard';
 import { betaAccessGuard } from './core/guards/beta-access.guard';
 
 export const routes: Routes = [
+  // Public landing page
+  { path: '', component: LandingComponent },
+
   // Beta access route (not protected by beta access guard)
   { path: 'beta-access', component: BetaAccessComponent },
 
-  // Default route - protected by betaAccessGuard and authGuard
-  { path: '', component: PropertyListComponent, canActivate: [betaAccessGuard, authGuard] },
+  // App home - protected by betaAccessGuard and authGuard
+  { path: 'home', component: PropertyListComponent, canActivate: [betaAccessGuard, authGuard] },
 
   // Protected routes (require beta access and authentication)
   { path: 'property/:id', component: PropertyDetailComponent, canActivate: [betaAccessGuard, authGuard] },

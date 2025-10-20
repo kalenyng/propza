@@ -1,0 +1,277 @@
+<div class="landing-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="logo-wrapper">
+        <img src="/propzaMain.png" alt="Propza" class="hero-logo" />
+      </div>
+      
+      <h1 class="hero-title">Smarter renting starts here</h1>
+      <p class="hero-subtitle">
+        Effortlessly manage your properties, track rent payments, and stay organized 
+        with the modern property management solution designed for landlords.
+      </p>
+
+      <div class="cta-buttons">
+        <button class="btn-primary btn-large" (click)="joinBeta()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Join Beta
+        </button>
+        <button class="btn-secondary btn-large" (click)="goToBetaAccess()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          I have a code
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works-section">
+    <div class="how-it-works-content">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">Get started in minutes with these simple steps</p>
+      
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <h3>Add your properties</h3>
+          <p>Create property profiles with photos, details, and manage multiple units or rooms</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <h3>Track rent payments</h3>
+          <p>Monitor who's paid, who's overdue, and record partial payments with ease</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <h3>Invite tenants</h3>
+          <p>Add tenant information and keep all contact details organized in one place</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <div class="step-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+              <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+              <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+            </svg>
+          </div>
+          <h3>View insights</h3>
+          <p>Track income, occupancy rates, and get a complete overview of your portfolio</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Preview Section -->
+  <section class="demo-section">
+    <div class="demo-content">
+      <h2 class="section-title">Take a look inside Propza</h2>
+      <p class="section-subtitle">A clean, intuitive interface designed for modern landlords</p>
+      
+      <div class="demo-preview">
+        <div class="browser-mockup">
+          <div class="browser-header">
+            <div class="browser-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="browser-address">propza.app</div>
+          </div>
+          <div class="browser-content">
+            <div class="mockup-placeholder">
+              <div class="placeholder-header">
+                <div class="placeholder-logo"></div>
+                <div class="placeholder-nav">
+                  <div class="placeholder-nav-item"></div>
+                  <div class="placeholder-nav-item"></div>
+                  <div class="placeholder-nav-item"></div>
+                </div>
+              </div>
+              <div class="placeholder-cards">
+                <div class="placeholder-card">
+                  <div class="placeholder-card-image"></div>
+                  <div class="placeholder-card-content">
+                    <div class="placeholder-line"></div>
+                    <div class="placeholder-line short"></div>
+                  </div>
+                </div>
+                <div class="placeholder-card">
+                  <div class="placeholder-card-image"></div>
+                  <div class="placeholder-card-content">
+                    <div class="placeholder-line"></div>
+                    <div class="placeholder-line short"></div>
+                  </div>
+                </div>
+                <div class="placeholder-card">
+                  <div class="placeholder-card-image"></div>
+                  <div class="placeholder-card-content">
+                    <div class="placeholder-line"></div>
+                    <div class="placeholder-line short"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-features">
+        <div class="demo-feature">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Clean, modern interface</span>
+        </div>
+        <div class="demo-feature">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Mobile-first design</span>
+        </div>
+        <div class="demo-feature">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Dark mode support</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2 class="section-title">Everything you need to manage your properties</h2>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <h3>Property Management</h3>
+        <p>Keep track of all your properties in one organized dashboard. Add details, photos, and important information.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <h3>Tenant Tracking</h3>
+        <p>Manage tenant information, lease agreements, and contact details all in one place.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <h3>Rent Collection</h3>
+        <p>Track rent payments, record partial payments, and monitor overdue accounts effortlessly.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <h3>Payment History</h3>
+        <p>View complete payment histories with dates, amounts, and notes for every transaction.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <h3>Real-time Updates</h3>
+        <p>Get instant notifications and updates on your properties, tenants, and payments.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v6m0 6v6"/>
+            <path d="M23 12h-6m-6 0H1"/>
+          </svg>
+        </div>
+        <h3>Cross-Platform</h3>
+        <p>Access your data anywhere, anytime. Works seamlessly on desktop, tablet, and mobile devices.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <h2>Ready to get started?</h2>
+    <p>Join our beta program and be among the first to experience modern property management.</p>
+    <div class="cta-buttons">
+      <button class="btn-primary btn-large" (click)="joinBeta()">
+        Request Beta Access
+      </button>
+      <button class="btn-secondary btn-large" (click)="goToBetaAccess()">
+        I have a code
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="/propza-logo.png" alt="Propza" class="footer-logo" />
+        <p class="footer-tagline">Smarter renting starts here</p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:kalenyoung03@gmail.com">Contact</a>
+        <span class="divider">•</span>
+        <span class="copyright">© 2025 Propza</span>
+      </div>
+    </div>
+  </footer>
+</div>
+

@@ -120,8 +120,8 @@ export class BetaAccessComponent {
     const isValid = this.betaAccessService.validateCode(code);
     
     if (isValid) {
-      // Navigate to home page
-      this.router.navigateByUrl('/');
+      // Navigate to login page to start authentication
+      this.router.navigateByUrl('/login');
     } else {
       this.errorMessage.set('Invalid access code. Please try again.');
       // Clear all digits

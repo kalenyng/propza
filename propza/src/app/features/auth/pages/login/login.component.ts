@@ -34,7 +34,7 @@ export class LoginComponent {
     if (err) {
       this.errorMsg = err.message;
     } else {
-      this.router.navigateByUrl('/');
+      this.router.navigateByUrl('/home');
     }
   }
 

@@ -18,137 +18,139 @@ export class TranslationService {
   public currentLanguage = signal<Language>('en');
   
   private translations: Translations = {
-    // Greetings - Morning (5 AM - 11:59 AM)
-    'greeting.morning.day0': { // Sunday
-      en: 'Good morning',
-      af: 'Goeie môre',
-      zu: 'Sawubona ekuseni',
-      xh: 'Molo kusasa'
-    },
-    'greeting.morning.day1': { // Monday
-      en: 'Morning',
-      af: 'Môre',
-      zu: 'Sawubona',
-      xh: 'Molo'
-    },
-    'greeting.morning.day2': { // Tuesday
-      en: 'Rise and shine',
-      af: 'Staan op en skyn',
-      zu: 'Vuka uphume',
-      xh: 'Vuka ukhazimle'
-    },
-    'greeting.morning.day3': { // Wednesday
-      en: 'Good morning',
-      af: 'Goeie oggend',
-      zu: 'Sawubona ekuseni',
-      xh: 'Molweni kusasa'
-    },
-    'greeting.morning.day4': { // Thursday
-      en: 'Morning sunshine',
-      af: 'Môre sonnestraal',
-      zu: 'Sawubona langa',
-      xh: 'Molo lilanga'
-    },
-    'greeting.morning.day5': { // Friday
-      en: 'Happy Friday morning',
-      af: 'Gelukkige Vrydag môre',
-      zu: 'Sawubona uLwesihlanu',
-      xh: 'Molo ngoLwesihlanu'
-    },
-    'greeting.morning.day6': { // Saturday
-      en: 'Weekend morning',
-      af: 'Naweek môre',
-      zu: 'Sawubona impelasonto',
-      xh: 'Molo mpela-veki'
-    },
+      // 🌅 MORNING (Before 12 PM)
+          'greeting.morning.day0': { // Sunday
+            en: 'Good morning',
+            af: 'Goeie môre',
+            zu: 'Sawubona ekuseni',
+            xh: 'Molo kusasa'
+          },
+          'greeting.morning.day1': { // Monday
+            en: 'Morning',
+            af: 'Môre',
+            zu: 'Sawubona',
+            xh: 'Molo'
+          },
+          'greeting.morning.day2': { // Tuesday
+            en: 'Rise and shine',
+            af: 'Staan op en skyn',
+            zu: 'Vuka uvuke kahle',
+            xh: 'Vuka ukhazimle'
+          },
+          'greeting.morning.day3': { // Wednesday
+            en: 'Hope your day starts well',
+            af: 'Hoop jou dag begin goed',
+            zu: 'Ngithemba usuku lwakho luqale kahle',
+            xh: 'Ndinqwenela ukuba usuku lwakho luqale kakuhle'
+          },
+          'greeting.morning.day4': { // Thursday
+            en: 'Morning sunshine',
+            af: 'Môre sonnestraal',
+            zu: 'Sawubona langa',
+            xh: 'Molo lilanga'
+          },
+          'greeting.morning.day5': { // Friday
+            en: 'Happy Friday',
+            af: 'Gelukkige Vrydag',
+            zu: 'Ube noLwesihlanu omuhle',
+            xh: 'Ube noLwesihlanu oluhle'
+          },
+          'greeting.morning.day6': { // Saturday
+            en: 'Enjoy your weekend',
+            af: 'Geniet jou naweek',
+            zu: 'Jabulela impelasonto yakho',
+            xh: 'Yonwabela impelaveki yakho'
+          },
 
-    // Greetings - Afternoon (12 PM - 4:59 PM)
-    'greeting.afternoon.day0': { // Sunday
-      en: 'Good afternoon',
-      af: 'Goeie middag',
-      zu: 'Sawubona ntambama',
-      xh: 'Molo emini'
-    },
-    'greeting.afternoon.day1': { // Monday
-      en: 'Afternoon',
-      af: 'Middag',
-      zu: 'Ntambama',
-      xh: 'Emini'
-    },
-    'greeting.afternoon.day2': { // Tuesday
-      en: 'Hello there',
-      af: 'Hallo daar',
-      zu: 'Yebo lapho',
-      xh: 'Molo apho'
-    },
-    'greeting.afternoon.day3': { // Wednesday
-      en: 'Good afternoon',
-      af: 'Goeiemiddag',
-      zu: 'Sawubona mhlathi',
-      xh: 'Molo emini'
-    },
-    'greeting.afternoon.day4': { // Thursday
-      en: 'Howzit',
-      af: 'Hoe gaan dit',
-      zu: 'Kunjani',
-      xh: 'Kunjani'
-    },
-    'greeting.afternoon.day5': { // Friday
-      en: 'Happy Friday',
-      af: 'Gelukkige Vrydag',
-      zu: 'Luvuyo ngoLwesihlanu',
-      xh: 'ULwesihlanu omnandi'
-    },
-    'greeting.afternoon.day6': { // Saturday
-      en: 'Happy weekend',
-      af: 'Lekker naweek',
-      zu: 'Impelasonto enhle',
-      xh: 'Mpela-veki emnandi'
-    },
+          // 🌞 AFTERNOON (12 PM – 4:59 PM)
+          'greeting.afternoon.day0': { // Sunday
+            en: 'Hope you’re having a relaxing day',
+            af: 'Hoop jy rus lekker vandag',
+            zu: 'Ngithemba uphumula kahle namhlanje',
+            xh: 'Ndinethemba ukuba uphumla kakuhle namhlanje'
+          },
+          'greeting.afternoon.day1': { // Monday
+            en: 'Good afternoon',
+            af: 'Goeie middag',
+            zu: 'Sawubona ntambama',
+            xh: 'Molo emini'
+          },
+          'greeting.afternoon.day2': { // Tuesday
+            en: 'Hello there',
+            af: 'Hallo daar',
+            zu: 'Yebo lapho',
+            xh: 'Molo apho'
+          },
+          'greeting.afternoon.day3': { // Wednesday
+            en: 'Hope your afternoon’s going well',
+            af: 'Hoop jou middag gaan goed',
+            zu: 'Ngithemba ntambama yakho imnandi',
+            xh: 'Ndinqwenela ukuba emini yakho imnandi'
+          },
+          'greeting.afternoon.day4': { // Thursday
+            en: 'Howzit',
+            af: 'Hoe gaan dit',
+            zu: 'Kunjani',
+            xh: 'Kunjani'
+          },
+          'greeting.afternoon.day5': { // Friday
+            en: 'Happy Friday',
+            af: 'Gelukkige Vrydag',
+            zu: 'Ube noLwesihlanu omuhle',
+            xh: 'Ube noLwesihlanu oluhle'
+          },
+          'greeting.afternoon.day6': { // Saturday
+            en: 'Enjoy your weekend',
+            af: 'Geniet jou naweek',
+            zu: 'Jabulela impelasonto yakho',
+            xh: 'Yonwabela impelaveki yakho'
+          },
 
-    // Greetings - Evening (5 PM onwards)
-    'greeting.evening.day0': { // Sunday
-      en: 'Good evening',
-      af: 'Goeie naand',
-      zu: 'Sawubona ntambama',
-      xh: 'Molo ngokuhlwa'
-    },
-    'greeting.evening.day1': { // Monday
-      en: 'Evening',
-      af: 'Naand',
-      zu: 'Ntambama',
-      xh: 'Ngokuhlwa'
-    },
-    'greeting.evening.day2': { // Tuesday
-      en: 'Welcome back',
-      af: 'Welkom terug',
-      zu: 'Siyakwamukela',
-      xh: 'Wamkelekile'
-    },
-    'greeting.evening.day3': { // Wednesday
-      en: 'Good evening',
-      af: 'Goeie aand',
-      zu: 'Sawubona kusihlwa',
-      xh: 'Molo ngokuhlwa'
-    },
-    'greeting.evening.day4': { // Thursday
-      en: 'Evening time',
-      af: 'Aand tyd',
-      zu: 'Sekusihlwa',
-      xh: 'Lixesha lokuhlwa'
-    },
-    'greeting.evening.day5': { // Friday
-      en: 'Friday evening',
-      af: 'Vrydag aand',
-      zu: 'LwesiHlanu ntambama',
-      xh: 'ULwesihlanu ngokuhlwa'
-    },
-    'greeting.evening.day6': { // Saturday
-      en: 'Saturday evening',
-      af: 'Saterdag aand',
-      zu: 'UMgqibelo ntambama',
-      xh: 'UMgqibelo ngokuhlwa'
-    },
+          // 🌙 EVENING (5 PM onwards)
+          'greeting.evening.day0': { // Sunday
+            en: 'Good evening',
+            af: 'Goeie naand',
+            zu: 'Sawubona kusihlwa',
+            xh: 'Molo ngokuhlwa'
+          },
+          'greeting.evening.day1': { // Monday
+            en: 'Hope you had a good day',
+            af: 'Hoop jy het ’n goeie dag gehad',
+            zu: 'Ngithemba usuku lwakho beluhle',
+            xh: 'Ndinethemba ukuba usuku lwakho beluhle'
+          },
+          'greeting.evening.day2': { // Tuesday
+            en: 'Good evening',
+            af: 'Goeie naand',
+            zu: 'Sawubona kusihlwa',
+            xh: 'Molo ngokuhlwa'
+          },
+          'greeting.evening.day3': { // Wednesday
+            en: 'Evening',
+            af: 'Naand',
+            zu: 'Sekusihlwa',
+            xh: 'Lixesha lokuhlwa'
+          },
+          'greeting.evening.day4': { // Thursday
+            en: 'Hope your evening’s easy',
+            af: 'Hoop jy ontspan vanaand',
+            zu: 'Ngithemba ubusuku bakho buhle',
+            xh: 'Ndinqwenela ukuba ubusuku bakho bumnandi'
+          },
+          'greeting.evening.day5': { // Friday
+            en: 'Friday evening vibes',
+            af: 'Vrydag-aand vibes',
+            zu: 'ULwesihlanu kusihlwa',
+            xh: 'ULwesihlanu ngokuhlwa'
+          },
+          'greeting.evening.day6': { // Saturday
+            en: 'Enjoy your weekend evening',
+            af: 'Geniet jou naweek-aand',
+            zu: 'Jabulela ubusuku bakho beimpelasonto',
+            xh: 'Yonwabela ubusuku bakho beempelaveki'
+          },
+
+
 
     // Navigation
     'nav.home': {
