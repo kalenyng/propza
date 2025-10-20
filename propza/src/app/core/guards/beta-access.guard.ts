@@ -26,9 +26,10 @@ export const betaAccessGuard: CanActivateFn = async (route: ActivatedRouteSnapsh
     console.log('[BETA GUARD] Granting beta access from URL param');
     // Grant beta access and store it
     betaAccess.grantAccess();
-    // Clean up URL by removing the parameter
-    const urlWithoutBeta = router.url.split('?')[0].split('#')[0];
-    router.navigateByUrl(urlWithoutBeta, { replaceUrl: true });
+    // Get the actual path from the route, not router.url which may be incorrect
+    const actualPath = route.url.map(segment => segment.path).join('/') || 'home';
+    console.log('[BETA GUARD] Cleaning URL, navigating to:', actualPath);
+    router.navigateByUrl('/' + actualPath, { replaceUrl: true });
     return true;
   }
   
