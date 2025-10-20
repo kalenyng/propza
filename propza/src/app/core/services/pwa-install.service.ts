@@ -20,13 +20,18 @@ export class PwaInstallService {
   }
 
   private initializePromptListener(): void {
+    console.log('[PWA Install] Service initialized');
+    
     // Check if already dismissed in this session
     if (this.isDismissed()) {
+      console.log('[PWA Install] Already dismissed in this session');
       return;
     }
 
     // Listen for the beforeinstallprompt event
     window.addEventListener('beforeinstallprompt', (e: Event) => {
+      console.log('[PWA Install] beforeinstallprompt event fired');
+      
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
       
@@ -35,10 +40,12 @@ export class PwaInstallService {
       
       // Update the signal to show the install button
       this.canInstall.set(true);
+      console.log('[PWA Install] Install button should now be visible');
     });
 
     // Listen for successful installation
     window.addEventListener('appinstalled', () => {
+      console.log('[PWA Install] App successfully installed');
       this.deferredPrompt = null;
       this.canInstall.set(false);
       this.markDismissed();

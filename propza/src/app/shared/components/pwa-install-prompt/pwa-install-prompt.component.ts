@@ -27,10 +27,16 @@ export class PwaInstallPromptComponent implements OnInit {
   constructor(public pwaInstall: PwaInstallService) {}
 
   ngOnInit(): void {
+    console.log('[PWA Install Component] Component initialized');
+    
     // Show install button after 4 second delay if PWA can be installed
     setTimeout(() => {
+      console.log('[PWA Install Component] Checking if install is available:', this.pwaInstall.canInstall());
       if (this.pwaInstall.canInstall()) {
         this.showInstallButton.set(true);
+        console.log('[PWA Install Component] Showing install button');
+      } else {
+        console.log('[PWA Install Component] Install not available - button will not show');
       }
     }, 4000); // 4 seconds delay
   }
