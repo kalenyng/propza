@@ -28,11 +28,27 @@ export class PwaInstallService {
     const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
     const isStandalone = (window.navigator as any).standalone === true || 
                         window.matchMedia('(display-mode: standalone)').matches;
+    const isDismissed = this.isDismissed();
+    
+    console.log('[PWA Install] Detection details:', {
+      userAgent: userAgent,
+      isIOSDevice: isIOSDevice,
+      isStandalone: isStandalone,
+      isDismissed: isDismissed,
+      navigatorStandalone: (window.navigator as any).standalone,
+      displayMode: window.matchMedia('(display-mode: standalone)').matches
+    });
     
     // Show iOS prompt if on iOS device and NOT already installed
-    if (isIOSDevice && !isStandalone && !this.isDismissed()) {
+    if (isIOSDevice && !isStandalone && !isDismissed) {
       this.isIOS.set(true);
-      console.log('[PWA Install] iOS device detected');
+      console.log('[PWA Install] ✅ iOS prompt ENABLED');
+    } else {
+      console.log('[PWA Install] ❌ iOS prompt NOT enabled because:', {
+        notIOS: !isIOSDevice,
+        alreadyInstalled: isStandalone,
+        wasDismissed: isDismissed
+      });
     }
   }
 

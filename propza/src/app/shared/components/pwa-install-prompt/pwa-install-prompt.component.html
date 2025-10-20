@@ -16,6 +16,11 @@
   </button>
 </div>
 
+<!-- Debug: Component is rendering -->
+<!-- <div style="position: fixed; top: 100px; left: 20px; background: red; color: white; padding: 10px; z-index: 99999;">
+  PWA Component Active - iOS: {{pwaInstall.isIOS()}} - Modal: {{showIOSModal()}}
+</div> -->
+
 <!-- iOS Installation Modal -->
 <div class="ios-modal-overlay" *ngIf="showIOSModal()" (click)="onDismissIOSModal()">
   <div class="ios-modal" (click)="$event.stopPropagation()">

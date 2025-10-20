@@ -29,19 +29,31 @@ export class PwaInstallPromptComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('[PWA Install Component] Component initialized');
+    console.log('[PWA Install Component] Initial state:', {
+      isIOS: this.pwaInstall.isIOS(),
+      canInstall: this.pwaInstall.canInstall()
+    });
     
     // Show install prompt after 4 second delay
     setTimeout(() => {
+      console.log('[PWA Install Component] After 4s delay - checking state:', {
+        isIOS: this.pwaInstall.isIOS(),
+        canInstall: this.pwaInstall.canInstall(),
+        showIOSModal: this.showIOSModal(),
+        showInstallButton: this.showInstallButton()
+      });
+      
       if (this.pwaInstall.isIOS()) {
         // Show iOS instructions modal
-        console.log('[PWA Install Component] Showing iOS instructions modal');
+        console.log('[PWA Install Component] ✅ Showing iOS instructions modal');
         this.showIOSModal.set(true);
+        console.log('[PWA Install Component] Modal signal set to:', this.showIOSModal());
       } else if (this.pwaInstall.canInstall()) {
         // Show regular install button for Android/Desktop
-        console.log('[PWA Install Component] Showing install button');
+        console.log('[PWA Install Component] ✅ Showing install button');
         this.showInstallButton.set(true);
       } else {
-        console.log('[PWA Install Component] Install not available - nothing will show');
+        console.log('[PWA Install Component] ❌ Install not available - nothing will show');
       }
     }, 4000); // 4 seconds delay
   }
