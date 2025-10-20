@@ -153,11 +153,11 @@ export class SettingsComponent {
 
     const { data } = await this.supabase.supabase
       .from('profiles')
-      .select('first_name, last_name, notifications_enabled')
+      .select('full_name, notifications_enabled')
       .eq('id', user.id)
       .single();
-    this.firstName = data?.first_name || '';
-    this.lastName = data?.last_name || '';
+    this.firstName = data?.full_name?.split(' ')[0] || '';
+    this.lastName = data?.full_name?.split(' ').slice(1).join(' ') || '';
     this.notificationsEnabled = !!data?.notifications_enabled;
 
     const meta = (user as any).user_metadata || {};
@@ -185,16 +185,14 @@ export class SettingsComponent {
       // Update auth metadata full_name
       const err = await this.auth.updateProfile({ fullName: full });
       if (err) { this.error = err.message; return; }
-      // Backfill profiles first/last by splitting
-      const [first, ...rest] = full.split(/\s+/);
-      const last = rest.join(' ').trim();
+      // Update profiles table with full_name
       const userId = user?.id;
       if (userId) {
-        await this.supabase.supabase.from('profiles').update({ first_name: first || null, last_name: last || null }).eq('id', userId);
+        await this.supabase.supabase.from('profiles').update({ full_name: full }).eq('id', userId);
       }
       this.displayName = full;
-      this.firstName = first || '';
-      this.lastName = last || '';
+      this.firstName = full.split(' ')[0] || '';
+      this.lastName = full.split(' ').slice(1).join(' ') || '';
       this.greetingName = (full || '').split(' ')[0] || '';
       this.message = 'Name updated';
     } catch {}

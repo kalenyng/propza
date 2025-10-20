@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, OnDestroy, inject, effect } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslationService } from '../../../core/services/translation.service';
+import { SupabaseService } from '../../../core/services/supabase.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -17,7 +18,10 @@ export class HeaderBannerComponent implements OnInit {
   
   greeting: string = '';
 
-  constructor(private auth: AuthService) {
+  constructor(
+    private auth: AuthService,
+    private supabase: SupabaseService
+  ) {
     // Use effect to reactively update greeting when language changes
     effect(() => {
       const lang = this.translate.currentLanguage(); // Read the signal
@@ -38,9 +42,26 @@ export class HeaderBannerComponent implements OnInit {
     this.greeting = this.getTimeBasedGreeting();
   }
 
-  private updateUserName(user: any): void {
+  private async updateUserName(user: any): Promise<void> {
     if (user) {
-      // Try to get name from user metadata (for both email signup and Google sign-in)
+      try {
+        // First try to get name from profiles table
+        const { data } = await this.supabase.supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+        
+        if (data?.full_name) {
+          this.userName = data.full_name.split(' ')[0];
+          this.greeting = this.getTimeBasedGreeting();
+          return;
+        }
+      } catch (error) {
+        console.log('[Header Banner] No profile found, falling back to metadata');
+      }
+      
+      // Fallback to user metadata (for both email signup and Google sign-in)
       const firstName = user.user_metadata?.['first_name'] || 
                        user.user_metadata?.['full_name']?.split(' ')[0] ||
                        user.user_metadata?.['name']?.split(' ')[0] || // Google provides 'name'
