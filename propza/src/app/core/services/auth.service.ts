@@ -81,7 +81,17 @@ export class AuthService {
       };
     }
     if (email) options.email = email;
+    
     const { error } = await this.supabase.supabase.auth.updateUser(options);
+    
+    // After update, refresh the session to update the local user signal
+    // This ensures the header-banner and other components see the updated name immediately
+    if (!error) {
+      const { data } = await this.supabase.supabase.auth.getSession();
+      this.session.set(data.session);
+      this.user.set(data.session?.user ?? null);
+    }
+    
     return error ?? null;
   }
 
