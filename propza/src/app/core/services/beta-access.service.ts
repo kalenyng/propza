@@ -45,6 +45,7 @@ export class BetaAccessService {
     const localAccess = localStorage.getItem(this.STORAGE_KEY);
     const sessionAccess = sessionStorage.getItem(this.STORAGE_KEY);
     const hasAccess = localAccess === 'granted' || sessionAccess === 'granted';
+    console.log('[BETA SERVICE] hasAccess check - localStorage:', localAccess, 'sessionStorage:', sessionAccess, 'result:', hasAccess);
     this.hasAccessSignal.set(hasAccess);
     return hasAccess;
   }
@@ -53,9 +54,11 @@ export class BetaAccessService {
    * Grant beta access (for OAuth flow)
    */
   grantAccess(): void {
+    console.log('[BETA SERVICE] Granting beta access');
     localStorage.setItem(this.STORAGE_KEY, 'granted');
     sessionStorage.setItem(this.STORAGE_KEY, 'granted');
     this.hasAccessSignal.set(true);
+    console.log('[BETA SERVICE] Beta access granted - localStorage and sessionStorage updated');
   }
 
   /**
