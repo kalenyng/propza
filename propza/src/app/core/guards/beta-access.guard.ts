@@ -26,10 +26,9 @@ export const betaAccessGuard: CanActivateFn = async (route: ActivatedRouteSnapsh
     console.log('[BETA GUARD] Granting beta access from URL param');
     // Grant beta access and store it
     betaAccess.grantAccess();
-    // Get the actual path from the route, not router.url which may be incorrect
-    const actualPath = route.url.map(segment => segment.path).join('/') || 'home';
-    console.log('[BETA GUARD] Cleaning URL, navigating to:', actualPath);
-    router.navigateByUrl('/' + actualPath, { replaceUrl: true });
+    // Don't navigate - just allow this route to continue
+    // The beta param will be cleaned up by Angular/Supabase naturally
+    console.log('[BETA GUARD] Beta access granted via URL param - allowing navigation');
     return true;
   }
   
