@@ -66,6 +66,16 @@ export class PwaInstallPromptComponent implements OnInit {
       canInstall: this.pwaInstall.canInstall(),
       isLoggedIn: this.isLoggedIn()
     });
+    
+    // If user is already logged in when component loads, start timer
+    if (this.isLoggedIn() && !this.hasTriggeredPrompt) {
+      console.log('[PWA Install Component] ✅ User already logged in on init - starting 4s timer');
+      this.hasTriggeredPrompt = true;
+      
+      setTimeout(() => {
+        this.checkAndShowPrompt();
+      }, 4000);
+    }
   }
 
   private checkAndShowPrompt(): void {
