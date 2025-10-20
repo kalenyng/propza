@@ -1,0 +1,178 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  padding: 20px;
+}
+
+.auth-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 32px;
+
+  .brand-image {
+    width: 84px;
+    height: 84px;
+    object-fit: contain;
+    border-radius: 16px;
+    display: block;
+    margin: 0 auto 12px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  }
+
+  .tagline {
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.3px;
+  }
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
+  font-size: 14px;
+  margin: 0 0 24px;
+}
+
+.code-input-section {
+  margin-bottom: 16px;
+
+  .digit-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+
+    .digit-wrapper {
+      flex: 0 0 auto;
+    }
+
+    .digit-input {
+      width: 48px;
+      height: 56px;
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+      border: 1px solid rgba(229, 231, 235, 0.2);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      background: var(--bg);
+      color: var(--text);
+
+      &:focus {
+        outline: none;
+        border-color: rgba(209, 213, 219, 0.3);
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+      }
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// Messages
+.message {
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  margin: 0 0 16px;
+  text-align: center;
+
+  &.error {
+    background: #fee2e2;
+    color: #991b1b;
+    animation: shake 0.3s ease;
+  }
+}
+
+// Use global .btn-primary from styles.scss
+.btn-primary {
+  width: 100%;
+}
+
+// Footer
+.footer-link {
+  text-align: center;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
+  margin-top: 24px;
+
+  span {
+    display: block;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+// Dark mode overrides
+:host-context(.dark-theme) {
+  .auth-card {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  .brand .tagline {
+    color: #22c55e;
+  }
+
+  .digit-input {
+    border-color: rgba(229, 231, 235, 0.15);
+    
+    &:focus {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+    }
+  }
+
+  .message.error {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 24px;
+  }
+
+  .code-input-section {
+    .digit-inputs {
+      gap: 6px;
+
+      .digit-input {
+        width: 40px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  }
+}
+
