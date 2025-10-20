@@ -278,15 +278,16 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       this.showPaymentForm = false;
       this.editingPaymentId = null;
       // Service automatically refreshes, observable will update payments array
-    } catch (error: any) {
-      console.error('Error saving payment:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorCode = (error as { code?: string }).code;
       
-      if (error.code === '42P01') {
+      if (errorCode === '42P01') {
         alert('Payments table not found. Please run the database migration first.');
-      } else if (error.message?.includes('NavigatorLockAcquireTimeoutError')) {
+      } else if (errorMessage.includes('NavigatorLockAcquireTimeoutError')) {
         alert('Authentication timeout. Please try again.');
       } else {
-        alert(`Failed to save payment: ${error.message || 'Unknown error'}`);
+        alert(`Failed to save payment: ${errorMessage}`);
       }
     } finally {
       this.savingPayment = false;

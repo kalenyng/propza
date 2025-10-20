@@ -2,13 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 
+interface ServiceWithRefresh {
+  refreshProperties?: () => Promise<void>;
+  refreshTenants?: () => Promise<void>;
+  refreshPayments?: () => Promise<void>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
   private client: SupabaseClient;
-  
-  // Services will be injected lazily to avoid circular dependencies
-  private _propertyService?: any;
-  private _tenantService?: any;
+  private _propertyService?: ServiceWithRefresh;
+  private _tenantService?: ServiceWithRefresh;
 
   constructor() {
     this.client = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
@@ -25,30 +29,28 @@ export class SupabaseService {
     return this.client;
   }
 
-  // Register services to avoid circular dependency
-  registerPropertyService(service: any): void {
+  registerPropertyService(service: ServiceWithRefresh): void {
     this._propertyService = service;
   }
 
-  registerTenantService(service: any): void {
+  registerTenantService(service: ServiceWithRefresh): void {
     this._tenantService = service;
   }
 
-  // Centralized refresh methods that coordinate both services
   async refreshProperties(): Promise<void> {
-    if (this._propertyService) {
+    if (this._propertyService?.refreshProperties) {
       await this._propertyService.refreshProperties();
     }
   }
 
   async refreshTenants(): Promise<void> {
-    if (this._tenantService) {
+    if (this._tenantService?.refreshTenants) {
       await this._tenantService.refreshTenants();
     }
   }
 
   async refreshPayments(): Promise<void> {
-    if (this._propertyService) {
+    if (this._propertyService?.refreshPayments) {
       await this._propertyService.refreshPayments();
     }
   }

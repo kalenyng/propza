@@ -24,7 +24,7 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   translate = inject(TranslationService);
 
-  vacantProperties: any[] = [];
+  vacantProperties: Array<{ id: string; name: string; address: string; rent_amount: number }> = [];
   loading = false;
   saving = false;
   selectedFile: File | null = null;
@@ -34,7 +34,6 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to properties and filter vacant ones
     this.propertyService.properties$
       .pipe(takeUntil(this.destroy$))
       .subscribe(properties => {
@@ -187,8 +186,9 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
     }
   }
 
-  onFileSelected(event: any): void {
-    this.selectedFile = event.target.files[0] || null;
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.selectedFile = target.files?.[0] || null;
   }
 
   cancel(): void {

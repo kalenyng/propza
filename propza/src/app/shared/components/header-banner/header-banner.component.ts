@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, inject, effect } from '@angular/core';
+import { Component, Input, OnInit, inject, effect } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslationService } from '../../../core/services/translation.service';
 import { SupabaseService } from '../../../core/services/supabase.service';
@@ -30,8 +30,10 @@ export class HeaderBannerComponent implements OnInit {
 
     // Use effect to reactively update user name when user data changes
     effect(() => {
-      const user = this.auth.user(); // Read the signal
-      this.updateUserName(user);
+      const user = this.auth.user();
+      if (user) {
+        this.updateUserName(user);
+      }
     });
   }
   
@@ -42,34 +44,35 @@ export class HeaderBannerComponent implements OnInit {
     this.greeting = this.getTimeBasedGreeting();
   }
 
-  private async updateUserName(user: any): Promise<void> {
-    if (user) {
-      try {
-        // First try to get name from profiles table
-        const { data } = await this.supabase.supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', user.id)
-          .single();
-        
-        if (data?.full_name) {
-          this.userName = data.full_name.split(' ')[0];
-          this.greeting = this.getTimeBasedGreeting();
-          return;
-        }
-      } catch (error) {
-        console.log('[Header Banner] No profile found, falling back to metadata');
-      }
-      
-      // Fallback to user metadata (for both email signup and Google sign-in)
-      const firstName = user.user_metadata?.['first_name'] || 
-                       user.user_metadata?.['full_name']?.split(' ')[0] ||
-                       user.user_metadata?.['name']?.split(' ')[0] || // Google provides 'name'
-                       '';
-      
-      this.userName = firstName;
-      this.greeting = this.getTimeBasedGreeting();
+  private async updateUserName(user: { id: string; user_metadata?: Record<string, unknown> }): Promise<void> {
+    if (!user) {
+      return;
     }
+
+    try {
+      const { data } = await this.supabase.supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+      
+      if (data?.full_name) {
+        this.userName = String(data.full_name).split(' ')[0];
+        this.greeting = this.getTimeBasedGreeting();
+        return;
+      }
+    } catch {
+      // Fallback to metadata
+    }
+    
+    const metadata = user.user_metadata || {};
+    const firstName = String(metadata['first_name'] || 
+                     (metadata['full_name'] as string)?.split(' ')[0] ||
+                     (metadata['name'] as string)?.split(' ')[0] || 
+                     '');
+    
+    this.userName = firstName;
+    this.greeting = this.getTimeBasedGreeting();
   }
 
   private getTimeBasedGreeting(): string {

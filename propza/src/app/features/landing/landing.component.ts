@@ -19,12 +19,9 @@ export class LandingComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    // Wait for auth session to initialize
     await this.auth.waitForSession();
     
-    // If user is logged in and has beta access, redirect to home
     if (this.auth.user() && this.betaAccess.hasAccess()) {
-      console.log('[LANDING] User is logged in with beta access - redirecting to /home');
       this.router.navigateByUrl('/home');
     }
   }

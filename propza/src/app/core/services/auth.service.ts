@@ -71,21 +71,30 @@ export class AuthService {
     return error ?? null;
   }
 
-  // Update profile name (metadata) and/or email
   async updateProfile({ firstName, fullName, email }: { firstName?: string; fullName?: string; email?: string }): Promise<AuthError | null> {
-    const options: any = {};
+    interface UpdateOptions {
+      data?: {
+        first_name?: string;
+        full_name?: string;
+      };
+      email?: string;
+    }
+
+    const options: UpdateOptions = {};
+    
     if (firstName || fullName) {
       options.data = {
         ...(firstName ? { first_name: firstName } : {}),
         ...(fullName ? { full_name: fullName } : {})
       };
     }
-    if (email) options.email = email;
+    
+    if (email) {
+      options.email = email;
+    }
     
     const { error } = await this.supabase.supabase.auth.updateUser(options);
     
-    // After update, refresh the session to update the local user signal
-    // This ensures the header-banner and other components see the updated name immediately
     if (!error) {
       const { data } = await this.supabase.supabase.auth.getSession();
       this.session.set(data.session);
@@ -109,13 +118,21 @@ export class AuthService {
   async deleteAccount(): Promise<string | null> {
     try {
       const { data } = await this.supabase.supabase.auth.getUser();
-      if (!data.user) return 'No authenticated user';
+      if (!data.user) {
+        return 'No authenticated user';
+      }
 
       const { error } = await this.supabase.supabase.rpc('delete_current_user');
-      if (error) return error.message;
+      if (error) {
+        return error.message;
+      }
+      
       return null;
-    } catch (e: any) {
-      return e?.message || 'Failed to delete account. Server function not configured.';
+    } catch (error) {
+      if (error instanceof Error) {
+        return error.message;
+      }
+      return 'Failed to delete account. Server function not configured.';
     }
   }
 }

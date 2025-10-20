@@ -173,29 +173,39 @@ export class SettingsComponent {
 
   async openEditName(): Promise<void> {
     const user = this.auth.user();
-    const meta = (user as any)?.user_metadata || {};
-    const currentFull = (meta['full_name'] || this.displayName || '').toString();
+    const meta = user?.user_metadata || {};
+    const currentFull = String(meta['full_name'] || this.displayName || '');
 
     const ref = this.modal.open(EditNameModalComponent, { centered: true });
     (ref.componentInstance as EditNameModalComponent).setInitial(currentFull);
+    
     try {
-      const result: any = await ref.result; // { full_name }
+      const result = await ref.result as { full_name?: string };
       const full = (result?.full_name || '').trim();
-      if (!full) return;
-      // Update auth metadata full_name
+      
+      if (!full) {
+        return;
+      }
+      
       const err = await this.auth.updateProfile({ fullName: full });
-      if (err) { this.error = err.message; return; }
-      // Update profiles table with full_name
+      if (err) {
+        this.error = err.message;
+        return;
+      }
+      
       const userId = user?.id;
       if (userId) {
         await this.supabase.supabase.from('profiles').update({ full_name: full }).eq('id', userId);
       }
+      
       this.displayName = full;
       this.firstName = full.split(' ')[0] || '';
       this.lastName = full.split(' ').slice(1).join(' ') || '';
-      this.greetingName = (full || '').split(' ')[0] || '';
+      this.greetingName = full.split(' ')[0] || '';
       this.message = 'Name updated';
-    } catch {}
+    } catch {
+      // Modal dismissed
+    }
   }
 
   private async updateName(first: string, last: string): Promise<void> {
@@ -233,7 +243,7 @@ export class SettingsComponent {
         this.supabase.supabase.from('payments').select('*').eq('owner_id', user.id).order('created_at', { ascending: false }),
         this.supabase.supabase.from('tenancies').select('*').in('property_id', (
           await this.supabase.supabase.from('properties').select('id').eq('owner_id', user.id)
-        ).data?.map((p: any) => p.id) || []),
+        ).data?.map((p) => p.id as string) || []),
       ]);
 
       const blob = new Blob([JSON.stringify({ properties: properties.data, payments: payments.data, tenancies: tenancies.data }, null, 2)], { type: 'application/json' });

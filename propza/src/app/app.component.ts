@@ -13,14 +13,11 @@ import { PwaInstallPromptComponent } from './shared/components/pwa-install-promp
 })
 export class AppComponent {
   title = 'Propza';
+  
   constructor(
     private theme: ThemeService,
     private pwaInstall: PwaInstallService
   ) {
-    console.log('📱 APP COMPONENT CONSTRUCTOR - Initializing PWA service');
     void this.theme.loadTheme();
-    // PWA service is injected to initialize early and capture beforeinstallprompt event
-    console.log('PWA Service isIOS:', this.pwaInstall.isIOS());
-    console.log('PWA Service canInstall:', this.pwaInstall.canInstall());
   }
 }

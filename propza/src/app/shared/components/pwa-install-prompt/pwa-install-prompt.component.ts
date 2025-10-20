@@ -31,23 +31,12 @@ export class PwaInstallPromptComponent implements OnInit {
     public pwaInstall: PwaInstallService,
     private auth: AuthService
   ) {
-    console.log('🎯 PWA INSTALL PROMPT COMPONENT CONSTRUCTOR CALLED!');
-    
-    // Watch for auth state changes and trigger prompt when user logs in
     effect(() => {
       const user = this.auth.user();
       const loggedIn = !!user;
       
-      console.log('[PWA Install Component] Auth state:', {
-        loggedIn: loggedIn,
-        hasTriggeredPrompt: this.hasTriggeredPrompt
-      });
-      
-      // If logged in and haven't triggered yet, start timer
       if (loggedIn && !this.hasTriggeredPrompt) {
-        console.log('[PWA Install Component] ✅ User logged in - starting 4s timer');
         this.hasTriggeredPrompt = true;
-        
         setTimeout(() => {
           this.checkAndShowPrompt();
         }, 4000);
@@ -56,42 +45,20 @@ export class PwaInstallPromptComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('[PWA Install Component] Component initialized');
-    console.log('[PWA Install Component] Initial state:', {
-      isIOS: this.pwaInstall.isIOS(),
-      canInstall: this.pwaInstall.canInstall(),
-      isLoggedIn: !!this.auth.user()
-    });
+    // Component initialization
   }
 
   private checkAndShowPrompt(): void {
     const isLoggedIn = !!this.auth.user();
     
-    console.log('[PWA Install Component] After 4s delay - checking state:', {
-      isIOS: this.pwaInstall.isIOS(),
-      canInstall: this.pwaInstall.canInstall(),
-      isLoggedIn: isLoggedIn,
-      showIOSModal: this.showIOSModal(),
-      showInstallButton: this.showInstallButton()
-    });
-    
-    // Double-check user is still logged in
     if (!isLoggedIn) {
-      console.log('[PWA Install Component] ❌ User not logged in - not showing prompt');
       return;
     }
     
     if (this.pwaInstall.isIOS()) {
-      // Show iOS instructions modal
-      console.log('[PWA Install Component] ✅ Showing iOS instructions modal');
       this.showIOSModal.set(true);
-      console.log('[PWA Install Component] Modal signal set to:', this.showIOSModal());
     } else if (this.pwaInstall.canInstall()) {
-      // Show regular install button for Android/Desktop
-      console.log('[PWA Install Component] ✅ Showing install button');
       this.showInstallButton.set(true);
-    } else {
-      console.log('[PWA Install Component] ❌ Install not available - nothing will show');
     }
   }
 

@@ -6,7 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { HeaderBannerComponent } from '../../../../shared/components/header-banner/header-banner.component';
 import { PropertyCardComponent } from '../../components/property-card/property-card.component';
 import { BottomNavComponent } from '../../../../shared/components/bottom-nav/bottom-nav.component';
-import { PropertyService } from '../../../../core/services/property.service';
+import { PropertyService, Property, Payment } from '../../../../core/services/property.service';
 import { RentHelperService, RentStatus } from '../../../../core/services/rent-helper.service';
 import { TranslationService } from '../../../../core/services/translation.service';
 
@@ -90,7 +90,7 @@ export class PropertyListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private processPropertiesData(data: any[], payments: any[]): void {
+  private processPropertiesData(data: Property[], payments: Payment[]): void {
     if (!data || data.length === 0) {
       this.allProperties = [];
       this.properties = [];
@@ -105,18 +105,16 @@ export class PropertyListComponent implements OnInit, OnDestroy {
     const currency = data[0].currency || 'ZAR';
     const today = new Date();
 
-    // Build payments map - sum amounts per (property_id, period)
     this.paymentsMap.clear();
     if (payments) {
-      payments.forEach((p: any) => {
+      payments.forEach((p) => {
         const key = `${p.property_id}-${p.period}`;
         const currentSum = this.paymentsMap.get(key) || 0;
         this.paymentsMap.set(key, currentSum + (Number(p.amount) || 0));
       });
     }
 
-    // Map properties with status calculation
-    this.allProperties = data.map((p: any) => {
+    this.allProperties = data.map((p) => {
       // Get active tenant
       const activeTenant = Array.isArray(p.tenants) && p.tenants.length > 0
         ? p.tenants[0] // Get the first (and should be only) tenant
@@ -297,11 +295,9 @@ export class PropertyListComponent implements OnInit, OnDestroy {
 
   openAddProperty(): void {
     const ref = this.modal.open(AddPropertyModalComponent, { size: 'lg', backdrop: 'static' });
-    ref.result
-      .then((ok) => { 
-        // No need to manually reload - the service observables will handle it
-      })
-      .catch(() => {});
+    ref.result.catch(() => {
+      // Modal dismissed - no action needed
+    });
   }
 
   formatMoney(amount: number, currency: string): string {
