@@ -179,117 +179,59 @@
   justify-content: center;
 }
 
-.browser-mockup {
-  width: 100%;
-  max-width: 900px;
-  background: var(--card);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(229, 231, 235, 0.2);
+.phone-mockups {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 1000px;
 }
 
-.browser-header {
-  background: color-mix(in srgb, var(--card) 95%, #000 5%);
-  padding: 12px 16px;
+.phone-mockup {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid rgba(229, 231, 235, 0.2);
+  gap: 16px;
 }
 
-.browser-dots {
-  display: flex;
-  gap: 8px;
-
-  span {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--text) 20%, transparent 80%);
-  }
+.phone-frame {
+  position: relative;
+  width: 280px;
+  height: 580px;
+  background: #1a1a1a;
+  border-radius: 40px;
+  padding: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-.browser-address {
-  flex: 1;
+.phone-notch {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 28px;
+  background: #1a1a1a;
+  border-radius: 0 0 20px 20px;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.phone-screenshot {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 32px;
+  display: block;
+}
+
+.phone-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
   text-align: center;
-  font-size: 13px;
-  color: color-mix(in srgb, var(--text) 60%, #888 40%);
-  padding: 4px 12px;
-  background: var(--bg);
-  border-radius: 6px;
-}
-
-.browser-content {
-  background: var(--bg);
-  padding: 40px 20px;
-  min-height: 400px;
-}
-
-.mockup-placeholder {
-  max-width: 100%;
-}
-
-.placeholder-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 32px;
-  padding: 0 20px;
-}
-
-.placeholder-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: linear-gradient(135deg,#0E3D2E,#16a34a);
-}
-
-.placeholder-nav {
-  display: flex;
-  gap: 12px;
-}
-
-.placeholder-nav-item {
-  width: 60px;
-  height: 8px;
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--text) 15%, transparent 85%);
-}
-
-.placeholder-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  padding: 0 20px;
-}
-
-.placeholder-card {
-  background: var(--card);
-  border: 1px solid rgba(229, 231, 235, 0.2);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.placeholder-card-image {
-  width: 100%;
-  height: 120px;
-    background: linear-gradient(135deg,color-mix(in srgb,#16a34a 20%,transparent 80%),color-mix(in srgb,#0E3D2E 20%,transparent 80%));
-}
-
-.placeholder-card-content {
-  padding: 16px;
-}
-
-.placeholder-line {
-  height: 8px;
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--text) 15%, transparent 85%);
-  margin-bottom: 8px;
-
-  &.short {
-    width: 60%;
-  }
+  margin: 0;
 }
 
 .demo-features {
@@ -555,34 +497,28 @@
     margin: 48px 0 32px;
   }
 
-  .browser-content {
-    padding: 24px 12px;
-    min-height: 300px;
+  .phone-mockups {
+    gap: 32px;
   }
 
-  .placeholder-header {
-    margin-bottom: 24px;
-    padding: 0 12px;
+  .phone-frame {
+    width: 240px;
+    height: 500px;
+    border-radius: 36px;
+    padding: 10px;
   }
 
-  .placeholder-logo {
-    width: 32px;
-    height: 32px;
+  .phone-notch {
+    width: 100px;
+    height: 24px;
   }
 
-  .placeholder-nav-item {
-    width: 50px;
-    height: 6px;
+  .phone-screenshot {
+    border-radius: 28px;
   }
 
-  .placeholder-cards {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 0 12px;
-  }
-
-  .placeholder-card-image {
-    height: 100px;
+  .phone-label {
+    font-size: 14px;
   }
 
   .demo-features {
@@ -716,68 +652,30 @@
     margin: 40px 0 24px;
   }
 
-  .browser-mockup {
-    border-radius: 8px;
+  .phone-mockups {
+    gap: 24px;
+    flex-direction: column;
+    align-items: center;
   }
 
-  .browser-header {
-    padding: 8px 10px;
+  .phone-frame {
+    width: 220px;
+    height: 460px;
+    border-radius: 32px;
+    padding: 10px;
   }
 
-  .browser-dots {
-    gap: 6px;
-
-    span {
-      width: 10px;
-      height: 10px;
-    }
+  .phone-notch {
+    width: 90px;
+    height: 22px;
   }
 
-  .browser-address {
-    font-size: 10px;
-    padding: 3px 8px;
+  .phone-screenshot {
+    border-radius: 24px;
   }
 
-  .browser-content {
-    padding: 20px 8px;
-    min-height: 250px;
-  }
-
-  .placeholder-header {
-    margin-bottom: 20px;
-    padding: 0 8px;
-  }
-
-  .placeholder-logo {
-    width: 28px;
-    height: 28px;
-  }
-
-  .placeholder-nav {
-    gap: 8px;
-  }
-
-  .placeholder-nav-item {
-    width: 40px;
-    height: 6px;
-  }
-
-  .placeholder-cards {
-    gap: 12px;
-    padding: 0 8px;
-  }
-
-  .placeholder-card-image {
-    height: 80px;
-  }
-
-  .placeholder-card-content {
-    padding: 12px;
-  }
-
-  .placeholder-line {
-    height: 6px;
-    margin-bottom: 6px;
+  .phone-label {
+    font-size: 13px;
   }
 
   .demo-features {
