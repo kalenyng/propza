@@ -181,10 +181,11 @@
 
 .phone-mockups {
   display: flex;
-  gap: 40px;
+  gap: 32px;
   justify-content: center;
-  flex-wrap: wrap;
-  max-width: 1200px;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  padding: 0 20px;
 }
 
 .phone-mockup {
@@ -192,12 +193,13 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  flex-shrink: 0;
 }
 
 .phone-frame {
   position: relative;
-  width: 280px;
-  height: 580px;
+  width: 260px;
+  height: 540px;
   background: #1a1a1a;
   border-radius: 40px;
   padding: 12px;

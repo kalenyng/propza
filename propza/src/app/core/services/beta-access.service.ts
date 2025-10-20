@@ -42,6 +42,14 @@ export class BetaAccessService {
   }
 
   /**
+   * Grant beta access (for OAuth flow)
+   */
+  grantAccess(): void {
+    localStorage.setItem(this.STORAGE_KEY, 'granted');
+    this.hasAccessSignal.set(true);
+  }
+
+  /**
    * Revoke beta access (useful for testing)
    */
   revokeAccess(): void {

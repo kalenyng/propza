@@ -42,7 +42,7 @@ export class AuthService {
     const { error } = await this.supabase.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/home`,
+        redirectTo: `${window.location.origin}/home?beta=granted`,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
