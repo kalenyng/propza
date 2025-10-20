@@ -19,8 +19,16 @@ export class PwaInstallService {
   isIOS = signal<boolean>(false);
 
   constructor() {
-    this.detectIOS();
-    this.initializePromptListener();
+    console.log('🚀 PWA INSTALL SERVICE CONSTRUCTOR CALLED - CODE IS LOADING!');
+    console.log('Current URL:', window.location.href);
+    console.log('User Agent:', window.navigator.userAgent);
+    
+    try {
+      this.detectIOS();
+      this.initializePromptListener();
+    } catch (error) {
+      console.error('❌ Error in PWA service initialization:', error);
+    }
   }
 
   private detectIOS(): void {

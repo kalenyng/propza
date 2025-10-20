@@ -25,7 +25,9 @@ export class PwaInstallPromptComponent implements OnInit {
   showInstallButton = signal<boolean>(false);
   showIOSModal = signal<boolean>(false);
 
-  constructor(public pwaInstall: PwaInstallService) {}
+  constructor(public pwaInstall: PwaInstallService) {
+    console.log('🎯 PWA INSTALL PROMPT COMPONENT CONSTRUCTOR CALLED!');
+  }
 
   ngOnInit(): void {
     console.log('[PWA Install Component] Component initialized');
