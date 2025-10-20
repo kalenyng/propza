@@ -26,6 +26,7 @@ export class PwaInstallPromptComponent implements OnInit {
   showInstallButton = signal<boolean>(false);
   showIOSModal = signal<boolean>(false);
   isLoggedIn = signal<boolean>(false);
+  private hasTriggeredPrompt = false;
 
   constructor(
     public pwaInstall: PwaInstallService,
@@ -33,12 +34,28 @@ export class PwaInstallPromptComponent implements OnInit {
   ) {
     console.log('🎯 PWA INSTALL PROMPT COMPONENT CONSTRUCTOR CALLED!');
     
-    // Watch for auth state changes
+    // Watch for auth state changes and trigger prompt when user logs in
     effect(() => {
       const user = this.auth.user();
       const loggedIn = !!user;
+      const wasLoggedIn = this.isLoggedIn();
       this.isLoggedIn.set(loggedIn);
-      console.log('[PWA Install Component] Auth state changed - Logged in:', loggedIn);
+      
+      console.log('[PWA Install Component] Auth state changed:', {
+        wasLoggedIn: wasLoggedIn,
+        nowLoggedIn: loggedIn,
+        hasTriggeredPrompt: this.hasTriggeredPrompt
+      });
+      
+      // Start timer when user logs in (transition from false to true)
+      if (loggedIn && !wasLoggedIn && !this.hasTriggeredPrompt) {
+        console.log('[PWA Install Component] ✅ User just logged in - starting 4s timer');
+        this.hasTriggeredPrompt = true;
+        
+        setTimeout(() => {
+          this.checkAndShowPrompt();
+        }, 4000);
+      }
     });
   }
 
@@ -49,36 +66,35 @@ export class PwaInstallPromptComponent implements OnInit {
       canInstall: this.pwaInstall.canInstall(),
       isLoggedIn: this.isLoggedIn()
     });
+  }
+
+  private checkAndShowPrompt(): void {
+    console.log('[PWA Install Component] After 4s delay - checking state:', {
+      isIOS: this.pwaInstall.isIOS(),
+      canInstall: this.pwaInstall.canInstall(),
+      isLoggedIn: this.isLoggedIn(),
+      showIOSModal: this.showIOSModal(),
+      showInstallButton: this.showInstallButton()
+    });
     
-    // Show install prompt after 4 second delay - ONLY if logged in
-    setTimeout(() => {
-      console.log('[PWA Install Component] After 4s delay - checking state:', {
-        isIOS: this.pwaInstall.isIOS(),
-        canInstall: this.pwaInstall.canInstall(),
-        isLoggedIn: this.isLoggedIn(),
-        showIOSModal: this.showIOSModal(),
-        showInstallButton: this.showInstallButton()
-      });
-      
-      // Only show if user is logged in
-      if (!this.isLoggedIn()) {
-        console.log('[PWA Install Component] ❌ User not logged in - not showing prompt');
-        return;
-      }
-      
-      if (this.pwaInstall.isIOS()) {
-        // Show iOS instructions modal
-        console.log('[PWA Install Component] ✅ Showing iOS instructions modal');
-        this.showIOSModal.set(true);
-        console.log('[PWA Install Component] Modal signal set to:', this.showIOSModal());
-      } else if (this.pwaInstall.canInstall()) {
-        // Show regular install button for Android/Desktop
-        console.log('[PWA Install Component] ✅ Showing install button');
-        this.showInstallButton.set(true);
-      } else {
-        console.log('[PWA Install Component] ❌ Install not available - nothing will show');
-      }
-    }, 4000); // 4 seconds delay
+    // Double-check user is still logged in
+    if (!this.isLoggedIn()) {
+      console.log('[PWA Install Component] ❌ User not logged in - not showing prompt');
+      return;
+    }
+    
+    if (this.pwaInstall.isIOS()) {
+      // Show iOS instructions modal
+      console.log('[PWA Install Component] ✅ Showing iOS instructions modal');
+      this.showIOSModal.set(true);
+      console.log('[PWA Install Component] Modal signal set to:', this.showIOSModal());
+    } else if (this.pwaInstall.canInstall()) {
+      // Show regular install button for Android/Desktop
+      console.log('[PWA Install Component] ✅ Showing install button');
+      this.showInstallButton.set(true);
+    } else {
+      console.log('[PWA Install Component] ❌ Install not available - nothing will show');
+    }
   }
 
   async onInstallClick(): Promise<void> {
