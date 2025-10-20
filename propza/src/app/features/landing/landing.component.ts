@@ -20,5 +20,12 @@ export class LandingComponent {
     // Open email client to request beta access
     window.location.href = 'mailto:kalenyoung03@gmail.com?subject=Propza Beta Access Request&body=Hi, I would like to request access to the Propza beta program.';
   }
+
+  scrollToNextSection(): void {
+    const nextSection = document.querySelector('.how-it-works-section');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 }
 
