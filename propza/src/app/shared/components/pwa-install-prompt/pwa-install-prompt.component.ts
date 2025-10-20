@@ -25,7 +25,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
 export class PwaInstallPromptComponent implements OnInit {
   showInstallButton = signal<boolean>(false);
   showIOSModal = signal<boolean>(false);
-  isLoggedIn = signal<boolean>(false);
   private hasTriggeredPrompt = false;
 
   constructor(
@@ -38,18 +37,15 @@ export class PwaInstallPromptComponent implements OnInit {
     effect(() => {
       const user = this.auth.user();
       const loggedIn = !!user;
-      const wasLoggedIn = this.isLoggedIn();
-      this.isLoggedIn.set(loggedIn);
       
-      console.log('[PWA Install Component] Auth state changed:', {
-        wasLoggedIn: wasLoggedIn,
-        nowLoggedIn: loggedIn,
+      console.log('[PWA Install Component] Auth state:', {
+        loggedIn: loggedIn,
         hasTriggeredPrompt: this.hasTriggeredPrompt
       });
       
-      // Start timer when user logs in (transition from false to true)
-      if (loggedIn && !wasLoggedIn && !this.hasTriggeredPrompt) {
-        console.log('[PWA Install Component] ✅ User just logged in - starting 4s timer');
+      // If logged in and haven't triggered yet, start timer
+      if (loggedIn && !this.hasTriggeredPrompt) {
+        console.log('[PWA Install Component] ✅ User logged in - starting 4s timer');
         this.hasTriggeredPrompt = true;
         
         setTimeout(() => {
@@ -64,31 +60,23 @@ export class PwaInstallPromptComponent implements OnInit {
     console.log('[PWA Install Component] Initial state:', {
       isIOS: this.pwaInstall.isIOS(),
       canInstall: this.pwaInstall.canInstall(),
-      isLoggedIn: this.isLoggedIn()
+      isLoggedIn: !!this.auth.user()
     });
-    
-    // If user is already logged in when component loads, start timer
-    if (this.isLoggedIn() && !this.hasTriggeredPrompt) {
-      console.log('[PWA Install Component] ✅ User already logged in on init - starting 4s timer');
-      this.hasTriggeredPrompt = true;
-      
-      setTimeout(() => {
-        this.checkAndShowPrompt();
-      }, 4000);
-    }
   }
 
   private checkAndShowPrompt(): void {
+    const isLoggedIn = !!this.auth.user();
+    
     console.log('[PWA Install Component] After 4s delay - checking state:', {
       isIOS: this.pwaInstall.isIOS(),
       canInstall: this.pwaInstall.canInstall(),
-      isLoggedIn: this.isLoggedIn(),
+      isLoggedIn: isLoggedIn,
       showIOSModal: this.showIOSModal(),
       showInstallButton: this.showInstallButton()
     });
     
     // Double-check user is still logged in
-    if (!this.isLoggedIn()) {
+    if (!isLoggedIn) {
       console.log('[PWA Install Component] ❌ User not logged in - not showing prompt');
       return;
     }
