@@ -12,8 +12,15 @@ export const betaAccessGuard: CanActivateFn = (route: ActivatedRouteSnapshot) =>
     // Grant beta access and store it
     betaAccess.grantAccess();
     // Clean up URL by removing the parameter
-    const urlWithoutBeta = router.url.split('?')[0];
+    const urlWithoutBeta = router.url.split('?')[0].split('#')[0];
     router.navigateByUrl(urlWithoutBeta, { replaceUrl: true });
+    return true;
+  }
+  
+  // Check if this is an OAuth callback (has hash with tokens)
+  if (window.location.hash && window.location.hash.includes('access_token')) {
+    // User is returning from OAuth, grant beta access to avoid redirect loop
+    betaAccess.grantAccess();
     return true;
   }
   

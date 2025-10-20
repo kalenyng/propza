@@ -13,11 +13,12 @@ export class BetaAccessService {
   }
 
   /**
-   * Check if user has beta access stored in localStorage
+   * Check if user has beta access stored in localStorage or sessionStorage
    */
   private checkStoredAccess(): void {
-    const storedAccess = localStorage.getItem(this.STORAGE_KEY);
-    this.hasAccessSignal.set(storedAccess === 'granted');
+    const localAccess = localStorage.getItem(this.STORAGE_KEY);
+    const sessionAccess = sessionStorage.getItem(this.STORAGE_KEY);
+    this.hasAccessSignal.set(localAccess === 'granted' || sessionAccess === 'granted');
   }
 
   /**
@@ -27,7 +28,9 @@ export class BetaAccessService {
     const isValid = code === environment.betaAccessCode;
     
     if (isValid) {
+      // Store in both localStorage and sessionStorage for reliability
       localStorage.setItem(this.STORAGE_KEY, 'granted');
+      sessionStorage.setItem(this.STORAGE_KEY, 'granted');
       this.hasAccessSignal.set(true);
     }
     
@@ -38,7 +41,12 @@ export class BetaAccessService {
    * Check if user has beta access
    */
   hasAccess(): boolean {
-    return this.hasAccessSignal();
+    // Re-check storage each time to ensure it's current
+    const localAccess = localStorage.getItem(this.STORAGE_KEY);
+    const sessionAccess = sessionStorage.getItem(this.STORAGE_KEY);
+    const hasAccess = localAccess === 'granted' || sessionAccess === 'granted';
+    this.hasAccessSignal.set(hasAccess);
+    return hasAccess;
   }
 
   /**
@@ -46,6 +54,7 @@ export class BetaAccessService {
    */
   grantAccess(): void {
     localStorage.setItem(this.STORAGE_KEY, 'granted');
+    sessionStorage.setItem(this.STORAGE_KEY, 'granted');
     this.hasAccessSignal.set(true);
   }
 
@@ -54,6 +63,7 @@ export class BetaAccessService {
    */
   revokeAccess(): void {
     localStorage.removeItem(this.STORAGE_KEY);
+    sessionStorage.removeItem(this.STORAGE_KEY);
     this.hasAccessSignal.set(false);
   }
 }
