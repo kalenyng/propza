@@ -114,3 +114,280 @@
   }
 }
 
+/* iOS Installation Modal */
+.ios-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.ios-modal {
+  background: var(--card, white);
+  border-radius: 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+  overflow: hidden;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s ease;
+  color: var(--text, #333);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+.modal-header {
+  text-align: center;
+  padding: 40px 32px 24px;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  color: white;
+
+  .modal-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 16px;
+    opacity: 0.9;
+    margin: 0;
+  }
+}
+
+.modal-steps {
+  padding: 32px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+  padding-top: 4px;
+}
+
+.step-text {
+  font-size: 16px;
+  color: var(--text, #333);
+  margin: 0;
+  line-height: 1.5;
+
+  strong {
+    color: #16a34a;
+    font-weight: 600;
+  }
+}
+
+.share-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(22, 163, 74, 0.1);
+  margin-left: 8px;
+  vertical-align: middle;
+
+  svg {
+    color: #16a34a;
+  }
+}
+
+.modal-footer {
+  padding: 0 32px 32px;
+
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Dark mode support */
+:host-context(.dark-theme) {
+  .ios-modal {
+    background: #1a1a1a;
+  }
+
+  .modal-close {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .step-text {
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile adjustments for modal */
+@media (max-width: 480px) {
+  .ios-modal {
+    border-radius: 20px;
+  }
+
+  .modal-header {
+    padding: 32px 24px 20px;
+
+    .modal-icon {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+
+      svg {
+        width: 36px;
+        height: 36px;
+      }
+    }
+
+    h2 {
+      font-size: 24px;
+    }
+
+    p {
+      font-size: 15px;
+    }
+  }
+
+  .modal-steps {
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+
+  .step-number {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .step-text {
+    font-size: 15px;
+  }
+
+  .modal-footer {
+    padding: 0 24px 24px;
+
+    .btn-primary {
+      padding: 14px;
+      font-size: 15px;
+    }
+  }
+
+  .modal-close {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+

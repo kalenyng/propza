@@ -23,20 +23,25 @@ import { trigger, transition, style, animate } from '@angular/animations';
 })
 export class PwaInstallPromptComponent implements OnInit {
   showInstallButton = signal<boolean>(false);
+  showIOSModal = signal<boolean>(false);
 
   constructor(public pwaInstall: PwaInstallService) {}
 
   ngOnInit(): void {
     console.log('[PWA Install Component] Component initialized');
     
-    // Show install button after 4 second delay if PWA can be installed
+    // Show install prompt after 4 second delay
     setTimeout(() => {
-      console.log('[PWA Install Component] Checking if install is available:', this.pwaInstall.canInstall());
-      if (this.pwaInstall.canInstall()) {
-        this.showInstallButton.set(true);
+      if (this.pwaInstall.isIOS()) {
+        // Show iOS instructions modal
+        console.log('[PWA Install Component] Showing iOS instructions modal');
+        this.showIOSModal.set(true);
+      } else if (this.pwaInstall.canInstall()) {
+        // Show regular install button for Android/Desktop
         console.log('[PWA Install Component] Showing install button');
+        this.showInstallButton.set(true);
       } else {
-        console.log('[PWA Install Component] Install not available - button will not show');
+        console.log('[PWA Install Component] Install not available - nothing will show');
       }
     }, 4000); // 4 seconds delay
   }
@@ -49,6 +54,16 @@ export class PwaInstallPromptComponent implements OnInit {
   onDismissInstall(): void {
     this.pwaInstall.dismissPrompt();
     this.showInstallButton.set(false);
+  }
+
+  onDismissIOSModal(): void {
+    this.pwaInstall.dismissPrompt();
+    this.showIOSModal.set(false);
+  }
+
+  onIOSGotIt(): void {
+    this.pwaInstall.dismissPrompt();
+    this.showIOSModal.set(false);
   }
 }
 

@@ -1,3 +1,4 @@
+<!-- Android/Desktop Install Button -->
 <div class="install-prompt" *ngIf="showInstallButton()" [@slideIn]>
   <button class="install-button" (click)="onInstallClick()" aria-label="Install App">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -13,5 +14,63 @@
       <line x1="6" y1="6" x2="18" y2="18"/>
     </svg>
   </button>
+</div>
+
+<!-- iOS Installation Modal -->
+<div class="ios-modal-overlay" *ngIf="showIOSModal()" (click)="onDismissIOSModal()">
+  <div class="ios-modal" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="onDismissIOSModal()" aria-label="Close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    
+    <div class="modal-header">
+      <div class="modal-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </div>
+      <h2>Install Propza</h2>
+      <p>Add Propza to your home screen for quick access</p>
+    </div>
+
+    <div class="modal-steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <p class="step-text">Tap the <strong>Share</strong> button</p>
+          <div class="share-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+              <polyline points="16 6 12 2 8 6"/>
+              <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <p class="step-text">Scroll down and tap<br><strong>"Add to Home Screen"</strong></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <p class="step-text">Tap <strong>"Add"</strong> to install</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-primary" (click)="onIOSGotIt()">Got it!</button>
+    </div>
+  </div>
 </div>
 

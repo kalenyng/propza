@@ -14,9 +14,26 @@ export class PwaInstallService {
   
   // Signal to indicate if install is available
   canInstall = signal<boolean>(false);
+  
+  // Signal to indicate if this is iOS
+  isIOS = signal<boolean>(false);
 
   constructor() {
+    this.detectIOS();
     this.initializePromptListener();
+  }
+
+  private detectIOS(): void {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
+    const isStandalone = (window.navigator as any).standalone === true || 
+                        window.matchMedia('(display-mode: standalone)').matches;
+    
+    // Show iOS prompt if on iOS device and NOT already installed
+    if (isIOSDevice && !isStandalone && !this.isDismissed()) {
+      this.isIOS.set(true);
+      console.log('[PWA Install] iOS device detected');
+    }
   }
 
   private initializePromptListener(): void {
