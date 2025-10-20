@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-<parameter name="CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
+import { CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { BetaAccessService } from '../services/beta-access.service';
 import { AuthService } from '../services/auth.service';
 
