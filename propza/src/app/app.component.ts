@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from './core/services/theme.service';
-import { PwaInstallService } from './core/services/pwa-install.service';
-import { PwaInstallPromptComponent } from './shared/components/pwa-install-prompt/pwa-install-prompt.component';
 import { PreloaderComponent } from './shared/components/preloader/preloader.component';
 import { AuthService } from './core/services/auth.service';
 import { BetaAccessService } from './core/services/beta-access.service';
@@ -12,7 +10,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, PwaInstallPromptComponent, PreloaderComponent],
+  imports: [RouterOutlet, CommonModule, PreloaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -22,7 +20,6 @@ export class AppComponent implements OnInit {
   
   constructor(
     private theme: ThemeService,
-    private pwaInstall: PwaInstallService,
     private auth: AuthService,
     private betaAccess: BetaAccessService,
     private router: Router

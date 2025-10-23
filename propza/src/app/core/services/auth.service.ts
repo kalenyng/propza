@@ -6,8 +6,11 @@ import { SupabaseService } from './supabase.service';
 export class AuthService {
   readonly session = signal<Session | null>(null);
   readonly user = signal<User | null>(null);
+  readonly userName = signal<string>('');
   private sessionInitialized = false;
   private sessionInitPromise: Promise<void>;
+  private userNameInitialized = false;
+  private userNameInitPromise: Promise<void> = Promise.resolve();
 
   constructor(public supabase: SupabaseService) {
     // Initialize session and store the promise
@@ -17,6 +20,14 @@ export class AuthService {
     this.supabase.supabase.auth.onAuthStateChange((_event, session) => {
       this.session.set(session);
       this.user.set(session?.user ?? null);
+      
+      // Update user name when auth state changes
+      if (session?.user) {
+        this.initializeUserName(session.user);
+      } else {
+        this.userName.set('');
+        this.userNameInitialized = false;
+      }
     });
   }
 
@@ -25,11 +36,60 @@ export class AuthService {
     this.session.set(data.session);
     this.user.set(data.session?.user ?? null);
     this.sessionInitialized = true;
+    
+    // Initialize user name if user is logged in
+    if (data.session?.user) {
+      this.initializeUserName(data.session.user);
+    }
+  }
+
+  private async initializeUserName(user: User): Promise<void> {
+    if (this.userNameInitialized) {
+      return;
+    }
+    
+    this.userNameInitPromise = this.fetchUserName(user);
+    await this.userNameInitPromise;
+    this.userNameInitialized = true;
+  }
+
+  private async fetchUserName(user: User): Promise<void> {
+    try {
+      // Try to get name from profiles table first
+      const { data } = await this.supabase.supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+      
+      if (data?.full_name) {
+        const firstName = String(data.full_name).split(' ')[0];
+        this.userName.set(firstName);
+        return;
+      }
+    } catch {
+      // Fallback to metadata
+    }
+    
+    // Fallback to user metadata
+    const metadata = user.user_metadata || {};
+    const firstName = String(metadata['first_name'] || 
+                     (metadata['full_name'] as string)?.split(' ')[0] ||
+                     (metadata['name'] as string)?.split(' ')[0] || 
+                     '');
+    
+    this.userName.set(firstName);
   }
 
   async waitForSession(): Promise<void> {
     if (!this.sessionInitialized) {
       await this.sessionInitPromise;
+    }
+  }
+
+  async waitForUserName(): Promise<void> {
+    if (!this.userNameInitialized && this.user()) {
+      await this.userNameInitPromise;
     }
   }
 
@@ -99,6 +159,12 @@ export class AuthService {
       const { data } = await this.supabase.supabase.auth.getSession();
       this.session.set(data.session);
       this.user.set(data.session?.user ?? null);
+      
+      // Update cached user name if profile was updated
+      if (data.session?.user && (firstName || fullName)) {
+        const updatedFirstName = firstName || fullName?.split(' ')[0] || '';
+        this.userName.set(updatedFirstName);
+      }
     }
     
     return error ?? null;

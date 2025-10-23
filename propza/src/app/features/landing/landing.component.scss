@@ -837,3 +837,60 @@
     gap: 12px;
   }
 }
+
+/* Install Section Styles */
+.install-section {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.install-divider {
+  position: relative;
+  margin: 24px 0;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  span {
+    background: linear-gradient(135deg, #0E3D2E, #16a34a);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+  }
+}
+
+.btn-install {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.install-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  margin: 12px 0 0;
+  font-weight: 400;
+}
+

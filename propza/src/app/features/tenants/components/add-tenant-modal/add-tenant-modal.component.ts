@@ -8,6 +8,7 @@ import { SupabaseService } from '../../../../core/services/supabase.service';
 import { PropertyService } from '../../../../core/services/property.service';
 import { RentHelperService } from '../../../../core/services/rent-helper.service';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { SanitizationService } from '../../../../core/services/sanitization.service';
 
 @Component({
   selector: 'app-add-tenant-modal',
@@ -23,6 +24,7 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
   private rentHelper = inject(RentHelperService);
   private destroy$ = new Subject<void>();
   translate = inject(TranslationService);
+  private sanitizer = inject(SanitizationService);
 
   vacantProperties: Array<{ id: string; name: string; address: string; rent_amount: number }> = [];
   loading = false;
@@ -112,17 +114,17 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
 
       // Create tenant record
       const { error: tenantErr } = await this.supabase.supabase.from('tenants').insert({
-      name: formValue.name!,
-      email: formValue.email || null,
-      phone: formValue.phone || null,
+      name: this.sanitizer.sanitizeText(formValue.name!),
+      email: this.sanitizer.sanitizeEmail(formValue.email || ''),
+      phone: this.sanitizer.sanitizePhone(formValue.phone || ''),
       property_id: formValue.propertyId!,
-      rent_amount: formValue.rentAmount!,
+      rent_amount: this.sanitizer.sanitizeNumber(formValue.rentAmount!) || 0,
       rent_status: initialRentStatus,
       rent_due_date: formValue.rentDueDate!,
       lease_start_date: formValue.leaseStartDate!,
       lease_end_date: formValue.leaseEndDate || null,
-      deposit_amount: formValue.deposit || 0,
-      notes: formValue.notes || null
+      deposit_amount: this.sanitizer.sanitizeNumber(formValue.deposit) || 0,
+      notes: this.sanitizer.sanitizeNotes(formValue.notes || '')
     });
 
       if (tenantErr) {

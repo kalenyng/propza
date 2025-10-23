@@ -42,10 +42,9 @@
     </div>
 
 
-    <!-- Tenant Cards Grid -->
-    <div class="tenants-grid">
-      @if (loading) {
-        <!-- Loading Skeletons -->
+    @if (loading) {
+      <!-- Loading Skeletons -->
+      <div class="tenants-grid">
         @for (i of [1,2,3]; track i) {
           <div class="skeleton-card">
             <div class="skeleton-header">
@@ -61,42 +60,44 @@
             </div>
           </div>
         }
-      } @else if (filteredTenants.length > 0) {
-        <!-- Tenant Cards -->
+      </div>
+    } @else if (filteredTenants.length > 0) {
+      <!-- Tenant Cards Grid -->
+      <div class="tenants-grid">
         <div *ngFor="let tenant of filteredTenants; trackBy: trackByTenantId">
           <app-tenant-card
             [tenant]="tenant"
             (cardClick)="openTenantDetails($event)">
           </app-tenant-card>
         </div>
-      } @else {
-        <!-- Empty State -->
-        <div class="empty-state">
-          <div class="empty-icon">
-            <svg width="64" height="64" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="40" cy="30" r="12" stroke="currentColor" stroke-width="3" fill="none"/>
-              <path d="M20 65C20 55 28 48 40 48C52 48 60 55 60 65" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <h3 class="empty-title">{{ translate.t('tenants.noTenantsFound') }}</h3>
-          <p class="empty-description">
-            @if (allTenants.length === 0) {
-              {{ translate.t('tenants.getStarted') }}
-            } @else {
-              {{ translate.t('tenants.noMatches') }}
-            }
-          </p>
-          @if (allTenants.length === 0) {
-            <button class="btn-add-tenant-empty" (click)="openAddTenantModal()">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-              {{ translate.t('tenants.addTenant') }}
-            </button>
-          }
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg width="64" height="64" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="30" r="12" stroke="currentColor" stroke-width="3" fill="none"/>
+            <path d="M20 65C20 55 28 48 40 48C52 48 60 55 60 65" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
         </div>
-      }
-    </div>
+        <h3 class="empty-title">{{ translate.t('tenants.noTenantsFound') }}</h3>
+        <p class="empty-description">
+          @if (selectedFilter === 'all') {
+            {{ translate.t('tenants.getStarted') }}
+          } @else {
+            {{ translate.t('tenants.noMatches') }}
+          }
+        </p>
+        @if (selectedFilter === 'all') {
+          <button class="btn-add-tenant-empty" (click)="openAddTenantModal()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            {{ translate.t('tenants.addTenant') }}
+          </button>
+        }
+      </div>
+    }
   </div>
 
   <!-- Floating Add Button (when tenants exist) -->

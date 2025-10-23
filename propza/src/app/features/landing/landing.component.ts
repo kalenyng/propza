@@ -2,18 +2,25 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BetaAccessService } from '../../core/services/beta-access.service';
+import { AuthService } from '../../core/services/auth.service';
+import { PwaInstallService } from '../../core/services/pwa-install.service';
+import { IosInstallModalComponent } from '../../shared/components/ios-install-modal/ios-install-modal.component';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IosInstallModalComponent],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss'
 })
 export class LandingComponent {
+  showIOSModal = false;
+
   constructor(
     private router: Router,
-    public betaAccess: BetaAccessService
+    public betaAccess: BetaAccessService,
+    public auth: AuthService,
+    public pwaInstall: PwaInstallService
   ) {}
 
   goToRegister(): void {
@@ -38,6 +45,34 @@ export class LandingComponent {
     if (nextSection) {
       nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  }
+
+  // Check if user should see install prompt
+  shouldShowInstallPrompt(): boolean {
+    return !!this.auth.user() && this.betaAccess.hasAccess();
+  }
+
+  // Handle install button click
+  async onInstallClick(): Promise<void> {
+    if (this.pwaInstall.isIOS()) {
+      // For iOS, show the modal
+      this.showIOSModal = true;
+    } else {
+      // For Android/Desktop, use the native prompt
+      await this.pwaInstall.promptInstall();
+    }
+  }
+
+  // Handle iOS modal dismissal
+  onDismissIOSModal(): void {
+    this.showIOSModal = false;
+    this.pwaInstall.dismissPrompt();
+  }
+
+  // Handle iOS modal completion
+  onIOSGotIt(): void {
+    this.showIOSModal = false;
+    this.pwaInstall.dismissPrompt();
   }
 }
 

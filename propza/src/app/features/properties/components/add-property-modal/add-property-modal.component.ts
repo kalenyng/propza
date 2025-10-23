@@ -5,6 +5,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { TranslationService } from '../../../../core/services/translation.service';
 import { RentHelperService } from '../../../../core/services/rent-helper.service';
+import { SanitizationService } from '../../../../core/services/sanitization.service';
 
 @Component({
   selector: 'app-add-property-modal',
@@ -19,6 +20,7 @@ export class AddPropertyModalComponent {
   activeModal = inject(NgbActiveModal);
   translate = inject(TranslationService);
   private rentHelper = inject(RentHelperService);
+  private sanitizer = inject(SanitizationService);
 
   loading = false;
   leaseFile?: File;
@@ -107,13 +109,13 @@ export class AddPropertyModalComponent {
       .insert([
         {
           owner_id: userId,
-          name: v.name,
-          rent_amount: Number(v.rent_amount),
+          name: this.sanitizer.sanitizeText(v.name || ''),
+          rent_amount: this.sanitizer.sanitizeNumber(v.rent_amount) || 0,
           status: occupied ? 'occupied' : 'vacant',
           lease_url: lease_url || null,
           currency: 'ZAR', // ensure non-null text
-          address: v.name || 'No address', // temp default
-          tenant: occupied ? v.tenant || null : null,
+          address: this.sanitizer.sanitizeAddress(v.name || 'No address'),
+          tenant: occupied ? this.sanitizer.sanitizeText(v.tenant || '') : null,
         }
       ])
       .select()
@@ -155,17 +157,17 @@ export class AddPropertyModalComponent {
 
       // 4) Insert tenant record in tenants table
       const { error: tenantErr } = await this.supa.supabase.from('tenants').insert({
-        name: v.tenant,
-        email: v.tenant_email || null,
-        phone: v.tenant_phone || null,
+        name: this.sanitizer.sanitizeText(v.tenant || ''),
+        email: this.sanitizer.sanitizeEmail(v.tenant_email || ''),
+        phone: this.sanitizer.sanitizePhone(v.tenant_phone || ''),
         property_id: prop.id,
-        rent_amount: Number(v.rent_amount),
+        rent_amount: this.sanitizer.sanitizeNumber(v.rent_amount) || 0,
         rent_status: 'upcoming', // Default status for new tenants
         rent_due_date: v.next_payment_due,
         lease_start_date: v.tenancy_start,
         lease_end_date: v.tenancy_end || null,
-        deposit_amount: Number(v.deposit) || 0,
-        notes: v.tenant_notes || null
+        deposit_amount: this.sanitizer.sanitizeNumber(v.deposit) || 0,
+        notes: this.sanitizer.sanitizeNotes(v.tenant_notes || '')
       });
 
       if (tenantErr) {

@@ -1,0 +1,285 @@
+/* iOS Installation Modal - Improved Styles */
+.ios-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 24px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.ios-modal {
+  background: var(--card, white);
+  border-radius: 28px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  color: var(--text, #333);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+  }
+}
+
+.modal-header {
+  text-align: center;
+  padding: 48px 40px 32px;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  color: white;
+  flex-shrink: 0;
+
+  .modal-icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    line-height: 1.2;
+  }
+
+  p {
+    font-size: 18px;
+    opacity: 0.9;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+.modal-steps {
+  padding: 40px 40px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.step {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.step-number {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.step-content {
+  flex: 1;
+  padding-top: 6px;
+}
+
+.step-text {
+  font-size: 18px;
+  color: var(--text, #333);
+  margin: 0;
+  line-height: 1.6;
+
+  strong {
+    color: #16a34a;
+    font-weight: 600;
+  }
+}
+
+.share-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(22, 163, 74, 0.1);
+  margin-left: 12px;
+  vertical-align: middle;
+
+  svg {
+    color: #16a34a;
+  }
+}
+
+.modal-footer {
+  padding: 0 40px 40px;
+  flex-shrink: 0;
+
+  .btn-primary {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(22, 163, 74, 0.5);
+    }
+
+    &:active {
+      transform: translateY(-1px);
+    }
+  }
+}
+
+/* Dark mode support */
+:host-context(.dark-theme) {
+  .ios-modal {
+    background: #1a1a1a;
+  }
+
+  .modal-close {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .step-text {
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mobile adjustments for modal */
+@media (max-width: 480px) {
+  .ios-modal-overlay {
+    padding: 16px;
+  }
+
+  .ios-modal {
+    border-radius: 24px;
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 40px 28px 28px;
+
+    .modal-icon {
+      width: 72px;
+      height: 72px;
+      margin-bottom: 20px;
+
+      svg {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    h2 {
+      font-size: 28px;
+    }
+
+    p {
+      font-size: 16px;
+    }
+  }
+
+  .modal-steps {
+    padding: 32px 28px 28px;
+    gap: 28px;
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .step-text {
+    font-size: 16px;
+  }
+
+  .modal-footer {
+    padding: 0 28px 32px;
+
+    .btn-primary {
+      padding: 16px;
+      font-size: 16px;
+    }
+  }
+
+  .modal-close {
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+
+    svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+}
