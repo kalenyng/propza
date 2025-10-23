@@ -25,6 +25,12 @@ const distDir = path.join(__dirname, '..', 'dist', 'propza', 'browser');
 
 console.log(`🔧 Replacing environment variables in built files (${isDev ? 'development' : 'production'} mode)...`);
 
+// Add debugging
+console.log('Environment variables found:');
+Object.entries(envVars).forEach(([key, value]) => {
+  console.log(`${key}: ${value ? '***' : 'EMPTY'}`);
+});
+
 // Function to replace environment variables in a file
 function replaceEnvVars(filePath) {
   try {
@@ -38,7 +44,11 @@ function replaceEnvVars(filePath) {
       const regexDouble = new RegExp(`process\\.env\\["${key}"\\]`, 'g');
       const replacement = `"${value}"`;
       
-      if (content.includes(`process.env['${key}']`) || content.includes(`process.env["${key}"]`)) {
+      const hasSingleQuote = content.includes(`process.env['${key}']`);
+      const hasDoubleQuote = content.includes(`process.env["${key}"]`);
+      
+      if (hasSingleQuote || hasDoubleQuote) {
+        console.log(`🔍 Found ${key} in ${path.relative(distDir, filePath)} (single: ${hasSingleQuote}, double: ${hasDoubleQuote})`);
         content = content.replace(regexSingle, replacement);
         content = content.replace(regexDouble, replacement);
         modified = true;
