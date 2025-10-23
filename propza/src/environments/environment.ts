@@ -1,9 +1,9 @@
 export const environment = {
   production: false,
-  supabaseUrl: 'https://szmsslujuqdrsgogzaaw.supabase.co',
-  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6bXNzbHVqdXFkcnNnb2d6YWF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NzY2NDEsImV4cCI6MjA3NjA1MjY0MX0.qLN2t7glHvuVwxgwiMAFTsFiWL2n4gei3DdwVf4J9WQ',
-  requiresBetaAccess: true,
-  betaAccessCodeHash: 'MzcyODQ3'
+  supabaseUrl: process.env['SUPABASE_URL'] || '',
+  supabaseAnonKey: process.env['SUPABASE_ANON_KEY'] || '',
+  requiresBetaAccess: process.env['REQUIRES_BETA_ACCESS'] === 'true',
+  betaAccessCodeHash: process.env['BETA_ACCESS_CODE_HASH'] || ''
 };
 
 
