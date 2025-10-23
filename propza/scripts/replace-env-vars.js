@@ -121,3 +121,4 @@ if (!fs.existsSync(distDir)) {
 processDirectory(distDir);
 
 console.log('🎉 Environment variable replacement complete!');
+console.log(`KFTY - ${new Date().toISOString()}`); // Hidden signature with timestamp

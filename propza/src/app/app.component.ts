@@ -6,6 +6,7 @@ import { PreloaderComponent } from './shared/components/preloader/preloader.comp
 import { AuthService } from './core/services/auth.service';
 import { BetaAccessService } from './core/services/beta-access.service';
 import { Router } from '@angular/router';
+import { LoggerService } from './core/services/logger.service';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,8 @@ export class AppComponent implements OnInit {
     private theme: ThemeService,
     private auth: AuthService,
     private betaAccess: BetaAccessService,
-    private router: Router
+    private router: Router,
+    private logger: LoggerService
   ) {
     void this.theme.loadTheme();
   }
@@ -44,7 +46,7 @@ export class AppComponent implements OnInit {
         }
       }
     } catch (error) {
-      console.error('Error during app initialization:', error);
+      this.logger.error('Error during app initialization:', error);
     } finally {
       // Hide preloader after a minimum delay to prevent flash
       setTimeout(() => {

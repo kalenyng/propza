@@ -20,6 +20,7 @@ export class SupabaseService {
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true,
+        debug: false, // Disables internal SDK logs in production to suppress lock warnings
         storage: typeof window !== 'undefined' ? window.localStorage : undefined
       }
     });

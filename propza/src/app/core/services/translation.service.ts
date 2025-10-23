@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { LoggerService } from './logger.service';
 
 export type Language = 'en' | 'af' | 'zu' | 'xh';
 
@@ -1416,7 +1417,7 @@ export class TranslationService {
     }
   };
 
-  constructor() {
+  constructor(private logger: LoggerService) {
     this.initialize();
   }
 
@@ -1432,7 +1433,7 @@ export class TranslationService {
   translate(key: string): string {
     const translation = this.translations[key];
     if (!translation) {
-      console.warn(`Translation missing for key: ${key}`);
+      this.logger.warn(`Translation missing for key: ${key}`);
       return key;
     }
     return translation[this.currentLanguage()] || translation.en;
