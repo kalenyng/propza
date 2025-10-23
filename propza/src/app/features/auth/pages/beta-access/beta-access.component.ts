@@ -109,7 +109,7 @@ export class BetaAccessComponent {
   /**
    * Validate the entered access code
    */
-  validateAccess(): void {
+  async validateAccess(): Promise<void> {
     const code = this.digits().join('');
     
     if (code.length !== 6) {
@@ -117,7 +117,7 @@ export class BetaAccessComponent {
       return;
     }
 
-    const isValid = this.betaAccessService.validateCode(code);
+    const isValid = await this.betaAccessService.validateCode(code);
     
     if (isValid) {
       // Navigate to login page to start authentication

@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
 import { BetaAccessService } from '../../core/services/beta-access.service';
 
 @Component({
@@ -11,19 +10,18 @@ import { BetaAccessService } from '../../core/services/beta-access.service';
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss'
 })
-export class LandingComponent implements OnInit {
+export class LandingComponent {
   constructor(
     private router: Router,
-    private auth: AuthService,
-    private betaAccess: BetaAccessService
+    public betaAccess: BetaAccessService
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.auth.waitForSession();
-    
-    if (this.auth.user() && this.betaAccess.hasAccess()) {
-      this.router.navigateByUrl('/home');
-    }
+  goToRegister(): void {
+    this.router.navigateByUrl('/register');
+  }
+
+  goToLogin(): void {
+    this.router.navigateByUrl('/login');
   }
 
   goToBetaAccess(): void {

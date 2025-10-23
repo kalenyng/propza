@@ -13,22 +13,45 @@
       </p>
 
       <div class="cta-buttons">
-        <button class="btn-primary btn-large" (click)="joinBeta()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-          </svg>
-          Join Beta
-        </button>
-        <button class="btn-secondary btn-large" (click)="goToBetaAccess()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          I have a code
-        </button>
+        <!-- Show different buttons based on beta access requirement -->
+        <ng-container *ngIf="betaAccess.isBetaAccessRequired(); else publicButtons">
+          <!-- Beta Access Required -->
+          <button class="btn-primary btn-large" (click)="joinBeta()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Join Beta
+          </button>
+          <button class="btn-secondary btn-large" (click)="goToBetaAccess()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            I have a code
+          </button>
+        </ng-container>
+        
+        <ng-template #publicButtons>
+          <!-- Public Launch - No Beta Required -->
+          <button class="btn-primary btn-large" (click)="goToRegister()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M20 8v6M16 11l4-4 4 4"/>
+            </svg>
+            Create Account
+          </button>
+          <button class="btn-secondary btn-large" (click)="goToLogin()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Sign In
+          </button>
+        </ng-template>
       </div>
     </div>
 
@@ -246,14 +269,47 @@
   <!-- CTA Section -->
   <section class="cta-section">
     <h2>Ready to get started?</h2>
-    <p>Join our beta program and be among the first to experience modern property management.</p>
+    <p *ngIf="betaAccess.isBetaAccessRequired()">Join our beta program and be among the first to experience modern property management.</p>
+    <p *ngIf="!betaAccess.isBetaAccessRequired()">Start managing your properties today with our modern, intuitive platform.</p>
     <div class="cta-buttons">
-      <button class="btn-primary btn-large" (click)="joinBeta()">
-        Request Beta Access
-      </button>
-      <button class="btn-secondary btn-large" (click)="goToBetaAccess()">
-        I have a code
-      </button>
+      <ng-container *ngIf="betaAccess.isBetaAccessRequired(); else publicCtaButtons">
+        <!-- Beta Access Required -->
+        <button class="btn-primary btn-large" (click)="joinBeta()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Request Beta Access
+        </button>
+        <button class="btn-secondary btn-large" (click)="goToBetaAccess()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          I have a code
+        </button>
+      </ng-container>
+      
+      <ng-template #publicCtaButtons>
+        <!-- Public Launch - No Beta Required -->
+        <button class="btn-primary btn-large" (click)="goToRegister()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M20 8v6M16 11l4-4 4 4"/>
+          </svg>
+          Create Account
+        </button>
+        <button class="btn-secondary btn-large" (click)="goToLogin()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Sign In
+        </button>
+      </ng-template>
     </div>
   </section>
 
