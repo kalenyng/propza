@@ -61,20 +61,26 @@ function replaceEnvVars(filePath) {
       });
     }
 
-    // Replace process.env['VARIABLE_NAME'] and process.env["VARIABLE_NAME"] with actual values
+    // Replace process.env['VARIABLE_NAME'], process.env["VARIABLE_NAME"], and process.env.VARIABLE_NAME with actual values
     Object.entries(envVars).forEach(([key, value]) => {
-      // Handle both single and double quotes
+      // Handle different patterns:
+      // 1. process.env['KEY'] (single quotes)
+      // 2. process.env["KEY"] (double quotes)  
+      // 3. process.env.KEY (no quotes - minified)
       const regexSingle = new RegExp(`process\\.env\\['${key}'\\]`, 'g');
       const regexDouble = new RegExp(`process\\.env\\["${key}"\\]`, 'g');
+      const regexNoQuotes = new RegExp(`process\\.env\\.${key}`, 'g');
       const replacement = `"${value}"`;
       
       const hasSingleQuote = content.includes(`process.env['${key}']`);
       const hasDoubleQuote = content.includes(`process.env["${key}"]`);
+      const hasNoQuotes = content.includes(`process.env.${key}`);
       
-      if (hasSingleQuote || hasDoubleQuote) {
-        console.log(`🔍 Found ${key} in ${path.relative(distDir, filePath)} (single: ${hasSingleQuote}, double: ${hasDoubleQuote})`);
+      if (hasSingleQuote || hasDoubleQuote || hasNoQuotes) {
+        console.log(`🔍 Found ${key} in ${path.relative(distDir, filePath)} (single: ${hasSingleQuote}, double: ${hasDoubleQuote}, no-quotes: ${hasNoQuotes})`);
         content = content.replace(regexSingle, replacement);
         content = content.replace(regexDouble, replacement);
+        content = content.replace(regexNoQuotes, replacement);
         modified = true;
         console.log(`✅ Replaced ${key} with ${value ? '***' : 'empty string'}`);
       }
