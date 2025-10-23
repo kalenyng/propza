@@ -37,6 +37,30 @@ function replaceEnvVars(filePath) {
     let content = fs.readFileSync(filePath, 'utf8');
     let modified = false;
 
+    // Debug: Check if file contains any environment-related content
+    if ((filePath.includes('main-') || filePath.includes('main.js')) && filePath.endsWith('.js')) {
+      console.log(`🔍 Checking file: ${path.relative(distDir, filePath)}`);
+      
+      // Look for any environment-related patterns
+      const envPatterns = [
+        'process.env',
+        'NG_APP_SUPABASE_URL',
+        'NG_APP_SUPABASE_ANON_KEY',
+        'supabaseUrl',
+        'supabaseAnonKey'
+      ];
+      
+      envPatterns.forEach(pattern => {
+        if (content.includes(pattern)) {
+          console.log(`  Found "${pattern}" in file`);
+          // Show a snippet around the pattern
+          const index = content.indexOf(pattern);
+          const snippet = content.substring(Math.max(0, index - 50), index + 100);
+          console.log(`  Snippet: ...${snippet}...`);
+        }
+      });
+    }
+
     // Replace process.env['VARIABLE_NAME'] and process.env["VARIABLE_NAME"] with actual values
     Object.entries(envVars).forEach(([key, value]) => {
       // Handle both single and double quotes
