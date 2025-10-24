@@ -11,9 +11,13 @@ import { CommonModule } from '@angular/common';
 export class PreloaderComponent implements OnInit {
   showGif = true;
   showPng = false;
+  pngPreloaded = false;
 
   ngOnInit(): void {
     console.log('Preloader initialized, showing GIF');
+    
+    // Preload the PNG image while GIF is playing
+    this.preloadPng();
     
     // Switch to PNG after GIF completes (3200ms - exactly 3.2 seconds)
     setTimeout(() => {
@@ -21,5 +25,17 @@ export class PreloaderComponent implements OnInit {
       this.showGif = false;
       this.showPng = true;
     }, 3200);
+  }
+
+  private preloadPng(): void {
+    const img = new Image();
+    img.onload = () => {
+      console.log('PNG preloaded successfully');
+      this.pngPreloaded = true;
+    };
+    img.onerror = () => {
+      console.error('Failed to preload PNG');
+    };
+    img.src = '/final-frame.png';
   }
 }
