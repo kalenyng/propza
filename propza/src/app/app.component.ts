@@ -30,6 +30,10 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    const animationDuration = 3200; // GIF duration (3.2 seconds)
+    const minDisplayTime = 4000; // Minimum 4 seconds total display
+    let appReady = false;
+    
     try {
       // Wait for authentication to be checked
       await this.auth.waitForSession();
@@ -45,13 +49,18 @@ export class AppComponent implements OnInit {
           await this.router.navigateByUrl('/home');
         }
       }
+      
+      appReady = true;
     } catch (error) {
       this.logger.error('Error during app initialization:', error);
+      appReady = true; // Still hide preloader even if there's an error
     } finally {
-      // Hide preloader after a minimum delay to prevent flash
+      // Calculate when to hide preloader
+      const hideDelay = Math.max(minDisplayTime, appReady ? animationDuration + 500 : minDisplayTime);
+      
       setTimeout(() => {
         this.showPreloader = false;
-      }, 500);
+      }, hideDelay);
     }
   }
 }

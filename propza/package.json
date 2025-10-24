@@ -14,7 +14,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "prebuild": "ts-node scripts/generate-env.ts",
-    "postbuild": "echo '\n🎉 Environment variable replacement complete! KFTY -' && date"
+    "postbuild": "echo '\n🎉 Environment variable replacement complete! KFTY -' && date",
+    "kill": "lsof -ti:4201 | xargs kill -9 2>/dev/null || echo 'No process running on port 4201'"
   },
   "private": true,
   "dependencies": {

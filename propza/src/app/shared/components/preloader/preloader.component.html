@@ -1,7 +1,16 @@
 <div class="preloader">
   <div class="preloader-content">
     <div class="logo-wrapper">
-      <img src="/propzaMain.png" alt="Propza" class="logo-image">
+      <img 
+        *ngIf="showGif" 
+        src="/propza-main.gif" 
+        alt="Propza" 
+        class="logo-image logo-gif">
+      <img 
+        *ngIf="showPng" 
+        src="/final-frame.png" 
+        alt="Propza" 
+        class="logo-image logo-png">
     </div>
     <div class="spinner-container">
       <div class="spinner-ring"></div>
