@@ -2,15 +2,15 @@
   <div class="preloader-content">
     <div class="logo-wrapper">
       <img 
-        *ngIf="showGif" 
         src="/propza-main.gif" 
         alt="Propza" 
-        class="logo-image logo-gif">
+        class="logo-image logo-gif"
+        [class.fade-out]="!showGif">
       <img 
-        *ngIf="showPng" 
         src="/final-frame.png" 
         alt="Propza" 
-        class="logo-image logo-png">
+        class="logo-image logo-png"
+        [class.fade-in]="showPng">
     </div>
     <div class="spinner-container">
       <div class="spinner-ring"></div>

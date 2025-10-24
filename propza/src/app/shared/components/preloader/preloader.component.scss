@@ -57,6 +57,12 @@
   object-fit: contain;
   object-position: center;
   background: transparent;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+  
+  &.fade-out {
+    opacity: 0;
+  }
 }
 
 .logo-png {
@@ -70,6 +76,12 @@
   object-position: center;
   animation: breathe 2.5s ease-in-out infinite;
   background: transparent;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  
+  &.fade-in {
+    opacity: 1;
+  }
 }
 
 .spinner-container {

@@ -22,8 +22,12 @@ export class PreloaderComponent implements OnInit {
     // Switch to PNG after GIF completes (3200ms - exactly 3.2 seconds)
     setTimeout(() => {
       console.log('Switching to PNG (final frame) with breathing animation');
-      this.showGif = false;
       this.showPng = true;
+      
+      // Fade out GIF after a brief delay to ensure smooth transition
+      setTimeout(() => {
+        this.showGif = false;
+      }, 150);
     }, 3200);
   }
 
