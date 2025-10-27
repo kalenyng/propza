@@ -49,9 +49,9 @@ export class LandingComponent {
 
   // Check if user should see install prompt
   shouldShowInstallPrompt(): boolean {
-    // Only show button on mobile devices (Android/iOS), hide on desktop
-    const isMobileDevice = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(window.navigator.userAgent.toLowerCase());
-    return isMobileDevice && (this.pwaInstall.canInstall() || this.pwaInstall.isIOS());
+    // Only show button on mobile screen sizes and when PWA is supported
+    const isMobileScreen = window.innerWidth <= 768;
+    return isMobileScreen;
   }
 
   // Handle install button click
