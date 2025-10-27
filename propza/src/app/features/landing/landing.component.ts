@@ -49,19 +49,21 @@ export class LandingComponent {
 
   // Check if user should see install prompt
   shouldShowInstallPrompt(): boolean {
-    // Show install prompt to all users on landing page if device supports PWA
-    return this.pwaInstall.canInstall() || this.pwaInstall.isIOS();
+    // Only show button on mobile devices (Android/iOS), hide on desktop
+    const isMobileDevice = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(window.navigator.userAgent.toLowerCase());
+    return isMobileDevice && (this.pwaInstall.canInstall() || this.pwaInstall.isIOS());
   }
 
   // Handle install button click
   async onInstallClick(): Promise<void> {
     if (this.pwaInstall.isIOS()) {
-      // For iOS, show the modal
+      // For iOS, show the modal with instructions
       this.showIOSModal = true;
-    } else {
-      // For Android/Desktop, use the native prompt
+    } else if (this.pwaInstall.canInstall()) {
+      // For Android/Desktop, use the native browser prompt
       await this.pwaInstall.promptInstall();
     }
+    // If neither, button won't appear or nothing happens
   }
 
   // Handle iOS modal dismissal
