@@ -30,8 +30,7 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    const animationDuration = 3200; // GIF duration (3.2 seconds)
-    const minDisplayTime = 4000; // Minimum 4 seconds total display
+    const displayTime = 4000; // 20 seconds for testing
     let appReady = false;
     
     try {
@@ -55,12 +54,9 @@ export class AppComponent implements OnInit {
       this.logger.error('Error during app initialization:', error);
       appReady = true; // Still hide preloader even if there's an error
     } finally {
-      // Calculate when to hide preloader
-      const hideDelay = Math.max(minDisplayTime, appReady ? animationDuration + 500 : minDisplayTime);
-      
       setTimeout(() => {
         this.showPreloader = false;
-      }, hideDelay);
+      }, displayTime);
     }
   }
 }

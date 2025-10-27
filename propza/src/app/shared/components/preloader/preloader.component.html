@@ -1,27 +1,8 @@
 <div class="preloader">
   <div class="preloader-content">
-    <div class="logo-wrapper">
-      <img 
-        src="/propza-main.gif" 
-        alt="Propza" 
-        class="logo-image logo-gif"
-        [class.fade-out]="!showGif">
-      <img 
-        src="/final-frame.png" 
-        alt="Propza" 
-        class="logo-image logo-png"
-        [class.fade-in]="showPng">
+    <div class="logo-wrapper" [class.breathing]="animationComplete" #lottieContainer></div>
+    <div class="loading-text">
+      Loading<span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span>
     </div>
-    <div class="spinner-container">
-      <div class="spinner-ring"></div>
-    </div>
-    <div class="loading-text">Loading...</div>
   </div>
-  
-  <!-- Hidden preload image to ensure PNG is cached -->
-  <img 
-    src="/final-frame.png" 
-    alt="Preload" 
-    style="display: none;"
-    class="preload-image">
 </div>
