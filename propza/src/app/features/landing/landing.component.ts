@@ -49,7 +49,8 @@ export class LandingComponent {
 
   // Check if user should see install prompt
   shouldShowInstallPrompt(): boolean {
-    return !!this.auth.user() && this.betaAccess.hasAccess();
+    // Show install prompt to all users on landing page if device supports PWA
+    return this.pwaInstall.canInstall() || this.pwaInstall.isIOS();
   }
 
   // Handle install button click
