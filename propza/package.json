@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "npm run dev",
-    "dev": "npm run build:dev && concurrently \"npm run watch\" \"npm run serve:dev\"",
+    "start": "npm run build:dev && npm run serve:dev",
     "serve": "npm run build:dev && npm run serve:dev",
     "build": "ng build",
     "build:dev": "ng build --configuration development && npm run replace-env-vars:dev",
@@ -12,7 +11,7 @@
     "replace-env-vars": "node scripts/replace-env-vars.js",
     "replace-env-vars:dev": "node scripts/replace-env-vars.js dev",
     "serve:dev": "node scripts/dev-server.js",
-    "watch": "node scripts/watch-with-env.js",
+    "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "prebuild": "ts-node scripts/generate-env.ts",
     "postbuild": "echo '\n🎉 Environment variable replacement complete! KFTY -' && date",
