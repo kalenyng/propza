@@ -11,7 +11,9 @@
   z-index: 9999;
   transition: opacity 0.3s ease-out;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  overflow: hidden;
+  overflow: visible;
+  padding: 20px;
+  box-sizing: border-box;
 
   &::before {
     content: '';
@@ -48,6 +50,7 @@
   ::ng-deep svg {
     width: 100%;
     height: 100%;
+    overflow: visible;
   }
 }
 
