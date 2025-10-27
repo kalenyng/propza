@@ -78,7 +78,31 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`🚀 Development server running at http://localhost:${PORT}`);
+const os = require('os');
+
+// Helper to get local IP
+function getLocalIP() {
+  for (const name of Object.keys(os.networkInterfaces())) {
+    for (const iface of os.networkInterfaces()[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return 'localhost';
+}
+
+server.listen(PORT, '0.0.0.0', () => {
+  const localIP = getLocalIP();
+  console.log(`🚀 Development server running:`);
+  console.log(`   Local:   http://localhost:${PORT}`);
+  console.log(`   Mobile:  http://${localIP}:${PORT}`);
   console.log(`📁 Serving files from: ${DIST_DIR}`);
+});
+
+// Watch for file changes and log
+fs.watch(DIST_DIR, { recursive: true }, (eventType, filename) => {
+  if (filename) {
+    console.log(`📝 File changed: ${filename}`);
+  }
 });

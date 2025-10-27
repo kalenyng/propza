@@ -25,6 +25,9 @@ export class PreloaderComponent implements OnInit, AfterViewInit {
       container: this.lottieContainer.nativeElement,
       path: '/propza-logo.json',
       renderer: 'svg',
+      rendererSettings: {
+        preserveAspectRatio: 'xMidYMid meet'
+      },
       loop: false, // Play once and freeze on last frame
       autoplay: true
     });
