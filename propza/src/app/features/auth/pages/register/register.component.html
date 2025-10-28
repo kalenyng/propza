@@ -29,18 +29,24 @@
     </div>
 
     <!-- Email/Password Form -->
-    <form (ngSubmit)="register()" #form="ngForm">
+    <form [formGroup]="form" (ngSubmit)="register()">
       <div class="form-group">
         <label for="fullName">Full name</label>
         <input
           id="fullName"
           type="text"
-          name="fullName"
-          [(ngModel)]="fullName"
+          formControlName="fullName"
           placeholder="John Doe"
-          required
-          minlength="2"
+          [class.error]="form.get('fullName')?.invalid && form.get('fullName')?.touched"
+          aria-describedby="fullName-error"
         />
+        <div 
+          id="fullName-error" 
+          class="field-error" 
+          aria-live="polite"
+          *ngIf="getFieldError('fullName')">
+          {{ getFieldError('fullName') }}
+        </div>
       </div>
 
       <div class="form-group">
@@ -48,12 +54,18 @@
         <input
           id="email"
           type="email"
-          name="email"
-          [(ngModel)]="email"
+          formControlName="email"
           placeholder="you@example.com"
-          required
-          email
+          [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
+          aria-describedby="email-error"
         />
+        <div 
+          id="email-error" 
+          class="field-error" 
+          aria-live="polite"
+          *ngIf="getFieldError('email')">
+          {{ getFieldError('email') }}
+        </div>
       </div>
 
       <div class="form-group">
@@ -61,19 +73,25 @@
         <input
           id="password"
           type="password"
-          name="password"
-          [(ngModel)]="password"
+          formControlName="password"
           placeholder="Create a strong password"
-          required
-          minlength="6"
+          [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
+          aria-describedby="password-hint password-error"
         />
-        <small class="form-hint">At least 6 characters</small>
+        <small id="password-hint" class="form-hint">At least 6 characters</small>
+        <div 
+          id="password-error" 
+          class="field-error" 
+          aria-live="polite"
+          *ngIf="getFieldError('password')">
+          {{ getFieldError('password') }}
+        </div>
       </div>
 
       <button 
         type="submit" 
         class="btn-primary"
-        [disabled]="loading || form.invalid">
+        [disabled]="loading">
         {{ loading ? 'Creating account...' : 'Create account' }}
       </button>
     </form>

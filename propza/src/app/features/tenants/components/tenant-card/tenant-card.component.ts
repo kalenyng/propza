@@ -13,16 +13,45 @@ export class TenantCardComponent {
   @Input() tenant!: Tenant;
   @Output() cardClick = new EventEmitter<string>();
 
+  /**
+   * Compute the actual rent status based on current date
+   */
+  get actualStatus(): 'paid' | 'overdue' | 'upcoming' | 'vacant' {
+    // If tenant has paid status, keep it (assuming payments are logged)
+    if (this.tenant.rent_status === 'paid') {
+      return 'paid';
+    }
+
+    // Check if rent is overdue by comparing today with rent_due_date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+    
+    const dueDate = new Date(this.tenant.rent_due_date);
+    dueDate.setHours(0, 0, 0, 0);
+
+    // If due date has passed, tenant is overdue (unless already paid)
+    if (dueDate < today) {
+      return 'overdue';
+    }
+
+    // Otherwise, rent is upcoming
+    return 'upcoming';
+  }
+
   get statusColor(): string {
-    switch (this.tenant.rent_status) {
+    switch (this.actualStatus) {
       case 'overdue': return 'red';
+      case 'paid': return 'green';
+      case 'upcoming': return 'blue';
       default: return 'gray';
     }
   }
 
   get statusLabel(): string {
-    switch (this.tenant.rent_status) {
+    switch (this.actualStatus) {
       case 'overdue': return 'Overdue';
+      case 'paid': return 'Paid';
+      case 'upcoming': return 'Upcoming';
       default: return '';
     }
   }
@@ -45,7 +74,7 @@ export class TenantCardComponent {
   }
 
   get isOverdue(): boolean {
-    return this.tenant.rent_status === 'overdue';
+    return this.actualStatus === 'overdue';
   }
 
   get propertyAddress(): string {

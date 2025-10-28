@@ -9,35 +9,53 @@
   <form [formGroup]="form" (ngSubmit)="save()" novalidate>
     <!-- Property name -->
     <div class="mb-3">
-      <label class="form-label">Property name</label>
+      <label class="form-label" for="property-name">Property name</label>
       <input
+        id="property-name"
         class="form-control"
         [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
         formControlName="name"
         placeholder="e.g. 238 Howick Road"
+        aria-describedby="name-error"
       />
-      <div class="invalid-feedback" *ngIf="form.get('name')?.errors?.['required']">
+      <div 
+        id="name-error" 
+        class="invalid-feedback" 
+        aria-live="polite"
+        *ngIf="form.get('name')?.errors?.['required'] && form.get('name')?.touched">
         Property name is required.
       </div>
-      <div class="invalid-feedback" *ngIf="form.get('name')?.errors?.['maxlength']">
+      <div 
+        class="invalid-feedback" 
+        aria-live="polite"
+        *ngIf="form.get('name')?.errors?.['maxlength'] && form.get('name')?.touched">
         Name is too long (max 120 characters).
       </div>
     </div>
 
     <!-- Rent amount -->
     <div class="mb-3">
-      <label class="form-label">Rent amount (ZAR)</label>
+      <label class="form-label" for="rent-amount">Rent amount (ZAR)</label>
       <input
+        id="rent-amount"
         type="number"
         class="form-control"
         [class.is-invalid]="form.get('rent_amount')?.invalid && form.get('rent_amount')?.touched"
         formControlName="rent_amount"
         placeholder="8500"
+        aria-describedby="rent-error"
       />
-      <div class="invalid-feedback" *ngIf="form.get('rent_amount')?.errors?.['required']">
+      <div 
+        id="rent-error" 
+        class="invalid-feedback" 
+        aria-live="polite"
+        *ngIf="form.get('rent_amount')?.errors?.['required'] && form.get('rent_amount')?.touched">
         Rent amount is required.
       </div>
-      <div class="invalid-feedback" *ngIf="form.get('rent_amount')?.errors?.['min']">
+      <div 
+        class="invalid-feedback" 
+        aria-live="polite"
+        *ngIf="form.get('rent_amount')?.errors?.['min'] && form.get('rent_amount')?.touched">
         Rent must be a positive number.
       </div>
     </div>
@@ -63,8 +81,13 @@
           [class.is-invalid]="form.get('tenant')?.invalid && form.get('tenant')?.touched"
           formControlName="tenant"
           placeholder="Enter tenant's full name"
+          aria-describedby="tenant-error"
         />
-        <div class="invalid-feedback" *ngIf="form.get('tenant')?.errors?.['required']">
+        <div 
+          id="tenant-error" 
+          class="invalid-feedback" 
+          aria-live="polite"
+          *ngIf="form.get('tenant')?.errors?.['required'] && form.get('tenant')?.touched">
           Tenant name is required for occupied properties.
         </div>
       </div>
@@ -79,8 +102,13 @@
           [class.is-invalid]="form.get('tenant_email')?.invalid && form.get('tenant_email')?.touched"
           formControlName="tenant_email"
           placeholder="tenant@example.com"
+          aria-describedby="tenant-email-error"
         />
-        <div class="invalid-feedback" *ngIf="form.get('tenant_email')?.errors?.['email']">
+        <div 
+          id="tenant-email-error" 
+          class="invalid-feedback" 
+          aria-live="polite"
+          *ngIf="form.get('tenant_email')?.errors?.['email'] && form.get('tenant_email')?.touched">
           Please enter a valid email address.
         </div>
       </div>
@@ -95,8 +123,13 @@
           [class.is-invalid]="form.get('tenant_phone')?.invalid && form.get('tenant_phone')?.touched"
           formControlName="tenant_phone"
           placeholder="+27 71 234 5678"
+          aria-describedby="tenant-phone-error"
         />
-        <div class="invalid-feedback" *ngIf="form.get('tenant_phone')?.errors?.['required']">
+        <div 
+          id="tenant-phone-error" 
+          class="invalid-feedback" 
+          aria-live="polite"
+          *ngIf="form.get('tenant_phone')?.errors?.['required'] && form.get('tenant_phone')?.touched">
           Phone number is required.
         </div>
       </div>
@@ -134,44 +167,67 @@
 
       <!-- Lease start date -->
       <div class="mb-3">
-        <label class="form-label">Lease Start Date *</label>
+        <label class="form-label" for="tenancy_start">Lease Start Date *</label>
         <input
+          id="tenancy_start"
           type="date"
           class="form-control"
           [class.is-invalid]="form.get('tenancy_start')?.invalid && form.get('tenancy_start')?.touched"
           formControlName="tenancy_start"
+          aria-describedby="date-format-hint-start"
         />
-        <div class="invalid-feedback" *ngIf="form.get('tenancy_start')?.errors?.['required']">
+        <small id="date-format-hint-start" class="form-text text-muted">
+          Type or pick a date (YYYY-MM-DD)
+        </small>
+        <div 
+          class="invalid-feedback" 
+          aria-live="polite"
+          *ngIf="form.get('tenancy_start')?.errors?.['required'] && form.get('tenancy_start')?.touched">
           Start date is required.
         </div>
       </div>
 
       <!-- Next payment due -->
       <div class="mb-3">
-        <label class="form-label">Next Payment Due Date *</label>
+        <label class="form-label" for="next_payment_due">Next Payment Due Date *</label>
         <input
+          id="next_payment_due"
           type="date"
           class="form-control"
           [class.is-invalid]="form.get('next_payment_due')?.invalid && form.get('next_payment_due')?.touched"
           formControlName="next_payment_due"
+          aria-describedby="date-format-hint-next"
         />
-        <div class="invalid-feedback" *ngIf="form.get('next_payment_due')?.errors?.['required']">
+        <small id="date-format-hint-next" class="form-text text-muted">
+          Type or pick a date (YYYY-MM-DD) - when the next rent payment is due
+        </small>
+        <div 
+          class="invalid-feedback" 
+          aria-live="polite"
+          *ngIf="form.get('next_payment_due')?.errors?.['required'] && form.get('next_payment_due')?.touched">
           Next payment due date is required.
         </div>
-        <small class="form-text text-muted">
-          Select when the next rent payment is due
-        </small>
+        <div 
+          class="invalid-feedback" 
+          aria-live="polite"
+          *ngIf="form.get('next_payment_due')?.errors?.['invalidNextPaymentDate'] && form.get('next_payment_due')?.touched">
+          Next payment date must be after lease start date.
+        </div>
       </div>
 
       <!-- Lease end date -->
       <div class="mb-3">
-        <label class="form-label">Lease End Date (Optional)</label>
+        <label class="form-label" for="tenancy_end">Lease End Date (Optional)</label>
         <input
+          id="tenancy_end"
           type="date"
           class="form-control"
           formControlName="tenancy_end"
+          aria-describedby="date-format-hint-end"
         />
-        <small class="form-text text-muted">Leave blank for open-ended lease</small>
+        <small id="date-format-hint-end" class="form-text text-muted">
+          Type or pick a date (YYYY-MM-DD) - Leave blank for open-ended lease
+        </small>
       </div>
 
       <!-- Notes -->

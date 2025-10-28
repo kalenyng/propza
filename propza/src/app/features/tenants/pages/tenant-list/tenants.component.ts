@@ -82,6 +82,31 @@ export class TenantListComponent implements OnInit, OnDestroy {
   }
 
 
+  /**
+   * Compute the actual rent status based on current date
+   */
+  private getActualRentStatus(tenant: Tenant): 'paid' | 'overdue' | 'upcoming' | 'vacant' {
+    // If tenant has paid status, keep it (assuming payments are logged)
+    if (tenant.rent_status === 'paid') {
+      return 'paid';
+    }
+
+    // Check if rent is overdue by comparing today with rent_due_date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+    
+    const dueDate = new Date(tenant.rent_due_date);
+    dueDate.setHours(0, 0, 0, 0);
+
+    // If due date has passed, tenant is overdue (unless already paid)
+    if (dueDate < today) {
+      return 'overdue';
+    }
+
+    // Otherwise, rent is upcoming
+    return 'upcoming';
+  }
+
   private applyFilters(): void {
     let filtered = [...this.allTenants];
 
@@ -95,9 +120,12 @@ export class TenantListComponent implements OnInit, OnDestroy {
       );
     }
 
-    // Apply status filter
+    // Apply status filter with dynamic status computation
     if (this.selectedFilter !== 'all') {
-      filtered = filtered.filter(tenant => tenant.rent_status === this.selectedFilter);
+      filtered = filtered.filter(tenant => {
+        const actualStatus = this.getActualRentStatus(tenant);
+        return actualStatus === this.selectedFilter;
+      });
     }
 
     this.filteredTenants = filtered;
@@ -128,7 +156,11 @@ export class TenantListComponent implements OnInit, OnDestroy {
       );
     }
 
-    return tenants.filter(tenant => tenant.rent_status === filter).length;
+    // Count tenants with computed actual status
+    return tenants.filter(tenant => {
+      const actualStatus = this.getActualRentStatus(tenant);
+      return actualStatus === filter;
+    }).length;
   }
 
   openTenantDetails(tenantId: string): void {

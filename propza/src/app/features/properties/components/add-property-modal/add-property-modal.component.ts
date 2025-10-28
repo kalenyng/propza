@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { TranslationService } from '../../../../core/services/translation.service';
@@ -38,7 +38,40 @@ export class AddPropertyModalComponent {
     next_payment_due: [null as string | null],
     tenancy_end: [null as string | null],
     tenant_notes: [''],
-  });
+  }, { validators: this.nextPaymentAfterStartValidator });
+
+  /**
+   * Custom validator to ensure next payment date is after lease start date
+   */
+  nextPaymentAfterStartValidator(control: AbstractControl): ValidationErrors | null {
+    const start = control.get('tenancy_start')?.value;
+    const nextPayment = control.get('next_payment_due')?.value;
+    const occupied = control.get('occupied')?.value;
+
+    // Only validate if property is occupied and both dates are filled
+    if (!occupied || !start || !nextPayment) {
+      return null;
+    }
+
+    const startDate = new Date(start);
+    const nextPaymentDate = new Date(nextPayment);
+
+    if (nextPaymentDate < startDate) {
+      // Set the error on the next_payment_due control
+      control.get('next_payment_due')?.setErrors({ invalidNextPaymentDate: true });
+      return { invalidNextPaymentDate: true };
+    }
+
+    // Clear the error if dates are valid
+    const nextPaymentControl = control.get('next_payment_due');
+    if (nextPaymentControl?.hasError('invalidNextPaymentDate')) {
+      const errors = { ...nextPaymentControl.errors };
+      delete errors['invalidNextPaymentDate'];
+      nextPaymentControl.setErrors(Object.keys(errors).length ? errors : null);
+    }
+
+    return null;
+  }
 
   constructor() {
     this.form.get('occupied')?.valueChanges.subscribe((occupied) => {
@@ -71,6 +104,15 @@ export class AddPropertyModalComponent {
       start?.updateValueAndValidity();
       nextDue?.updateValueAndValidity();
       end?.updateValueAndValidity();
+    });
+
+    // Re-validate dates when either date changes
+    this.form.get('tenancy_start')?.valueChanges.subscribe(() => {
+      this.form.updateValueAndValidity();
+    });
+
+    this.form.get('next_payment_due')?.valueChanges.subscribe(() => {
+      this.form.updateValueAndValidity();
     });
   }
 

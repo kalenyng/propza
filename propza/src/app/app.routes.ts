@@ -8,6 +8,7 @@ import { PropertyDetailComponent } from './features/properties/pages/property-de
 import { TenantListComponent } from './features/tenants/pages/tenant-list/tenants.component';
 import { TenantDetailComponent } from './features/tenants/pages/tenant-detail/tenant-detail.component';
 import { SettingsComponent } from './features/settings/pages/settings/settings.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
 import { betaAccessGuard } from './core/guards/beta-access.guard';
@@ -32,5 +33,6 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [betaAccessGuard, guestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [betaAccessGuard, guestGuard] },
 
-  { path: '**', redirectTo: '' }
+  // 404 Not Found - must be last
+  { path: '**', component: NotFoundComponent }
 ];
