@@ -262,6 +262,12 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
     this.router.navigate(['/tenants']);
   }
 
+  goToProperty(): void {
+    if (this.tenant?.property_id) {
+      this.router.navigate(['/property', this.tenant.property_id]);
+    }
+  }
+
   formatPaymentDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('en-ZA', {
       day: 'numeric',

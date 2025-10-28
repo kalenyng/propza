@@ -24,6 +24,7 @@ interface Tenancy {
 }
 
 interface TenantData {
+  id?: string;
   email: string | null;
   phone: string | null;
   lease_start_date: string;
@@ -141,9 +142,15 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     // Extract tenant data from nested tenants array
     if (prop.tenants && prop.tenants.length > 0) {
       const tenant = prop.tenants[0];
+      // Preserve existing id and contact info if already loaded
+      const existingId = this.tenantData?.id;
+      const existingEmail = this.tenantData?.email;
+      const existingPhone = this.tenantData?.phone;
+      
       this.tenantData = {
-        email: null, // Need to get from full tenant record
-        phone: null,
+        id: existingId, // Preserve the id from full tenant load
+        email: existingEmail || null,
+        phone: existingPhone || null,
         lease_start_date: tenant.lease_start_date || '',
         lease_end_date: tenant.lease_end_date,
         rent_due_date: tenant.rent_due_date
@@ -170,11 +177,11 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   }
 
   async loadPropertyDetails(): Promise<void> {
-    // Load tenant data with full details (email, phone)
+    // Load tenant data with full details (email, phone, id)
     if (this.property?.status === 'occupied') {
       const { data: tenant } = await this.supabase.supabase
         .from('tenants')
-        .select('email, phone, lease_start_date, lease_end_date, rent_due_date')
+        .select('id, email, phone, lease_start_date, lease_end_date, rent_due_date')
         .eq('property_id', this.propertyId)
         .single();
       
@@ -503,6 +510,12 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
 
   goBack(): void {
     this.router.navigate(['/home']);
+  }
+
+  goToTenant(): void {
+    if (this.tenantData?.id) {
+      this.router.navigate(['/tenant', this.tenantData.id]);
+    }
   }
 
   formatMoney(amount: number, currency: string): string {
