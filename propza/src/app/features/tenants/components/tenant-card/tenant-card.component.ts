@@ -22,10 +22,16 @@ export class TenantCardComponent {
       return 'paid';
     }
 
+    // If tenant is marked as vacant, keep that status
+    if (this.tenant.rent_status === 'vacant') {
+      return 'vacant';
+    }
+
     // Check if rent is overdue by comparing today with rent_due_date
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
     
+    // Parse the due date - handle both ISO string and date string formats
     const dueDate = new Date(this.tenant.rent_due_date);
     dueDate.setHours(0, 0, 0, 0);
 

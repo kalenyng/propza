@@ -133,3 +133,20 @@
   color: var(--text);
   border-color: rgba(229, 231, 235, 0.3);
 }
+
+// Date input specific styling
+.date-input-clickable {
+  cursor: pointer !important;
+  user-select: none;
+  
+  &::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 1;
+    background-size: 18px;
+    margin-left: 8px;
+  }
+  
+  &::-webkit-date-and-time-value {
+    text-align: left;
+  }
+}

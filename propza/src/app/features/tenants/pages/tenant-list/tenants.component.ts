@@ -91,12 +91,21 @@ export class TenantListComponent implements OnInit, OnDestroy {
       return 'paid';
     }
 
+    // If tenant is marked as vacant, keep that status
+    if (tenant.rent_status === 'vacant') {
+      return 'vacant';
+    }
+
     // Check if rent is overdue by comparing today with rent_due_date
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
     
+    // Parse the due date - handle both ISO string and date string formats
     const dueDate = new Date(tenant.rent_due_date);
     dueDate.setHours(0, 0, 0, 0);
+
+    // Debug logging (remove after testing)
+    console.log(`Tenant: ${tenant.name}, Due Date: ${tenant.rent_due_date}, Parsed: ${dueDate.toISOString()}, Today: ${today.toISOString()}, Is Overdue: ${dueDate < today}`);
 
     // If due date has passed, tenant is overdue (unless already paid)
     if (dueDate < today) {

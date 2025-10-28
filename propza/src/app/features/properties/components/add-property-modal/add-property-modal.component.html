@@ -171,13 +171,15 @@
         <input
           id="tenancy_start"
           type="date"
-          class="form-control"
+          class="form-control date-input-clickable"
           [class.is-invalid]="form.get('tenancy_start')?.invalid && form.get('tenancy_start')?.touched"
           formControlName="tenancy_start"
           aria-describedby="date-format-hint-start"
+          placeholder="yyyy-mm-dd"
+          (click)="onDateInputClick($event)"
         />
         <small id="date-format-hint-start" class="form-text text-muted">
-          Type or pick a date (YYYY-MM-DD)
+          Click to open calendar or type date (YYYY-MM-DD)
         </small>
         <div 
           class="invalid-feedback" 
@@ -193,13 +195,15 @@
         <input
           id="next_payment_due"
           type="date"
-          class="form-control"
+          class="form-control date-input-clickable"
           [class.is-invalid]="form.get('next_payment_due')?.invalid && form.get('next_payment_due')?.touched"
           formControlName="next_payment_due"
           aria-describedby="date-format-hint-next"
+          placeholder="yyyy-mm-dd"
+          (click)="onDateInputClick($event)"
         />
         <small id="date-format-hint-next" class="form-text text-muted">
-          Type or pick a date (YYYY-MM-DD) - when the next rent payment is due
+          Click to open calendar or type date (YYYY-MM-DD) - when the next rent payment is due
         </small>
         <div 
           class="invalid-feedback" 
@@ -221,12 +225,14 @@
         <input
           id="tenancy_end"
           type="date"
-          class="form-control"
+          class="form-control date-input-clickable"
           formControlName="tenancy_end"
           aria-describedby="date-format-hint-end"
+          placeholder="yyyy-mm-dd"
+          (click)="onDateInputClick($event)"
         />
         <small id="date-format-hint-end" class="form-text text-muted">
-          Type or pick a date (YYYY-MM-DD) - Leave blank for open-ended lease
+          Click to open calendar or type date (YYYY-MM-DD) - Leave blank for open-ended lease
         </small>
       </div>
 

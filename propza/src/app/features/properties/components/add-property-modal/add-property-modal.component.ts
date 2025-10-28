@@ -121,6 +121,20 @@ export class AddPropertyModalComponent {
     this.leaseFile = input.files?.[0] || undefined;
   }
 
+  /**
+   * Ensure date input is clickable and focusable
+   */
+  onDateInputClick(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    // Try to trigger the native date picker
+    try {
+      input.showPicker?.();
+    } catch (e) {
+      // showPicker not supported, input will work normally
+      input.focus();
+    }
+  }
+
   async save() {
     if (this.form.invalid) return;
     this.loading = true;
