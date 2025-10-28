@@ -12,13 +12,30 @@ Create a `.env.local` file in the project root with the following variables:
 
 ```bash
 # Supabase Configuration
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-supabase-anon-key
+NG_APP_SUPABASE_URL=https://your-project.supabase.co
+NG_APP_SUPABASE_ANON_KEY=your-supabase-anon-key
 
 # Beta Access Configuration
-BETA_ACCESS_CODE_HASH=your-beta-code-hash
-REQUIRES_BETA_ACCESS=true
+NG_APP_BETA_ACCESS_CODE_HASH=your-beta-code-hash
+NG_APP_REQUIRES_BETA_ACCESS=true
 ```
+
+**Note**: You can also use the shorter variable names (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, etc.) - the script will check both formats.
+
+### Environment File Generation
+
+The environment files (`src/environments/environment.ts` and `environment.prod.ts`) are auto-generated from your environment variables. Before building or running the app, generate these files:
+
+```bash
+npm run prebuild
+```
+
+This script:
+1. Reads environment variables from `.env.local` (local) or system environment (Vercel)
+2. Generates `environment.ts` and `environment.prod.ts` with hardcoded values
+3. Eliminates browser errors related to `process.env` not being defined
+
+The generated files are gitignored for security. Template files are provided in `src/environments/*.template.ts` for reference.
 
 ### Production Deployment (Vercel)
 
@@ -26,10 +43,14 @@ Set these environment variables in your Vercel dashboard:
 
 1. Go to your project settings in Vercel
 2. Navigate to "Environment Variables"
-3. Add each variable with the appropriate values
-4. Redeploy your application
+3. Add each variable with the `NG_APP_` prefix:
+   - `NG_APP_SUPABASE_URL`
+   - `NG_APP_SUPABASE_ANON_KEY`
+   - `NG_APP_REQUIRES_BETA_ACCESS`
+   - `NG_APP_BETA_ACCESS_CODE_HASH`
+4. The build script (`npm run build:vercel`) automatically generates environment files before building
 
-**Important**: Never commit `.env` files to version control. The `.env.example` file is provided as a template.
+**Important**: Never commit `.env` files or generated environment files to version control.
 
 ## Development server
 
