@@ -136,17 +136,36 @@
 
 // Date input specific styling
 .date-input-clickable {
-  cursor: pointer !important;
-  user-select: none;
+  cursor: text !important;
+  user-select: text;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
   
   &::-webkit-calendar-picker-indicator {
     cursor: pointer;
     opacity: 1;
-    background-size: 18px;
+    background-size: 20px;
     margin-left: 8px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: rgba(22, 163, 74, 0.1);
+    }
   }
   
   &::-webkit-date-and-time-value {
     text-align: left;
+  }
+  
+  // Make it clear the field is editable
+  &:focus {
+    cursor: text;
+  }
+  
+  // Show placeholder-like styling when empty
+  &:not(:focus):invalid {
+    color: #999;
   }
 }

@@ -175,11 +175,11 @@
           [class.is-invalid]="form.get('tenancy_start')?.invalid && form.get('tenancy_start')?.touched"
           formControlName="tenancy_start"
           aria-describedby="date-format-hint-start"
-          placeholder="yyyy-mm-dd"
-          (click)="onDateInputClick($event)"
+          (input)="onDateInput($event, 'tenancy_start')"
+          (blur)="form.get('tenancy_start')?.markAsTouched()"
         />
         <small id="date-format-hint-start" class="form-text text-muted">
-          Click to open calendar or type date (YYYY-MM-DD)
+          📅 Click calendar icon or type manually (YYYY-MM-DD). Example: 2024-01-15
         </small>
         <div 
           class="invalid-feedback" 
@@ -199,11 +199,11 @@
           [class.is-invalid]="form.get('next_payment_due')?.invalid && form.get('next_payment_due')?.touched"
           formControlName="next_payment_due"
           aria-describedby="date-format-hint-next"
-          placeholder="yyyy-mm-dd"
-          (click)="onDateInputClick($event)"
+          (input)="onDateInput($event, 'next_payment_due')"
+          (blur)="form.get('next_payment_due')?.markAsTouched()"
         />
         <small id="date-format-hint-next" class="form-text text-muted">
-          Click to open calendar or type date (YYYY-MM-DD) - when the next rent payment is due
+          📅 Click calendar icon or type manually (YYYY-MM-DD). Example: 2024-07-01
         </small>
         <div 
           class="invalid-feedback" 
@@ -228,11 +228,10 @@
           class="form-control date-input-clickable"
           formControlName="tenancy_end"
           aria-describedby="date-format-hint-end"
-          placeholder="yyyy-mm-dd"
-          (click)="onDateInputClick($event)"
+          (input)="onDateInput($event, 'tenancy_end')"
         />
         <small id="date-format-hint-end" class="form-text text-muted">
-          Click to open calendar or type date (YYYY-MM-DD) - Leave blank for open-ended lease
+          📅 Click calendar icon or type manually (YYYY-MM-DD). Leave blank for open-ended lease
         </small>
       </div>
 

@@ -126,13 +126,43 @@ export class AddPropertyModalComponent {
    */
   onDateInputClick(event: Event): void {
     const input = event.target as HTMLInputElement;
-    // Try to trigger the native date picker
-    try {
-      input.showPicker?.();
-    } catch (e) {
-      // showPicker not supported, input will work normally
-      input.focus();
+    // Only trigger picker if the field is empty to allow manual typing
+    if (!input.value) {
+      try {
+        input.showPicker?.();
+      } catch (e) {
+        // showPicker not supported, input will work normally
+        input.focus();
+      }
     }
+  }
+
+  /**
+   * Handle manual date input and normalize the value
+   */
+  onDateInput(event: Event, controlName: string): void {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+    
+    // If user typed a valid date, ensure it's set in the form
+    if (value && this.isValidDate(value)) {
+      this.form.get(controlName)?.setValue(value, { emitEvent: true });
+    }
+  }
+
+  /**
+   * Validate date string format
+   */
+  private isValidDate(dateString: string): boolean {
+    // Check if it matches YYYY-MM-DD format
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(dateString)) {
+      return false;
+    }
+    
+    // Check if it's a valid date
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date.getTime());
   }
 
   async save() {
