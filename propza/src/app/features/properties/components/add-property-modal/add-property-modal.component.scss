@@ -134,38 +134,67 @@
   border-color: rgba(229, 231, 235, 0.3);
 }
 
-// Date input specific styling
-.date-input-clickable {
-  cursor: text !important;
-  user-select: text;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.5px;
+// Date input wrapper with separate calendar button
+.date-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
   
-  &::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    opacity: 1;
-    background-size: 20px;
-    margin-left: 8px;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-    
-    &:hover {
-      background-color: rgba(22, 163, 74, 0.1);
-    }
-  }
-  
-  &::-webkit-date-and-time-value {
-    text-align: left;
-  }
-  
-  // Make it clear the field is editable
-  &:focus {
+  .date-input-text {
+    flex: 1;
+    padding-right: 48px; // Make room for calendar button
     cursor: text;
   }
   
-  // Show placeholder-like styling when empty
-  &:not(:focus):invalid {
-    color: #999;
+  .calendar-icon-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
+    
+    &:hover {
+      background-color: rgba(22, 163, 74, 0.1);
+      color: #16a34a;
+    }
+    
+    &:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+    
+    &:focus-visible {
+      outline: 2px solid #16a34a;
+      outline-offset: 2px;
+    }
+    
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+    }
+  }
+}
+
+// Dark mode styling for date inputs
+:host-context(.dark-theme) {
+  .date-input-wrapper {
+    .calendar-icon-btn {
+      color: rgba(255, 255, 255, 0.6);
+      
+      &:hover {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #22c55e;
+      }
+    }
   }
 }

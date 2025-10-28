@@ -168,18 +168,41 @@
       <!-- Lease start date -->
       <div class="mb-3">
         <label class="form-label" for="tenancy_start">Lease Start Date *</label>
-        <input
-          id="tenancy_start"
-          type="date"
-          class="form-control date-input-clickable"
-          [class.is-invalid]="form.get('tenancy_start')?.invalid && form.get('tenancy_start')?.touched"
-          formControlName="tenancy_start"
-          aria-describedby="date-format-hint-start"
-          (input)="onDateInput($event, 'tenancy_start')"
-          (blur)="form.get('tenancy_start')?.markAsTouched()"
-        />
+        <div class="date-input-wrapper">
+          <input
+            id="tenancy_start"
+            type="text"
+            class="form-control date-input-text"
+            [class.is-invalid]="form.get('tenancy_start')?.invalid && form.get('tenancy_start')?.touched"
+            placeholder="dd/mm/yyyy"
+            maxlength="10"
+            (input)="onDateInput($event, 'tenancy_start')"
+            (keydown)="onDateKeydown($event, 'tenancy_start')"
+            (blur)="form.get('tenancy_start')?.markAsTouched()"
+            aria-describedby="date-format-hint-start"
+          />
+          <button
+            type="button"
+            class="calendar-icon-btn"
+            (click)="openDatePicker('tenancy_start')"
+            aria-label="Open calendar picker">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </button>
+          <!-- Hidden date input for calendar picker -->
+          <input
+            type="date"
+            class="hidden-date-picker"
+            formControlName="tenancy_start"
+            style="display: none;"
+          />
+        </div>
         <small id="date-format-hint-start" class="form-text text-muted">
-          📅 Click calendar icon or type manually (YYYY-MM-DD). Example: 2024-01-15
+          Type date as dd/mm/yyyy (e.g., 15/01/2024) or click 📅 icon to select
         </small>
         <div 
           class="invalid-feedback" 
@@ -192,18 +215,41 @@
       <!-- Next payment due -->
       <div class="mb-3">
         <label class="form-label" for="next_payment_due">Next Payment Due Date *</label>
-        <input
-          id="next_payment_due"
-          type="date"
-          class="form-control date-input-clickable"
-          [class.is-invalid]="form.get('next_payment_due')?.invalid && form.get('next_payment_due')?.touched"
-          formControlName="next_payment_due"
-          aria-describedby="date-format-hint-next"
-          (input)="onDateInput($event, 'next_payment_due')"
-          (blur)="form.get('next_payment_due')?.markAsTouched()"
-        />
+        <div class="date-input-wrapper">
+          <input
+            id="next_payment_due"
+            type="text"
+            class="form-control date-input-text"
+            [class.is-invalid]="form.get('next_payment_due')?.invalid && form.get('next_payment_due')?.touched"
+            placeholder="dd/mm/yyyy"
+            maxlength="10"
+            (input)="onDateInput($event, 'next_payment_due')"
+            (keydown)="onDateKeydown($event, 'next_payment_due')"
+            (blur)="form.get('next_payment_due')?.markAsTouched()"
+            aria-describedby="date-format-hint-next"
+          />
+          <button
+            type="button"
+            class="calendar-icon-btn"
+            (click)="openDatePicker('next_payment_due')"
+            aria-label="Open calendar picker">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </button>
+          <!-- Hidden date input for calendar picker -->
+          <input
+            type="date"
+            class="hidden-date-picker"
+            formControlName="next_payment_due"
+            style="display: none;"
+          />
+        </div>
         <small id="date-format-hint-next" class="form-text text-muted">
-          📅 Click calendar icon or type manually (YYYY-MM-DD). Example: 2024-07-01
+          Type date as dd/mm/yyyy (e.g., 01/07/2024) or click 📅 icon to select
         </small>
         <div 
           class="invalid-feedback" 
@@ -222,16 +268,39 @@
       <!-- Lease end date -->
       <div class="mb-3">
         <label class="form-label" for="tenancy_end">Lease End Date (Optional)</label>
-        <input
-          id="tenancy_end"
-          type="date"
-          class="form-control date-input-clickable"
-          formControlName="tenancy_end"
-          aria-describedby="date-format-hint-end"
-          (input)="onDateInput($event, 'tenancy_end')"
-        />
+        <div class="date-input-wrapper">
+          <input
+            id="tenancy_end"
+            type="text"
+            class="form-control date-input-text"
+            placeholder="dd/mm/yyyy"
+            maxlength="10"
+            (input)="onDateInput($event, 'tenancy_end')"
+            (keydown)="onDateKeydown($event, 'tenancy_end')"
+            aria-describedby="date-format-hint-end"
+          />
+          <button
+            type="button"
+            class="calendar-icon-btn"
+            (click)="openDatePicker('tenancy_end')"
+            aria-label="Open calendar picker">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </button>
+          <!-- Hidden date input for calendar picker -->
+          <input
+            type="date"
+            class="hidden-date-picker"
+            formControlName="tenancy_end"
+            style="display: none;"
+          />
+        </div>
         <small id="date-format-hint-end" class="form-text text-muted">
-          📅 Click calendar icon or type manually (YYYY-MM-DD). Leave blank for open-ended lease
+          Type date as dd/mm/yyyy or click 📅 icon. Leave blank for open-ended lease
         </small>
       </div>
 

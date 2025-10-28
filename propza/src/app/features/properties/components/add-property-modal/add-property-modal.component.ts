@@ -122,47 +122,157 @@ export class AddPropertyModalComponent {
   }
 
   /**
-   * Ensure date input is clickable and focusable
+   * Open calendar picker when clicking the icon
    */
-  onDateInputClick(event: Event): void {
+  openDatePicker(controlName: string): void {
+    // Find the hidden date input
+    const hiddenDateInputs = Array.from(document.querySelectorAll<HTMLInputElement>('.hidden-date-picker'));
+    const targetInput = hiddenDateInputs.find((input) => {
+      return input.getAttribute('formControlName') === controlName;
+    });
+    
+    if (!targetInput) {
+      return;
+    }
+
+    // Trigger the picker
+    this.triggerDatePicker(targetInput);
+    
+    // Listen for changes and update the visible text input
+    this.setupDateChangeListener(targetInput, controlName);
+  }
+
+  private triggerDatePicker(input: HTMLInputElement): void {
+    try {
+      // Try the modern showPicker API first
+      if ('showPicker' in input && typeof (input as any).showPicker === 'function') {
+        (input as any).showPicker();
+      } else {
+        input.click();
+      }
+    } catch (e) {
+      input.click();
+    }
+  }
+
+  private setupDateChangeListener(hiddenInput: HTMLInputElement, controlName: string): void {
+    const handler = () => {
+      const isoDate = hiddenInput.value;
+      if (isoDate) {
+        const textInput = document.getElementById(controlName) as HTMLInputElement | null;
+        if (textInput) {
+          textInput.value = this.convertToDisplay(isoDate);
+        }
+      }
+    };
+    
+    hiddenInput.addEventListener('change', handler, { once: true });
+  }
+
+  /**
+   * Handle manual date input in dd/mm/yyyy format
+   */
+  onDateInput(event: Event, controlName: string): void {
     const input = event.target as HTMLInputElement;
-    // Only trigger picker if the field is empty to allow manual typing
-    if (!input.value) {
-      try {
-        input.showPicker?.();
-      } catch (e) {
-        // showPicker not supported, input will work normally
-        input.focus();
+    let value = input.value;
+    
+    // Auto-format as user types: add slashes automatically
+    value = this.formatDateInput(value);
+    input.value = value;
+    
+    // If user typed a complete date in dd/mm/yyyy format, convert to YYYY-MM-DD and set in form
+    if (value.length === 10) {
+      const isoDate = this.convertToISO(value);
+      if (isoDate) {
+        this.form.get(controlName)?.setValue(isoDate, { emitEvent: false });
       }
     }
   }
 
   /**
-   * Handle manual date input and normalize the value
+   * Handle Enter key press to finalize date entry
    */
-  onDateInput(event: Event, controlName: string): void {
-    const input = event.target as HTMLInputElement;
-    const value = input.value;
-    
-    // If user typed a valid date, ensure it's set in the form
-    if (value && this.isValidDate(value)) {
-      this.form.get(controlName)?.setValue(value, { emitEvent: true });
+  onDateKeydown(event: KeyboardEvent, controlName: string): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const input = event.target as HTMLInputElement;
+      const value = input.value;
+      
+      // If complete date, validate and set it
+      if (value.length === 10) {
+        const isoDate = this.convertToISO(value);
+        if (isoDate) {
+          this.form.get(controlName)?.setValue(isoDate, { emitEvent: true });
+          this.form.get(controlName)?.markAsTouched();
+          input.blur(); // Remove focus to trigger validation display
+        }
+      }
     }
   }
 
   /**
-   * Validate date string format
+   * Format input as dd/mm/yyyy with auto-slashes
    */
-  private isValidDate(dateString: string): boolean {
-    // Check if it matches YYYY-MM-DD format
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(dateString)) {
-      return false;
+  private formatDateInput(value: string): string {
+    // Remove any non-numeric characters except slashes
+    const digitsOnly = value.replace(/[^\d]/g, '');
+    
+    // Add slashes at appropriate positions
+    let formatted = '';
+    for (let i = 0; i < Math.min(digitsOnly.length, 8); i++) {
+      if (i === 2 || i === 4) {
+        formatted += '/';
+      }
+      formatted += digitsOnly[i];
     }
     
-    // Check if it's a valid date
-    const date = new Date(dateString);
-    return date instanceof Date && !isNaN(date.getTime());
+    return formatted;
+  }
+
+  /**
+   * Convert dd/mm/yyyy to YYYY-MM-DD
+   */
+  private convertToISO(ddmmyyyy: string): string | null {
+    const parts = ddmmyyyy.split('/');
+    if (parts.length !== 3) return null;
+    
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+    
+    // Validate ranges
+    if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2100) {
+      return null;
+    }
+    
+    // Create date and validate it's real (handles Feb 30, etc.)
+    const date = new Date(year, month - 1, day);
+    if (date.getDate() !== day || date.getMonth() !== month - 1 || date.getFullYear() !== year) {
+      return null;
+    }
+    
+    // Return in YYYY-MM-DD format
+    const mm = String(month).padStart(2, '0');
+    const dd = String(day).padStart(2, '0');
+    return `${year}-${mm}-${dd}`;
+  }
+
+  /**
+   * Convert YYYY-MM-DD to dd/mm/yyyy for display
+   */
+  private convertToDisplay(isoDate: string): string {
+    if (!isoDate) return '';
+    const parts = isoDate.split('-');
+    if (parts.length !== 3) return '';
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+
+  /**
+   * Load display value when form is initialized
+   */
+  loadDisplayDate(controlName: string): string {
+    const value = this.form.get(controlName)?.value;
+    return value ? this.convertToDisplay(value) : '';
   }
 
   async save() {
