@@ -7,8 +7,13 @@ import { SupabaseService } from '../../../../core/services/supabase.service';
 import { PropertyService, Property as PropertyData, Payment } from '../../../../core/services/property.service';
 import { TenantService } from '../../../../core/services/tenant.service';
 import { RentHelperService } from '../../../../core/services/rent-helper.service';
+import { RentDueService } from '../../../../core/services/rent-due.service';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { ConfirmationModalService } from '../../../../core/services/confirmation-modal.service';
 import { FormsModule } from '@angular/forms';
+import { Tenant } from '../../../../core/services/tenant.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AddTenantModalComponent } from '../../../tenants/components/add-tenant-modal/add-tenant-modal.component';
 
 // Extended Property interface with additional fields for detail view
 interface Property extends Omit<PropertyData, 'tenants'> {
@@ -73,6 +78,9 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   paymentNotes: string = '';
   editingPaymentId: string | null = null;
 
+  // Chart data for rent performance
+  chartData: { month: string; expected: number; paid: number; paidPercentage: number; shortMonth: string }[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -80,7 +88,10 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     private propertyService: PropertyService,
     private tenantService: TenantService,
     private rentHelper: RentHelperService,
-    public translate: TranslationService
+    private rentDueService: RentDueService,
+    public translate: TranslationService,
+    private modalService: NgbModal,
+    private confirmationService: ConfirmationModalService
   ) {}
 
   ngOnInit(): void {
@@ -109,6 +120,8 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe(payments => {
           this.payments = payments.filter(p => p.property_id === this.propertyId);
+          // Rebuild chart data when payments change
+          this.buildPerformanceData();
         });
 
       // Don't subscribe to global loading$ - use local loading state only
@@ -163,13 +176,29 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   get displayStatus(): string {
     if (!this.property) return 'Vacant';
     
-    // Check property status first (new system)
-    if (this.property.status === 'occupied') {
+    // If property status is explicitly vacant, it's vacant
+    if (this.property.status === 'vacant') {
+      return 'Vacant';
+    }
+    
+    // Check if there's actually a tenant assigned (most reliable)
+    // Must have both tenant name and tenant data (actual tenant record)
+    if (this.property.tenant && this.tenantData && this.tenantData.id) {
       return 'Occupied';
     }
     
-    // Fallback to tenancy check (legacy system)
-    if (this.tenancy) {
+    // If property has no tenant name, it's vacant
+    if (!this.property.tenant || this.property.tenant.trim() === '') {
+      return 'Vacant';
+    }
+    
+    // Check property status (new system)
+    if (this.property.status === 'occupied' && this.property.tenant) {
+      return 'Occupied';
+    }
+    
+    // Fallback to tenancy check (legacy system) - only if there's actually a tenant name
+    if (this.tenancy && this.property.tenant) {
       return 'Occupied';
     }
     
@@ -187,7 +216,13 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       
       if (tenant) {
         this.tenantData = tenant;
+      } else {
+        // No tenant found in database, clear tenant data
+        this.tenantData = null;
       }
+    } else {
+      // Property is vacant, clear tenant data
+      this.tenantData = null;
     }
 
     // Load active tenancy (legacy system)
@@ -233,14 +268,119 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     this.editingPaymentId = null;
   }
 
+  /**
+   * Recalculates tenant status using the centralized RentDueService.
+   * This ensures consistent status calculation across the app.
+   * Also advances the rent_due_date if the current due period is fully paid.
+   * Called after payment create/update/delete operations.
+   */
+  private async recalculateTenantStatusFromPayments(): Promise<void> {
+    // Only proceed if we have tenant data
+    if (!this.tenantData || !this.tenantData.id || !this.propertyId) {
+      return;
+    }
+
+    try {
+      // Wait for payment service to refresh after database operation
+      await new Promise(resolve => setTimeout(resolve, 150));
+
+      const tenant = this.tenantService.getTenantById(this.tenantData.id);
+      if (!tenant) {
+        return;
+      }
+
+      // Get all payments for this property
+      const allPayments = this.propertyService.getPayments();
+
+      // Find the next unpaid period and set due date accordingly
+      // This handles both adding payments (advancing) and deleting payments (reverting)
+      let newDueDate: string | undefined = undefined;
+      if (tenant.rent_due_date) {
+        // Start from today and check forward for the first unpaid period
+        const today = this.rentDueService.getTodayZA();
+        const currentPeriod = this.rentDueService.getCurrentPeriod();
+        let checkDate = this.rentDueService.toDateOnlyZA(currentPeriod + '-01');
+        let foundUnpaidPeriod = false;
+        
+        // Check up to 12 months ahead to find first unpaid period
+        for (let i = 0; i < 12; i++) {
+          const checkPeriod = `${checkDate.getUTCFullYear()}-${String(checkDate.getUTCMonth() + 1).padStart(2, '0')}`;
+          
+          // Calculate collected amount for this period
+          const collectedForPeriod = allPayments
+            .filter(p => p.property_id === tenant.property_id && p.period === checkPeriod)
+            .reduce((sum, p) => sum + Number(p.amount || 0), 0);
+          
+          // If this period is not fully paid, this is the next due date
+          if (collectedForPeriod < tenant.rent_amount) {
+            // Set due date to the rent_due_day of this month
+            const rentDueDay = new Date(tenant.rent_due_date).getUTCDate();
+            checkDate.setUTCDate(rentDueDay);
+            newDueDate = checkDate.toISOString().split('T')[0];
+            foundUnpaidPeriod = true;
+            break;
+          }
+          
+          // Move to next month
+          checkDate = this.rentDueService.safeAddMonths(checkDate, 1);
+        }
+        
+        // If all checked periods are paid, set due date 12 months from now
+        if (!foundUnpaidPeriod) {
+          const futureDate = this.rentDueService.safeAddMonths(checkDate, 1);
+          const rentDueDay = new Date(tenant.rent_due_date).getUTCDate();
+          futureDate.setUTCDate(rentDueDay);
+          newDueDate = futureDate.toISOString().split('T')[0];
+        }
+      }
+
+      // Use centralized service to calculate status (monthly billing)
+      const calculatedStatus = this.rentDueService.getStatusForTenant(
+        tenant,
+        allPayments,
+        this.property || undefined
+      );
+
+      // Map to database-compatible status
+      const dbStatus = this.rentDueService.mapToDatabaseStatus(calculatedStatus);
+
+      // Update tenant if status or due date changed
+      const needsUpdate = tenant.rent_status !== dbStatus || (newDueDate && newDueDate !== tenant.rent_due_date);
+      
+      if (needsUpdate) {
+        const updates: any = {};
+        if (tenant.rent_status !== dbStatus) {
+          updates.rent_status = dbStatus;
+        }
+        if (newDueDate && newDueDate !== tenant.rent_due_date) {
+          updates.rent_due_date = newDueDate;
+        }
+        await this.tenantService.updateTenant(tenant.id, updates);
+        
+        // Also reload properties to ensure property detail view gets updated tenant data
+        await this.propertyService.loadProperties();
+      }
+    } catch (error) {
+      console.error('Error recalculating tenant status:', error);
+      // Don't throw - this is a side effect, shouldn't fail the main operation
+    }
+  }
+
   async deletePayment(paymentId: string): Promise<void> {
-    if (!confirm('Are you sure you want to delete this payment record?')) {
+    const confirmed = await this.confirmationService.confirm({
+      title: 'Delete Payment',
+      message: 'Are you sure you want to delete this payment record?',
+      type: 'danger'
+    });
+    if (!confirmed) {
       return;
     }
 
     try {
       await this.propertyService.deletePayment(paymentId);
-      // Service automatically refreshes, no need for manual refresh
+      
+      // Recalculate tenant status after deletion
+      await this.recalculateTenantStatusFromPayments();
     } catch (error) {
       alert('Failed to delete payment. Please try again.');
     }
@@ -255,12 +395,27 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     this.savingPayment = true;
 
     try {
-      // Calculate the current rent period (the one we're paying for)
-      // Use tenantData rent_due_date if available, otherwise use property rent_amount as fallback
-      const rentDueDay = this.tenantData?.rent_due_date ? 
-        new Date(this.tenantData.rent_due_date).getDate() : 
-        new Date().getDate();
-      const period = this.rentHelper.getCurrentRentPeriod(rentDueDay);
+      // Calculate the current rent period using centralized service
+      if (!this.tenantData?.rent_due_date) {
+        alert('Cannot create payment: Tenant rent due date is required.');
+        return;
+      }
+
+      // Create a tenant object for the service (we need full tenant record)
+      if (!this.tenantData.id) {
+        alert('Cannot create payment: Tenant ID is required.');
+        return;
+      }
+      const tenant = this.tenantService.getTenantById(this.tenantData.id);
+      if (!tenant) {
+        alert('Cannot create payment: Tenant record not found.');
+        return;
+      }
+
+      // Get current rent period (YYYY-MM format, monthly billing)
+      let period = this.rentDueService.getCurrentPeriod();
+      let paymentAttempts = 0;
+      const maxAttempts = 12; // Limit to 12 months to avoid infinite loops
 
       if (this.editingPaymentId) {
         // Update existing payment using service
@@ -271,28 +426,77 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
           notes: this.paymentNotes || null
         } as any);
       } else {
-        // Create new payment using service
-        await this.propertyService.addPayment({
-          property_id: this.propertyId,
-          period: period,
-          amount: this.paymentAmount,
-          payment_date: this.paymentDate,
-          payment_method: this.paymentMethod,
-          notes: this.paymentNotes || null
-        } as any);
+        // Create new payment - automatically use next period if current already has a payment
+        while (paymentAttempts < maxAttempts) {
+          try {
+            await this.propertyService.addPayment({
+              property_id: this.propertyId,
+              period: period,
+              amount: this.paymentAmount,
+              payment_date: this.paymentDate,
+              payment_method: this.paymentMethod,
+              notes: this.paymentNotes || null
+            } as any);
+            // Success - break out of retry loop
+            break;
+          } catch (error: any) {
+            // Check if it's a duplicate payment error for this period
+            if (error?.code === '23505' && paymentAttempts < maxAttempts - 1) {
+              // Duplicate payment - move to next period automatically
+              const year = parseInt(period.split('-')[0]);
+              const month = parseInt(period.split('-')[1]) - 1; // JS months are 0-indexed
+              const periodDate = new Date(Date.UTC(year, month, 1));
+              const nextPeriodDate = this.rentDueService.safeAddMonths(periodDate, 1);
+              const nextYear = nextPeriodDate.getUTCFullYear();
+              const nextMonth = String(nextPeriodDate.getUTCMonth() + 1).padStart(2, '0');
+              period = `${nextYear}-${nextMonth}`;
+              paymentAttempts++;
+              // Continue to retry with next period
+            } else {
+              // Different error or max attempts reached - rethrow
+              throw error;
+            }
+          }
+        }
       }
+
+      // Always recalculate tenant status after any payment change
+      await this.recalculateTenantStatusFromPayments();
 
       this.showPaymentForm = false;
       this.editingPaymentId = null;
       // Service automatically refreshes, observable will update payments array
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      const errorCode = (error as { code?: string }).code;
+      // Extract error message from various error formats (Supabase, Error, etc.)
+      let errorMessage = 'Unknown error when logging a payment';
+      const errorCode = (error as any)?.code;
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (error && typeof error === 'object') {
+        // Supabase error format
+        if ((error as any).message) {
+          errorMessage = (error as any).message;
+        } else if ((error as any).error?.message) {
+          errorMessage = (error as any).error.message;
+        } else if ((error as any).details) {
+          errorMessage = (error as any).details;
+        } else if ((error as any).hint) {
+          errorMessage = (error as any).hint;
+        }
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
       
       if (errorCode === '42P01') {
         alert('Payments table not found. Please run the database migration first.');
+      } else if (errorCode === '23503') {
+        // Foreign key violation
+        alert('Cannot create payment: Property or tenant reference is invalid.');
       } else if (errorMessage.includes('NavigatorLockAcquireTimeoutError')) {
         alert('Authentication timeout. Please try again.');
+      } else if (errorMessage.includes('JWT') || errorMessage.includes('token')) {
+        alert('Authentication error. Please refresh the page and try again.');
       } else {
         alert(`Failed to save payment: ${errorMessage}`);
       }
@@ -453,7 +657,12 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   }
 
   async deleteTenant(): Promise<void> {
-    if (!confirm('Are you sure you want to remove this tenant? The property will be marked as vacant.')) {
+    const confirmed = await this.confirmationService.confirm({
+      title: 'Remove Tenant',
+      message: 'Are you sure you want to remove this tenant? The property will be marked as vacant.',
+      type: 'danger'
+    });
+    if (!confirmed) {
       return;
     }
 
@@ -466,13 +675,26 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       if (tenants.length > 0) {
         await this.tenantService.deleteTenant(tenants[0].id);
         // Service automatically refreshes all data
-      } else {
-        // No tenant record, just update property status
-        await this.propertyService.updateProperty(this.propertyId, {
-          status: 'vacant',
-          tenant: null
-        } as any);
       }
+      
+      // Delete all legacy tenancy records for this property
+      await this.supabase.supabase
+        .from('tenancies')
+        .delete()
+        .eq('property_id', this.propertyId);
+      
+      // Always update property status to vacant and clear tenant name
+      await this.propertyService.updateProperty(this.propertyId, {
+        status: 'vacant',
+        tenant: null
+      } as any);
+      
+      // Clear tenant data and tenancy locally
+      this.tenantData = null;
+      this.tenancy = null;
+      
+      // Reload property details to ensure UI updates
+      await this.loadPropertyDetails();
     } catch (error) {
       console.error('Error deleting tenant:', error);
       alert('Failed to remove tenant');
@@ -482,7 +704,12 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   }
 
   async deleteProperty(): Promise<void> {
-    if (!confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
+    const confirmed = await this.confirmationService.confirm({
+      title: 'Delete Property',
+      message: 'Are you sure you want to delete this property? This action cannot be undone.',
+      type: 'danger'
+    });
+    if (!confirmed) {
       return;
     }
 
@@ -518,6 +745,36 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     }
   }
 
+  async openAddTenantModal(): Promise<void> {
+    const modalRef = this.modalService.open(AddTenantModalComponent, {
+      size: 'lg',
+      centered: true
+    });
+
+    // Pre-select the current property if it's vacant
+    // Use setTimeout to allow the modal component to initialize and populate vacantProperties
+    setTimeout(() => {
+      const propertyId = this.propertyId;
+      const vacantProperties = modalRef.componentInstance.vacantProperties;
+      
+      // Only pre-select if the property is in the vacant properties list
+      if (vacantProperties && vacantProperties.some((p: { id: string }) => p.id === propertyId)) {
+        modalRef.componentInstance.form.patchValue({
+          propertyId: propertyId
+        });
+      }
+    }, 100);
+
+    try {
+      const result = await modalRef.result;
+      // Modal was closed successfully, property will be refreshed automatically
+      await this.loadPropertyDetails();
+    } catch (error) {
+      // Modal dismissed or error occurred, no action needed
+      console.error('Error adding tenant:', error);
+    }
+  }
+
   formatMoney(amount: number, currency: string): string {
     const locale = currency === 'ZAR' ? 'en-ZA' : 'en-US';
     const code = currency === 'ZAR' ? 'ZAR' : currency;
@@ -530,5 +787,190 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     } catch {
       return `${currency === 'ZAR' ? 'R' : ''}${(amount ?? 0).toLocaleString(locale)}`;
     }
+  }
+
+  /**
+   * Check if lease is ending within 3 months
+   */
+  isLeaseEndingSoon(leaseEndDate: string): boolean {
+    if (!leaseEndDate) return false;
+    
+    const today = new Date();
+    const endDate = new Date(leaseEndDate);
+    const threeMonthsFromNow = new Date();
+    threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+    
+    return endDate <= threeMonthsFromNow && endDate >= today;
+  }
+
+  /**
+   * Calculate total rent collected for this property
+   */
+  get totalRentCollected(): number {
+    if (!this.payments || this.payments.length === 0) return 0;
+    
+    return this.payments.reduce((total, payment) => {
+      return total + (Number(payment.amount) || 0);
+    }, 0);
+  }
+
+  /**
+   * Get formatted total rent collected
+   */
+  get formattedTotalCollected(): string {
+    if (!this.property) return 'R0';
+    return this.formatMoney(this.totalRentCollected, this.property.currency);
+  }
+
+  /**
+   * Get tenant status for display
+   */
+  get tenantStatus(): string | null {
+    if (!this.tenantData?.id) return null;
+    const tenant = this.tenantService.getTenantById(this.tenantData.id);
+    if (!tenant) return null;
+    
+    // Use centralized service to calculate status
+    const calculatedStatus = this.rentDueService.getStatusForTenant(
+      tenant,
+      this.propertyService.getPayments(),
+      this.property || undefined
+    );
+    
+    return calculatedStatus;
+  }
+
+  /**
+   * Get status label for display
+   */
+  get statusLabel(): string {
+    const status = this.tenantStatus;
+    if (!status) return '';
+    
+    // Map status to user-friendly label
+    const statusMap: Record<string, string> = {
+      'paid': 'Paid',
+      'partially_paid': 'Partially Paid',
+      'due_soon': 'Due Soon',
+      'due_today': 'Due Today',
+      'overdue': 'Overdue',
+      'upcoming': 'Upcoming',
+      'vacant': 'Vacant'
+    };
+    
+    return statusMap[status] || status;
+  }
+
+  /**
+   * Get status color class for styling
+   */
+  get statusColor(): string {
+    const status = this.tenantStatus;
+    if (!status) return 'neutral';
+    
+    // Map status to color class
+    const colorMap: Record<string, string> = {
+      'paid': 'success',
+      'partially_paid': 'warning',
+      'due_soon': 'warning-light',
+      'due_today': 'warning',
+      'overdue': 'danger',
+      'upcoming': 'info',
+      'vacant': 'neutral'
+    };
+    
+    return colorMap[status] || 'neutral';
+  }
+
+  /**
+   * Build chart data for rent performance visualization
+   * Shows last 6 months of expected vs paid rent
+   */
+  buildPerformanceData(): void {
+    if (!this.property) {
+      this.chartData = [];
+      return;
+    }
+
+    const now = new Date();
+    const months: { month: string; expected: number; paid: number; paidPercentage: number; shortMonth: string }[] = [];
+
+    // Generate data for last 6 months
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthLabel = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const shortMonth = date.toLocaleString('default', { month: 'short' });
+      
+      // Calculate period string (YYYY-MM format) to match payment periods
+      const periodString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+      // Sum all payments for this period
+      const paidSum = this.payments
+        .filter(p => p.period === periodString)
+        .reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
+
+      const expected = this.property.rent_amount || 0;
+      const paidPercentage = expected > 0 ? Math.min((paidSum / expected) * 100, 100) : 0;
+
+      months.push({
+        month: monthLabel,
+        shortMonth: shortMonth,
+        expected,
+        paid: paidSum,
+        paidPercentage
+      });
+    }
+
+    this.chartData = months;
+  }
+
+  /**
+   * Get X position for a data point (0-100 scale)
+   */
+  getPointX(index: number): number {
+    if (this.chartData.length <= 1) return 50;
+    return (index / (this.chartData.length - 1)) * 100;
+  }
+
+  /**
+   * Get SVG points for expected rent line (horizontal line at 100%)
+   */
+  getExpectedLinePoints(): string {
+    if (this.chartData.length === 0) return '';
+    
+    return this.chartData
+      .map((_, i) => `${this.getPointX(i)},0`)
+      .join(' ');
+  }
+
+  /**
+   * Get SVG points for paid rent line
+   */
+  getPaidLinePoints(): string {
+    if (this.chartData.length === 0) return '';
+    
+    return this.chartData
+      .map((data, i) => `${this.getPointX(i)},${100 - data.paidPercentage}`)
+      .join(' ');
+  }
+
+  /**
+   * Get SVG points for paid area fill (area under the line)
+   */
+  getPaidAreaPoints(): string {
+    if (this.chartData.length === 0) return '';
+    
+    // Start from bottom-left
+    let points = '0,100 ';
+    
+    // Add all data points
+    points += this.chartData
+      .map((data, i) => `${this.getPointX(i)},${100 - data.paidPercentage}`)
+      .join(' ');
+    
+    // Close at bottom-right
+    points += ' 100,100';
+    
+    return points;
   }
 }

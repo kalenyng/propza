@@ -23,7 +23,7 @@
       </div>
 
       <div class="form-group">
-        <label for="email">Email Address *</label>
+        <label for="email">Email Address <span class="optional-tag">(Optional)</span></label>
         <input
           id="email"
           type="email"
@@ -31,13 +31,14 @@
           formControlName="email"
           placeholder="tenant@example.com"
           [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched">
+        <div class="form-help">Optional - enter if available</div>
         <div class="invalid-feedback" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
           Please enter a valid email address
         </div>
       </div>
 
       <div class="form-group">
-        <label for="phone">Phone Number *</label>
+        <label for="phone">Phone Number <span class="optional-tag">(Optional)</span></label>
         <input
           id="phone"
           type="tel"
@@ -45,6 +46,7 @@
           formControlName="phone"
           placeholder="+27 71 234 5678"
           [class.is-invalid]="form.get('phone')?.invalid && form.get('phone')?.touched">
+        <div class="form-help">Optional - enter if available</div>
         <div class="invalid-feedback" *ngIf="form.get('phone')?.invalid && form.get('phone')?.touched">
           Please enter a valid South African phone number
         </div>
@@ -143,7 +145,7 @@
       </div>
 
       <div class="form-group">
-        <label for="leaseEnd">Lease End Date (Optional)</label>
+        <label for="leaseEnd">Lease End Date <span class="optional-tag">(Optional)</span></label>
         <input
           id="leaseEnd"
           type="date"
@@ -153,7 +155,7 @@
       </div>
 
       <div class="form-group full-width">
-        <label for="notes">Notes (Optional)</label>
+        <label for="notes">Notes <span class="optional-tag">(Optional)</span></label>
         <textarea
           id="notes"
           class="form-control"

@@ -81,7 +81,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 .back-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: transparent;
   border: none;
   color: var(--text);
@@ -149,41 +149,62 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   gap: $spacing-md;
 }
 
+.title-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .property-title {
   font-size: $font-size-xxl;
   font-weight: 700;
   color: var(--text);
   margin: 0;
   line-height: $line-height;
-  flex: 1;
 }
 
+.property-subtitle {
+  font-size: $font-size-sm;
+  color: color-mix(in srgb, var(--text) 65%, #888 35%);
+  margin: 0;
+  font-weight: 500;
+}
+
+// Status badge - matching property-card exactly
 .status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: $font-size-sm;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 14px;
   font-weight: 600;
-  flex-shrink: 0;
+  line-height: 1.4;
 
   &.occupied {
-    background: rgba(22, 163, 74, 0.1);
-    color: $color-success;
+    background: color-mix(in srgb, #10b981 20%, transparent);
+    color: #34d399;
     
     .status-dot {
-      background: $color-success;
+      background: #16a34a;
     }
   }
 
   &.vacant {
-    background: rgba(107, 114, 128, 0.1);
-    color: $color-neutral;
+    background: color-mix(in srgb, #9ca3af 20%, transparent);
+    color: #9ca3af;
     
     .status-dot {
-      background: $color-neutral;
+      background: #9ca3af;
     }
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
   }
 }
 
@@ -192,6 +213,551 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+// Status Badge Inline (matching card components on main pages)
+.status-badge-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  flex-shrink: 0;
+  line-height: $line-height;
+
+  &.small {
+    padding: 4px 12px;
+    font-size: $font-size-sm;
+    gap: 8px;
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+    }
+  }
+
+  &.success {
+    background: color-mix(in srgb, #10b981 20%, transparent);
+    color: #34d399;
+    
+    .status-dot {
+      background: $color-success;
+    }
+  }
+
+  &.danger {
+    background: rgba(220, 38, 38, 0.1);
+    color: $color-danger;
+    
+    .status-dot {
+      background: $color-danger;
+    }
+  }
+
+  &.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: $color-warning;
+    
+    .status-dot {
+      background: $color-warning;
+    }
+  }
+
+  &.warning-light {
+    background: rgba(251, 191, 36, 0.1);
+    color: #f59e0b;
+    
+    .status-dot {
+      background: #fbbf24;
+    }
+  }
+
+  &.info {
+    background: rgba(59, 130, 246, 0.1);
+    color: $color-primary;
+    
+    .status-dot {
+      background: $color-primary;
+    }
+  }
+
+  &.partial {
+    background: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+    
+    .status-dot {
+      background: #0ea5e9;
+    }
+  }
+
+  &.neutral {
+    background: color-mix(in srgb, #9ca3af 20%, transparent);
+    color: #9ca3af;
+    
+    .status-dot {
+      background: #9ca3af;
+    }
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+}
+
+// Rent Overview Section
+.rent-overview {
+  .section-content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+  }
+}
+
+.rent-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.rent-amount-display {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rent-amount-large {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.rent-frequency {
+  font-size: $font-size-sm;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
+  font-weight: 500;
+}
+
+.rent-status-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.next-due-date {
+  font-size: $font-size-sm;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
+  font-weight: 500;
+}
+
+// Total Rent Collected Card
+.total-collected-card {
+  margin-top: $spacing-lg;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.08) 0%, rgba(34, 197, 94, 0.05) 100%);
+  border: 1.5px solid rgba(22, 163, 74, 0.2);
+  border-radius: $border-radius;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.total-collected-content {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.total-collected-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(22, 163, 74, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  
+  svg {
+    color: $color-success;
+  }
+}
+
+.total-collected-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.total-collected-label {
+  font-size: $font-size-sm;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.total-collected-amount {
+  font-size: 32px;
+  font-weight: 700;
+  color: $color-success;
+  line-height: 1.2;
+}
+
+.payment-count-inline {
+  font-size: $font-size-xs;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
+  font-weight: 500;
+}
+
+// Rent Performance Chart (Line Graph)
+.rent-performance-chart {
+  margin-top: $spacing-lg;
+}
+
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-md;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-line {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  
+  &.expected {
+    background: linear-gradient(90deg, #9ca3af 50%, transparent 50%);
+    background-size: 8px 3px;
+  }
+  
+  &.paid {
+    background: #16a34a;
+  }
+}
+
+.legend-label {
+  font-size: $font-size-sm;
+  color: color-mix(in srgb, var(--text) 70%, #888 30%);
+  font-weight: 500;
+}
+
+// Line Chart Container
+.line-chart-container {
+  display: flex;
+  gap: $spacing-md;
+  background: color-mix(in srgb, var(--bg) 98%, #000 2%);
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba(229, 231, 235, 0.15);
+  padding: $spacing-lg;
+}
+
+// Y-Axis
+.y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: $spacing-sm;
+  min-width: 60px;
+}
+
+.y-label {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--text) 55%, #888 45%);
+  font-weight: 500;
+  text-align: right;
+}
+
+// Chart Area
+.chart-area {
+  flex: 1;
+  position: relative;
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+}
+
+// Grid Lines
+.grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.grid-line {
+  height: 1px;
+  background: rgba(229, 231, 235, 0.2);
+  width: 100%;
+}
+
+// SVG Line Chart
+.line-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 32px;
+  width: 100%;
+  height: calc(100% - 32px);
+  pointer-events: none;
+}
+
+.line-expected {
+  stroke: #9ca3af;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.line-paid {
+  stroke: #16a34a;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 2px 4px rgba(22, 163, 74, 0.2));
+}
+
+.area-paid {
+  pointer-events: none;
+}
+
+// Data Points
+.data-points {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 32px;
+  pointer-events: none;
+}
+
+.point-group {
+  position: absolute;
+  transform: translate(-50%, 50%);
+  pointer-events: all;
+}
+
+.point {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #16a34a;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    transform: scale(1.5);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.5);
+  }
+
+  // Tooltip on hover
+  &:hover::before {
+    content: attr(data-amount);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--bg);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+  }
+
+  &:hover::after {
+    content: attr(data-month);
+    position: absolute;
+    top: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: color-mix(in srgb, var(--text) 90%, #000 10%);
+    color: var(--bg);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    z-index: 100;
+  }
+}
+
+// X-Axis Labels
+.x-axis-labels {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.x-label {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: $font-size-xs;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
+  text-align: center;
+}
+
+.no-chart-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl * 2;
+  background: color-mix(in srgb, var(--bg) 98%, #000 2%);
+  border: 1px dashed rgba(229, 231, 235, 0.3);
+  border-radius: $border-radius-sm;
+  text-align: center;
+  gap: $spacing-sm;
+  
+  svg {
+    color: color-mix(in srgb, var(--text) 30%, #888 70%);
+    margin-bottom: $spacing-xs;
+  }
+  
+  p {
+    font-size: $font-size-md;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
+    margin: 0;
+  }
+  
+  .hint {
+    font-size: $font-size-xs;
+    color: color-mix(in srgb, var(--text) 45%, #888 55%);
+    font-style: italic;
+  }
+}
+
+// Tenant Info Grid
+.tenant-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.tenant-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.tenant-status-badge {
+  position: absolute;
+  top: $spacing-lg;
+  right: $spacing-lg;
+  z-index: 1;
+}
+
+.tenant-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1px solid rgba(229, 231, 235, 0.15);
+}
+
+.btn-view-tenant {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid rgba(229, 231, 235, 0.2);
+  border-radius: $border-radius-sm;
+  color: var(--text);
+  font-size: $font-size-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+    
+    svg {
+      transform: translateX(2px) translateY(-2px);
+    }
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+  }
+}
+
+// Lease Details Grid
+.lease-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-md;
+}
+
+.lease-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+// Vacancy Warning
+.vacancy-warning {
+  border: 2px solid $color-warning;
+  
+  .section-header {
+    background: rgba(245, 158, 11, 0.05);
+    border-bottom-color: rgba(245, 158, 11, 0.2);
+    
+    h2 {
+      color: $color-warning;
+    }
+  }
+}
+
+.vacancy-message {
+  font-size: $font-size-md;
+  color: var(--text);
+  margin: 0;
+  
+  strong {
+    font-weight: 700;
+    color: $color-warning;
+  }
 }
 
 // Metrics Grid
@@ -250,12 +816,13 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 
 .section-content {
   padding: $spacing-lg;
+  position: relative;
 }
 
 .btn-add {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 6px 14px;
   background: transparent;
   border: 1px solid rgba(229, 231, 235, 0.2);
@@ -281,7 +848,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
 .btn-delete-tenant {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 6px 14px;
   background: transparent;
   border: 1px solid rgba(220, 38, 38, 0.3);
@@ -327,6 +894,67 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
       color: #16a34a;
     }
   }
+
+  // Line chart dark theme adjustments
+  .line-chart-container {
+    background: color-mix(in srgb, var(--card) 95%, #fff 5%);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .grid-line {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .line-expected {
+    stroke: #6b7280;
+  }
+
+  .line-paid {
+    stroke: #22c55e;
+    filter: drop-shadow(0 2px 4px rgba(34, 197, 94, 0.3));
+  }
+
+  .point {
+    background: #22c55e;
+    border-color: var(--card);
+    box-shadow: 0 2px 6px rgba(34, 197, 94, 0.4);
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.6);
+    }
+  }
+
+  .legend-line.expected {
+    background: linear-gradient(90deg, #6b7280 50%, transparent 50%);
+    background-size: 8px 3px;
+  }
+
+  .legend-line.paid {
+    background: #22c55e;
+  }
+
+  .no-chart-data {
+    background: color-mix(in srgb, var(--card) 95%, #fff 5%);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  // Total collected card dark theme
+  .total-collected-card {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, rgba(52, 211, 153, 0.08) 100%);
+    border-color: rgba(34, 197, 94, 0.3);
+  }
+
+  .total-collected-icon {
+    background: rgba(34, 197, 94, 0.2);
+    
+    svg {
+      color: #22c55e;
+    }
+  }
+
+  .total-collected-amount {
+    color: #22c55e;
+  }
 }
 
 // Detail Row
@@ -356,7 +984,7 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   &.tenant-link {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     transition: all 0.2s ease;
 
     &.clickable {
@@ -475,6 +1103,13 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
     font-size: $font-size-sm;
     font-weight: 500;
     color: color-mix(in srgb, var(--text) 75%, #888 25%);
+
+    .optional-tag {
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: color-mix(in srgb, var(--text) 60%, #888 40%);
+      font-style: italic;
+    }
   }
 
   input,
@@ -761,6 +1396,95 @@ select {
 
   .payment-check {
     align-self: flex-end;
+  }
+
+  .rent-amount-large {
+    font-size: 24px;
+  }
+
+  .rent-details {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rent-status-wrapper {
+    align-items: flex-start;
+  }
+
+  .lease-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tenant-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    
+    .btn-view-tenant {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .line-chart-container {
+    flex-direction: column;
+    padding: $spacing-md;
+  }
+
+  .y-axis {
+    flex-direction: row;
+    justify-content: space-between;
+    padding-right: 0;
+    padding-bottom: $spacing-sm;
+    min-width: 0;
+    width: 100%;
+    order: -1;
+  }
+
+  .y-label {
+    font-size: 10px;
+  }
+
+  .chart-area {
+    height: 180px;
+  }
+
+  .x-label {
+    font-size: 10px;
+  }
+
+  .point {
+    width: 8px;
+    height: 8px;
+    border-width: 1.5px;
+
+    &:hover::before,
+    &:hover::after {
+      font-size: 10px;
+      padding: 3px 8px;
+    }
+  }
+
+  .chart-legend {
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+  }
+
+  .total-collected-card {
+    padding: $spacing-md;
+  }
+
+  .total-collected-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .total-collected-amount {
+    font-size: 26px;
+  }
+
+  .tenant-status-badge {
+    top: $spacing-md;
+    right: $spacing-md;
   }
 }
 

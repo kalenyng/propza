@@ -34,24 +34,179 @@
     @if (!editing) {
       <!-- View Mode -->
       <div class="content">
-        <!-- Property Title & Status -->
+        <!-- 1. Header: Property Title & Status -->
         <div class="title-section">
-          <h1 class="property-title">{{ property.name }}</h1>
+          <div class="title-wrapper">
+            <h1 class="property-title">{{ property.name }}</h1>
+            @if (property.address && property.address !== property.name) {
+              <p class="property-subtitle">{{ property.address }}</p>
+            }
+          </div>
           <span class="status-badge" [class]="displayStatus.toLowerCase()">
             <span class="status-dot"></span>
             {{ displayStatus }}
           </span>
         </div>
 
-        <!-- Key Metrics -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <span class="metric-label">Monthly Rent</span>
-            <span class="metric-value">{{ formatMoney(property.rent_amount, property.currency) }}</span>
+        <!-- 2. Monthly Rent Overview -->
+        <div class="section-card rent-overview">
+          <div class="section-header">
+            <h2>Rent Overview</h2>
+          </div>
+          <div class="section-content">
+            <!-- Top row: Monthly rent and status -->
+            <div class="rent-details">
+              <div class="rent-amount-display">
+                <span class="rent-amount-large">{{ formatMoney(property.rent_amount, property.currency) }}</span>
+                <span class="rent-frequency">Monthly Rent</span>
+              </div>
+              @if (displayStatus === 'Occupied' && tenantData) {
+                <div class="rent-status-wrapper">
+                  <span class="status-badge-inline" [class]="statusColor">
+                    <span class="status-dot"></span>
+                    {{ statusLabel }}
+                  </span>
+                  @if (tenantData.rent_due_date) {
+                    <span class="next-due-date">Next due: {{ tenantData.rent_due_date | date:'dd MMM yyyy' }}</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Total Rent Collected -->
+            @if (payments.length > 0) {
+              <div class="total-collected-card">
+                <div class="total-collected-content">
+                  <div class="total-collected-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="total-collected-info">
+                    <span class="total-collected-label">Total Rent Collected</span>
+                    <span class="total-collected-amount">{{ formattedTotalCollected }}</span>
+                    <span class="payment-count-inline">
+                      {{ payments.length }} payment{{ payments.length === 1 ? '' : 's' }} recorded
+                    </span>
+                  </div>
+                </div>
+              </div>
+            }
+            
+            <!-- Rent Performance Chart -->
+            <div class="rent-performance-chart">
+              @if (chartData.length > 0) {
+                <div class="chart-legend">
+                  <div class="legend-item">
+                    <span class="legend-line expected"></span>
+                    <span class="legend-label">Expected Rent</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-line paid"></span>
+                    <span class="legend-label">Paid Rent</span>
+                  </div>
+                </div>
+                
+                <div class="line-chart-container">
+                  <!-- Y-axis labels -->
+                  <div class="y-axis">
+                    <span class="y-label">{{ formatMoney(property.rent_amount, property.currency) }}</span>
+                    <span class="y-label">{{ formatMoney(property.rent_amount * 0.75, property.currency) }}</span>
+                    <span class="y-label">{{ formatMoney(property.rent_amount * 0.5, property.currency) }}</span>
+                    <span class="y-label">{{ formatMoney(property.rent_amount * 0.25, property.currency) }}</span>
+                    <span class="y-label">R0</span>
+                  </div>
+                  
+                  <!-- Chart area -->
+                  <div class="chart-area">
+                    <!-- Grid lines -->
+                    <div class="grid-lines">
+                      <div class="grid-line"></div>
+                      <div class="grid-line"></div>
+                      <div class="grid-line"></div>
+                      <div class="grid-line"></div>
+                      <div class="grid-line"></div>
+                    </div>
+                    
+                    <!-- SVG for lines -->
+                    <svg class="line-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <!-- Expected line (dashed) -->
+                      <polyline
+                        class="line-expected"
+                        [attr.points]="getExpectedLinePoints()"
+                        fill="none"
+                        stroke="#9ca3af"
+                        stroke-width="0.5"
+                        stroke-dasharray="2,2"
+                      />
+                      
+                      <!-- Paid area fill -->
+                      <polygon
+                        class="area-paid"
+                        [attr.points]="getPaidAreaPoints()"
+                        fill="url(#gradient-paid)"
+                        opacity="0.2"
+                      />
+                      
+                      <!-- Paid line (solid) -->
+                      <polyline
+                        class="line-paid"
+                        [attr.points]="getPaidLinePoints()"
+                        fill="none"
+                        stroke="#16a34a"
+                        stroke-width="1"
+                      />
+                      
+                      <!-- Gradient definition -->
+                      <defs>
+                        <linearGradient id="gradient-paid" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" style="stop-color:#16a34a;stop-opacity:0.3" />
+                          <stop offset="100%" style="stop-color:#16a34a;stop-opacity:0" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    
+                    <!-- Data points -->
+                    <div class="data-points">
+                      @for (data of chartData; track data.month; let i = $index) {
+                        <div 
+                          class="point-group" 
+                          [style.left.%]="getPointX(i)"
+                          [style.bottom.%]="data.paidPercentage">
+                          <div class="point point-paid" 
+                               [attr.data-amount]="formatMoney(data.paid, property.currency)"
+                               [attr.data-month]="data.month">
+                          </div>
+                        </div>
+                      }
+                    </div>
+                    
+                    <!-- X-axis labels -->
+                    <div class="x-axis-labels">
+                      @for (data of chartData; track data.month; let i = $index) {
+                        <span class="x-label" [style.left.%]="getPointX(i)">
+                          {{ data.shortMonth }}
+                        </span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <div class="no-chart-data">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 3L21 21M9 9V17M15 7V15M3 21H21M5 21V9M19 21V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <p>No payment data available yet</p>
+                  <span class="hint">Payment history will appear here once rent is logged</span>
+                </div>
+              }
+            </div>
           </div>
         </div>
 
-        <!-- Payment History (Moved up) -->
+        <!-- 3. Payment History -->
         @if (displayStatus === 'Occupied') {
           <div class="section-card">
             <div class="section-header">
@@ -91,7 +246,7 @@
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="payment-notes">Notes (optional)</label>
+                    <label for="payment-notes">Notes <span class="optional-tag">(Optional)</span></label>
                     <textarea id="payment-notes" [(ngModel)]="paymentNotes" rows="2" placeholder="Add any notes about this payment..."></textarea>
                   </div>
                   <div class="form-actions">
@@ -148,12 +303,12 @@
           </div>
         }
 
-        <!-- Tenant Section -->
+        <!-- 4. Current Tenant -->
         <div class="section-card">
           <div class="section-header">
-            <h2>Tenant Information</h2>
+            <h2>Current Tenant</h2>
             @if (displayStatus === 'Vacant') {
-              <button class="btn-add" (click)="startEdit()">
+              <button class="btn-add" (click)="openAddTenantModal()">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
@@ -175,70 +330,97 @@
           </div>
           <div class="section-content">
             @if (property.tenant) {
-              <div class="detail-row">
-                <span class="detail-label">Name</span>
-                <span class="detail-value tenant-link" (click)="goToTenant()" [class.clickable]="tenantData?.id">
-                  {{ property.tenant }}
-                  @if (tenantData?.id) {
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="link-arrow">
+              @if (tenantStatus) {
+                <span class="status-badge-inline small tenant-status-badge" [class]="statusColor">
+                  <span class="status-dot"></span>
+                  {{ statusLabel }}
+                </span>
+              }
+              <div class="tenant-info-grid">
+                <div class="tenant-info-item">
+                  <span class="detail-label">Name</span>
+                  <span class="detail-value">{{ property.tenant }}</span>
+                </div>
+                @if (tenantData && tenantData.email) {
+                  <div class="tenant-info-item">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value">{{ tenantData.email }}</span>
+                  </div>
+                }
+                @if (tenantData && tenantData.phone) {
+                  <div class="tenant-info-item">
+                    <span class="detail-label">Phone</span>
+                    <span class="detail-value">{{ tenantData.phone }}</span>
+                  </div>
+                }
+              </div>
+              @if (tenantData?.id) {
+                <div class="tenant-actions">
+                  <button class="btn-view-tenant" (click)="goToTenant()">
+                    View Tenant Details
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M5 3H3C2.46957 3 1.96086 3.21071 1.58579 3.58579C1.21071 3.96086 1 4.46957 1 5V11C1 11.5304 1.21071 12.0391 1.58579 12.4142C1.96086 12.7893 2.46957 13 3 13H9C9.53043 13 10.0391 12.7893 10.4142 12.4142C10.7893 12.0391 11 11.5304 11 11V9M8 1H13M13 1V6M13 1L5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                  }
-                </span>
-              </div>
-              @if (tenantData?.email) {
-                <div class="detail-row">
-                  <span class="detail-label">Email</span>
-                  <span class="detail-value">{{ tenantData?.email }}</span>
-                </div>
-              }
-              @if (tenantData?.phone) {
-                <div class="detail-row">
-                  <span class="detail-label">Phone</span>
-                  <span class="detail-value">{{ tenantData?.phone }}</span>
+                  </button>
                 </div>
               }
             } @else {
-              <p class="empty-text">No tenant assigned</p>
+              <p class="empty-text">No tenant assigned to this property</p>
             }
           </div>
         </div>
 
-        <!-- Tenancy Details -->
+        <!-- 5. Lease Details -->
         @if (tenantData || tenancy) {
           <div class="section-card">
             <div class="section-header">
               <h2>Lease Details</h2>
             </div>
             <div class="section-content">
-              @if (tenantData) {
-                <div class="detail-row">
-                  <span class="detail-label">Lease Start</span>
-                  <span class="detail-value">{{ tenantData.lease_start_date | date:'dd MMM yyyy' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Lease End</span>
-                  <span class="detail-value">{{ tenantData.lease_end_date ? (tenantData.lease_end_date | date:'dd MMM yyyy') : 'Ongoing' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Next Rent Due</span>
-                  <span class="detail-value">{{ tenantData.rent_due_date | date:'dd MMM yyyy' }}</span>
-                </div>
-              }
-              @if (tenancy && !tenantData) {
-                <div class="detail-row">
-                  <span class="detail-label">Start Date</span>
-                  <span class="detail-value">{{ tenancy.start_date | date:'dd MMM yyyy' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">End Date</span>
-                  <span class="detail-value">{{ tenancy.end_date ? (tenancy.end_date | date:'dd MMM yyyy') : 'Ongoing' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Rent Due</span>
-                  <span class="detail-value">{{ tenancy.rent_due_day }}{{ tenancy.rent_due_day === 1 ? 'st' : tenancy.rent_due_day === 2 ? 'nd' : tenancy.rent_due_day === 3 ? 'rd' : 'th' }} of each month</span>
-                </div>
-              }
+              <div class="lease-details-grid">
+                @if (tenantData) {
+                  <div class="lease-detail-item">
+                    <span class="detail-label">Lease Start</span>
+                    <span class="detail-value">{{ tenantData.lease_start_date | date:'dd MMM yyyy' }}</span>
+                  </div>
+                  <div class="lease-detail-item">
+                    <span class="detail-label">Lease End</span>
+                    <span class="detail-value">{{ tenantData.lease_end_date ? (tenantData.lease_end_date | date:'dd MMM yyyy') : 'Ongoing' }}</span>
+                  </div>
+                  <div class="lease-detail-item">
+                    <span class="detail-label">Next Rent Due</span>
+                    <span class="detail-value">{{ tenantData.rent_due_date | date:'dd MMM yyyy' }}</span>
+                  </div>
+                }
+                @if (tenancy && !tenantData) {
+                  <div class="lease-detail-item">
+                    <span class="detail-label">Start Date</span>
+                    <span class="detail-value">{{ tenancy.start_date | date:'dd MMM yyyy' }}</span>
+                  </div>
+                  <div class="lease-detail-item">
+                    <span class="detail-label">End Date</span>
+                    <span class="detail-value">{{ tenancy.end_date ? (tenancy.end_date | date:'dd MMM yyyy') : 'Ongoing' }}</span>
+                  </div>
+                  <div class="lease-detail-item">
+                    <span class="detail-label">Rent Due</span>
+                    <span class="detail-value">{{ tenancy.rent_due_day }}{{ tenancy.rent_due_day === 1 ? 'st' : tenancy.rent_due_day === 2 ? 'nd' : tenancy.rent_due_day === 3 ? 'rd' : 'th' }} of each month</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- 6. Upcoming Vacancy -->
+        @if (tenantData && tenantData.lease_end_date && isLeaseEndingSoon(tenantData.lease_end_date)) {
+          <div class="section-card vacancy-warning">
+            <div class="section-header">
+              <h2>⚠️ Upcoming Vacancy</h2>
+            </div>
+            <div class="section-content">
+              <p class="vacancy-message">
+                Lease ending soon: <strong>{{ tenantData.lease_end_date | date:'dd MMM yyyy' }}</strong>
+              </p>
             </div>
           </div>
         }
@@ -333,8 +515,8 @@
               </div>
 
               <div class="form-group">
-                <label for="lease-end">Lease End Date</label>
-                <input type="date" id="lease-end" [(ngModel)]="editLeaseEndDate" name="leaseEndDate" placeholder="Optional">
+                <label for="lease-end">Lease End Date <span class="optional-tag">(Optional)</span></label>
+                <input type="date" id="lease-end" [(ngModel)]="editLeaseEndDate" name="leaseEndDate">
                 <small class="form-helper">Leave empty for ongoing/month-to-month lease</small>
               </div>
 

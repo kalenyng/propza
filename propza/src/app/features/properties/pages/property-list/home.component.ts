@@ -8,7 +8,9 @@ import { PropertyCardComponent } from '../../components/property-card/property-c
 import { BottomNavComponent } from '../../../../shared/components/bottom-nav/bottom-nav.component';
 import { PropertyService, Property, Payment } from '../../../../core/services/property.service';
 import { RentHelperService, RentStatus } from '../../../../core/services/rent-helper.service';
+import { RentDueService, TenantStatus } from '../../../../core/services/rent-due.service';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { Tenant } from '../../../../core/services/tenant.service';
 
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddPropertyModalComponent } from '../../components/add-property-modal/add-property-modal.component';
@@ -65,6 +67,7 @@ export class PropertyListComponent implements OnInit, OnDestroy {
     private modal: NgbModal,
     private router: Router,
     private rentHelper: RentHelperService,
+    private rentDueService: RentDueService,
     public translate: TranslationService
   ) {}
 
@@ -104,6 +107,7 @@ export class PropertyListComponent implements OnInit, OnDestroy {
 
     const currency = data[0].currency || 'ZAR';
     const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
 
     this.paymentsMap.clear();
     if (payments) {
@@ -129,38 +133,48 @@ export class PropertyListComponent implements OnInit, OnDestroy {
       let rentAmount = Number(p.rent_amount) || 0;
 
       if (activeTenant && p.status === 'occupied') {
-        // Use tenant's rent due date
-        nextDueDate = new Date(activeTenant.rent_due_date);
-        daysUntilDue = this.rentHelper.daysUntilDue(nextDueDate);
+        // Create a full tenant object for the service
+        const tenant: Tenant = {
+          id: '', // Not needed for status calculation
+          name: p.tenant || '',
+          email: null,
+          phone: null,
+          property_id: p.id,
+          rent_amount: rentAmount,
+          rent_status: activeTenant.rent_status,
+          rent_due_date: activeTenant.rent_due_date,
+          lease_start_date: activeTenant.lease_start_date,
+          lease_end_date: activeTenant.lease_end_date,
+          deposit_amount: 0,
+          notes: null,
+          created_at: ''
+        };
+
+        // Use centralized service for current period (monthly billing)
+        periodKey = this.rentDueService.getCurrentPeriod();
         
-        // Get the CURRENT rent period we're in (not the next one)
-        const currentRentPeriod = this.rentHelper.getCurrentRentPeriod(nextDueDate.getDate());
-        
-        // Get payments for current period
-        const currentPaymentKey = `${p.id}-${currentRentPeriod}`;
-        const currentPeriodPayments = this.paymentsMap.get(currentPaymentKey) || 0;
-        
-        // Get overpayment from previous period (carryover)
-        const prevMonth = new Date(today);
-        prevMonth.setMonth(prevMonth.getMonth() - 1);
-        const prevPeriod = this.rentHelper.periodKey(prevMonth);
-        const prevPaymentKey = `${p.id}-${prevPeriod}`;
-        const prevPeriodPayments = this.paymentsMap.get(prevPaymentKey) || 0;
-        const prevOverpayment = this.rentHelper.getOverpayment(prevPeriodPayments, rentAmount);
-        
-        // Total collected = current period payments + previous overpayment
-        collectedAmount = currentPeriodPayments + prevOverpayment;
-        remaining = this.rentHelper.getRemaining(collectedAmount, rentAmount);
-        
-        periodKey = currentRentPeriod;
-        
-        // Calculate status dynamically based on due date and payments
-        status = this.rentHelper.statusFor(
-          true,              // tenancy is active
-          nextDueDate,       // next due date
-          collectedAmount,   // total collected (including carryover)
-          rentAmount         // expected rent amount
+        // Calculate collected amount for current period
+        collectedAmount = this.rentDueService.getCollectedAmount(
+          payments,
+          p.id,
+          periodKey
         );
+        
+        remaining = Math.max(0, rentAmount - collectedAmount);
+        
+        // Get next due date
+        nextDueDate = tenant.rent_due_date ? new Date(tenant.rent_due_date) : new Date();
+        daysUntilDue = Math.round((nextDueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        
+        // Calculate status using centralized service
+        const tenantStatus = this.rentDueService.getStatusForTenant(
+          tenant,
+          payments,
+          p
+        );
+        
+        // Map TenantStatus to RentStatus for display
+        status = this.mapTenantStatusToRentStatus(tenantStatus);
       }
 
       return {
@@ -277,6 +291,30 @@ export class PropertyListComponent implements OnInit, OnDestroy {
   setSortBy(sortBy: 'dueDate' | 'amount' | 'status'): void {
     this.sortBy = sortBy;
     this.applyFiltersAndSort();
+  }
+
+  /**
+   * Maps TenantStatus from RentDueService to RentStatus for display compatibility.
+   */
+  private mapTenantStatusToRentStatus(tenantStatus: TenantStatus): RentStatus {
+    switch (tenantStatus) {
+      case 'vacant':
+        return 'vacant';
+      case 'paid':
+        return 'paid';
+      case 'partially_paid':
+        return 'partially_paid';
+      case 'upcoming':
+        return 'upcoming';
+      case 'due_soon':
+        return 'due_soon';
+      case 'due_today':
+        return 'due_today';
+      case 'overdue':
+        return 'overdue';
+      default:
+        return 'upcoming';
+    }
   }
 
   getFilterCount(filter: PropertyStatus | 'all' | 'unpaid_period'): number {

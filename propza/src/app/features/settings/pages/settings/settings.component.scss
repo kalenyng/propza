@@ -73,7 +73,7 @@
 .back-btn {
   border: none;
   background: transparent;
-  color: var(--accent);
+  color: #16a34a;
   font-size: 1.1rem;
   cursor: pointer;
   display: flex;
@@ -103,7 +103,7 @@
 
 .sidebar-item {
   text-align: left;
-  padding: 10px 12px;
+  padding: 12px 16px;
   border-radius: 12px;
   background: transparent;
   border: 1px solid transparent;
@@ -177,7 +177,7 @@
 
 .coming-soon-label {
   font-size: 12px;
-  color: #6b7280;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
   font-style: italic;
   font-weight: 500;
 }
@@ -264,12 +264,12 @@
 
   .setting-badge {
     font-size: 12px;
-    color: #9ca3af;
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
     font-style: italic;
   }
 
   .chevron {
-    color: #9ca3af;
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
     font-size: 18px;
   }
 }
@@ -301,19 +301,19 @@
   .form-row {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 
     label {
       font-size: 13px;
-      color: #6b7280;
+      color: color-mix(in srgb, var(--text) 60%, #888 40%);
     }
 
     input {
-      padding: 10px 12px;
-      border: 1px solid #e5e7eb;
+      padding: 12px 16px;
+      border: 1px solid rgba(229, 231, 235, 0.2);
       border-radius: 12px;
       font-size: 14px;
-      color: #374151;
+      color: var(--text);
     }
   }
 
@@ -336,7 +336,7 @@
 .sign-out-section {
   margin-top: 40px;
   padding-top: 24px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(229, 231, 235, 0.2);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;

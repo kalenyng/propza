@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from './core/services/theme.service';
 import { PreloaderComponent } from './shared/components/preloader/preloader.component';
+import { ConfirmationModalComponent } from './shared/components/confirmation-modal/confirmation-modal.component';
 import { AuthService } from './core/services/auth.service';
 import { BetaAccessService } from './core/services/beta-access.service';
 import { Router } from '@angular/router';
@@ -11,7 +12,7 @@ import { LoggerService } from './core/services/logger.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, PreloaderComponent],
+  imports: [RouterOutlet, CommonModule, PreloaderComponent, ConfirmationModalComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

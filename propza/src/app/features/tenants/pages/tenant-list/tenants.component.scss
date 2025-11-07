@@ -123,7 +123,7 @@
   background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;
-  border-radius: 14px;
+  border-radius: 12px;
 }
 
 .skeleton-body {
@@ -191,7 +191,7 @@
 }
 
 .empty-icon {
-  color: #9ca3af;
+  color: color-mix(in srgb, var(--text) 60%, #888 40%);
   margin-bottom: 16px;
 }
 
@@ -254,7 +254,7 @@
   right: 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 12px 20px;
   border-radius: 28px;
   background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
@@ -358,7 +358,7 @@
 
 @media (max-width: 480px) {
   .filter-chips {
-    gap: 6px;
+    gap: 8px;
   }
 }
 

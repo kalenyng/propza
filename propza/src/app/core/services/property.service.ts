@@ -181,13 +181,21 @@ export class PropertyService {
 
   async addPayment(payment: Omit<Payment, 'id' | 'created_at'>): Promise<void> {
     try {
-      const { error } = await this.supabaseService.supabase
+      const { data, error } = await this.supabaseService.supabase
         .from('payments')
-        .insert([payment]);
+        .insert([payment])
+        .select()
+        .single();
 
       if (error) {
         console.error('Error adding payment:', error);
-        throw error;
+        // Convert Supabase error to a more informative Error object
+        const errorMessage = error.message || error.details || error.hint || 'Unknown error when creating payment';
+        const enhancedError = new Error(errorMessage);
+        (enhancedError as any).code = error.code;
+        (enhancedError as any).details = error.details;
+        (enhancedError as any).hint = error.hint;
+        throw enhancedError;
       }
 
       // Refresh payments list

@@ -8,7 +8,9 @@ import { TenantService, Tenant } from '../../../../core/services/tenant.service'
 import { PropertyService } from '../../../../core/services/property.service';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { TranslationService } from '../../../../core/services/translation.service';
-import { RentHelperService } from '../../../../core/services/rent-helper.service';
+import { RentHelperService, RentStatus } from '../../../../core/services/rent-helper.service';
+import { RentDueService, TenantStatus } from '../../../../core/services/rent-due.service';
+import { ConfirmationModalService } from '../../../../core/services/confirmation-modal.service';
 
 interface Payment {
   id: string;
@@ -34,6 +36,7 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
   payments: Payment[] = [];
   propertyName: string = '';
   propertyAddress: string = '';
+  property: any = null; // Store property for status calculation
   loading = true;
   editing = false;
   tenantId: string = '';
@@ -60,7 +63,9 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
     private propertyService: PropertyService,
     private supabase: SupabaseService,
     private rentHelper: RentHelperService,
-    public translate: TranslationService
+    public translate: TranslationService,
+    private rentDueService: RentDueService,
+    private confirmationService: ConfirmationModalService
   ) {}
 
   ngOnInit(): void {
@@ -91,6 +96,7 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
           if (this.tenant) {
             const property = properties.find(p => p.id === this.tenant!.property_id);
             if (property) {
+              this.property = property;
               this.propertyName = property.name || '';
               this.propertyAddress = property.address || '';
             }
@@ -129,6 +135,17 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
     this.editLeaseStartDate = tenant.lease_start_date || '';
     this.editLeaseEndDate = tenant.lease_end_date || '';
     this.editNotes = tenant.notes || '';
+    
+    // Update property reference when tenant updates
+    const property = this.propertyService.getProperties().find(p => p.id === tenant.property_id);
+    if (property) {
+      this.property = property;
+      this.propertyName = property.name || '';
+      this.propertyAddress = property.address || '';
+    }
+    
+    // Fetch payments for this tenant's property
+    this.fetchPayments();
   }
 
   private async fetchPayments(): Promise<void> {
@@ -197,13 +214,61 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
 
   get statusLabel(): string {
     if (!this.tenant) return '';
-    return this.tenant.rent_status.replace('_', ' ').charAt(0).toUpperCase() + 
-           this.tenant.rent_status.replace('_', ' ').slice(1);
+    
+    // Calculate status dynamically using the same logic as property page
+    const calculatedStatus = this.getCalculatedStatus();
+    const displayStatus = this.mapTenantStatusToRentStatus(calculatedStatus);
+    
+    return displayStatus.replace('_', ' ').charAt(0).toUpperCase() + 
+           displayStatus.replace('_', ' ').slice(1);
   }
 
   get statusColor(): string {
     if (!this.tenant) return 'gray';
-    return this.rentHelper.getStatusColor(this.tenant.rent_status as any);
+    
+    // Calculate status dynamically using the same logic as property page
+    const calculatedStatus = this.getCalculatedStatus();
+    const displayStatus = this.mapTenantStatusToRentStatus(calculatedStatus);
+    
+    return this.rentHelper.getStatusColor(displayStatus);
+  }
+
+  /**
+   * Calculates the current tenant status using RentDueService (same as property page)
+   */
+  private getCalculatedStatus(): TenantStatus {
+    if (!this.tenant) return 'upcoming';
+    
+    // Use the same calculation method as property page
+    return this.rentDueService.getStatusForTenant(
+      this.tenant,
+      this.payments,
+      this.property
+    );
+  }
+
+  /**
+   * Maps TenantStatus from RentDueService to RentStatus for display compatibility.
+   */
+  private mapTenantStatusToRentStatus(tenantStatus: TenantStatus): RentStatus {
+    switch (tenantStatus) {
+      case 'vacant':
+        return 'vacant';
+      case 'paid':
+        return 'paid';
+      case 'partially_paid':
+        return 'partially_paid';
+      case 'upcoming':
+        return 'upcoming';
+      case 'due_soon':
+        return 'due_soon';
+      case 'due_today':
+        return 'due_today';
+      case 'overdue':
+        return 'overdue';
+      default:
+        return 'upcoming';
+    }
   }
 
   startEdit(): void {
@@ -245,7 +310,11 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
   async deleteTenant(): Promise<void> {
     if (!this.tenant || this.deleting) return;
 
-    const confirmed = confirm('Are you sure you want to delete this tenant? This action cannot be undone.');
+    const confirmed = await this.confirmationService.confirm({
+      title: 'Delete Tenant',
+      message: 'Are you sure you want to delete this tenant? This action cannot be undone.',
+      type: 'danger'
+    });
     if (!confirmed) return;
 
     this.deleting = true;

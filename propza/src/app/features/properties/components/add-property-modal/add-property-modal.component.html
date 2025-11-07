@@ -94,7 +94,7 @@
 
       <!-- Tenant email -->
       <div class="mb-3">
-        <label class="form-label" for="tenantEmail">{{ translate.t('tenants.emailAddress') }} *</label>
+        <label class="form-label" for="tenantEmail">{{ translate.t('tenants.emailAddress') }} <span class="optional-tag">(Optional)</span></label>
         <input
           id="tenantEmail"
           type="email"
@@ -102,8 +102,9 @@
           [class.is-invalid]="form.get('tenant_email')?.invalid && form.get('tenant_email')?.touched"
           formControlName="tenant_email"
           placeholder="tenant@example.com"
-          aria-describedby="tenant-email-error"
+          aria-describedby="tenant-email-help tenant-email-error"
         />
+        <div id="tenant-email-help" class="form-text text-muted">Optional - enter if available</div>
         <div 
           id="tenant-email-error" 
           class="invalid-feedback" 
@@ -115,7 +116,7 @@
 
       <!-- Tenant phone -->
       <div class="mb-3">
-        <label class="form-label" for="tenantPhone">{{ translate.t('tenants.phoneNumber') }} *</label>
+        <label class="form-label" for="tenantPhone">{{ translate.t('tenants.phoneNumber') }} <span class="optional-tag">(Optional)</span></label>
         <input
           id="tenantPhone"
           type="tel"
@@ -123,8 +124,9 @@
           [class.is-invalid]="form.get('tenant_phone')?.invalid && form.get('tenant_phone')?.touched"
           formControlName="tenant_phone"
           placeholder="+27 71 234 5678"
-          aria-describedby="tenant-phone-error"
+          aria-describedby="tenant-phone-help tenant-phone-error"
         />
+        <div id="tenant-phone-help" class="form-text text-muted">Optional - enter if available</div>
         <div 
           id="tenant-phone-error" 
           class="invalid-feedback" 
@@ -267,7 +269,7 @@
 
       <!-- Lease end date -->
       <div class="mb-3">
-        <label class="form-label" for="tenancy_end">Lease End Date (Optional)</label>
+        <label class="form-label" for="tenancy_end">Lease End Date <span class="optional-tag">(Optional)</span></label>
         <div class="date-input-wrapper">
           <input
             id="tenancy_end"
@@ -306,7 +308,7 @@
 
       <!-- Notes -->
       <div class="mb-3">
-        <label class="form-label">{{ translate.t('tenants.notes') }}</label>
+        <label class="form-label">Notes <span class="optional-tag">(Optional)</span></label>
         <textarea
           class="form-control"
           formControlName="tenant_notes"

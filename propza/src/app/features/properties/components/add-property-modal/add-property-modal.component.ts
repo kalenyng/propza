@@ -5,6 +5,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { TranslationService } from '../../../../core/services/translation.service';
 import { RentHelperService } from '../../../../core/services/rent-helper.service';
+import { RentDueService } from '../../../../core/services/rent-due.service';
 import { SanitizationService } from '../../../../core/services/sanitization.service';
 
 @Component({
@@ -20,7 +21,17 @@ export class AddPropertyModalComponent {
   activeModal = inject(NgbActiveModal);
   translate = inject(TranslationService);
   private rentHelper = inject(RentHelperService);
+  private rentDueService = inject(RentDueService);
   private sanitizer = inject(SanitizationService);
+
+  // Optional email validator: only validates format if a value is provided
+  optionalEmailValidator = (control: any) => {
+    const value = control.value;
+    if (!value || value.trim() === '') {
+      return null; // Empty is valid (optional field)
+    }
+    return Validators.email(control); // Validate format if provided
+  };
 
   loading = false;
   leaseFile?: File;
@@ -84,8 +95,8 @@ export class AddPropertyModalComponent {
 
       if (occupied) {
         tenant?.addValidators([Validators.required]);
-        tenantEmail?.addValidators([Validators.email]);
-        tenantPhone?.addValidators([Validators.required]);
+        tenantEmail?.addValidators([this.optionalEmailValidator]); // Optional: only validate format if provided
+        tenantPhone?.clearValidators(); // Phone is optional
         start?.addValidators([Validators.required]);
         nextDue?.addValidators([Validators.required]);
         end?.clearValidators(); // make end optional
@@ -332,13 +343,13 @@ export class AddPropertyModalComponent {
       }
 
       // Calculate rent_due_day from next_payment_due
-      const nextDueDate = new Date(v.next_payment_due);
-      const rentDueDay = nextDueDate.getDate();
+      const tenancyDueDate = new Date(v.next_payment_due);
+      const tenancyRentDueDay = tenancyDueDate.getDate();
 
       const { error: tenancyErr } = await this.supa.supabase.from('tenancies').insert({
         property_id: prop.id,
         start_date: v.tenancy_start,
-        rent_due_day: rentDueDay,
+        rent_due_day: tenancyRentDueDay,
         end_date: v.tenancy_end || null
       });
 
@@ -352,14 +363,60 @@ export class AddPropertyModalComponent {
       }
 
       // 4) Insert tenant record in tenants table
+      // "Currently Paid" means: tenant has paid for the CURRENT period
+      // Their NEXT payment is still due on the entered date
+      // We use the entered next payment due date as-is for both cases
+      const nextDueDate = this.rentDueService.toDateOnlyZA(v.next_payment_due!);
+
+      // Convert next due date to ISO string for database
+      const nextDueDateISO = nextDueDate.toISOString().split('T')[0];
+
+      // Create a temporary tenant object to calculate status
+      const tempTenant = {
+        id: '',
+        name: v.tenant!,
+        email: v.tenant_email || null,
+        phone: v.tenant_phone || null,
+        property_id: prop.id,
+        rent_amount: v.rent_amount!,
+        rent_status: 'upcoming' as const,
+        rent_due_date: nextDueDateISO,
+        lease_start_date: v.tenancy_start!,
+        lease_end_date: v.tenancy_end || null,
+        deposit_amount: v.deposit || 0,
+        notes: v.tenant_notes || null,
+        created_at: new Date().toISOString()
+      };
+
+      // Calculate actual status using RentDueService
+      const calculatedStatus = this.rentDueService.getTenantStatus(tempTenant);
+      const dbStatus = this.rentDueService.mapToDatabaseStatus(calculatedStatus);
+
+      // Log tenant creation details
+      const logRentDueDay = new Date(v.next_payment_due!).getDate();
+      const period = this.rentHelper.getCurrentRentPeriod(logRentDueDay);
+      
+      console.log('🏡 NEW PROPERTY WITH TENANT ADDED:', {
+        propertyName: v.name,
+        tenantName: v.tenant,
+        originalNextPaymentDue: v.next_payment_due,
+        nextDueDate: nextDueDateISO,
+        rentDueDay: logRentDueDay,
+        selectedRentalPeriod: period,
+        rentAmount: v.rent_amount,
+        currentlyPaid: v.currentlyPaid,
+        calculatedStatus: calculatedStatus,
+        dbStatus: dbStatus
+      });
+      
       const { error: tenantErr } = await this.supa.supabase.from('tenants').insert({
         name: this.sanitizer.sanitizeText(v.tenant || ''),
         email: this.sanitizer.sanitizeEmail(v.tenant_email || ''),
         phone: this.sanitizer.sanitizePhone(v.tenant_phone || ''),
         property_id: prop.id,
         rent_amount: this.sanitizer.sanitizeNumber(v.rent_amount) || 0,
-        rent_status: 'upcoming', // Default status for new tenants
-        rent_due_date: v.next_payment_due,
+        rent_status: dbStatus,  // Use calculated status, not hardcoded 'upcoming'
+        rent_due_date: nextDueDateISO,  // Use next due date, not original next_payment_due
         lease_start_date: v.tenancy_start,
         lease_end_date: v.tenancy_end || null,
         deposit_amount: this.sanitizer.sanitizeNumber(v.deposit) || 0,
@@ -376,22 +433,36 @@ export class AddPropertyModalComponent {
       }
 
       // 5) Create payment record if "currently paid" is checked
+      // The payment covers the CURRENT period (e.g., October)
+      // Next due date is set to the entered date (e.g., Nov 1)
       if (v.currentlyPaid) {
         const rentDueDay = new Date(v.next_payment_due!).getDate();
         const period = this.rentHelper.getCurrentRentPeriod(rentDueDay);
         
-        const { error: paymentErr } = await this.supa.supabase.from('payments').insert({
-          property_id: prop.id,
-          period: period,
-          amount: Number(v.rent_amount),
-          payment_date: new Date().toISOString().split('T')[0],
-          payment_method: 'cash',
-          notes: 'Initial payment - tenant currently paid'
-        });
+        // Check if payment already exists for this property/period
+        const { data: existingPayments } = await this.supa.supabase
+          .from('payments')
+          .select('id')
+          .eq('property_id', prop.id)
+          .eq('period', period);
 
-        if (paymentErr) {
-          console.error('Payment insert error:', paymentErr);
-          alert(`Property, tenancy, and tenant created but payment record failed: ${paymentErr.message}`);
+        if (!existingPayments || existingPayments.length === 0) {
+          // Only insert if no payment exists
+          const { error: paymentErr } = await this.supa.supabase.from('payments').insert({
+            property_id: prop.id,
+            period: period,
+            amount: Number(v.rent_amount),
+            payment_date: new Date().toISOString().split('T')[0],
+            payment_method: 'cash',
+            notes: 'Initial payment - tenant currently paid'
+          });
+
+          if (paymentErr) {
+            console.error('Payment insert error:', paymentErr);
+            alert(`Property, tenancy, and tenant created but payment record failed: ${paymentErr.message}`);
+          }
+        } else {
+          console.log(`Payment already exists for property ${prop.id} period ${period}, skipping creation`);
         }
       }
     }

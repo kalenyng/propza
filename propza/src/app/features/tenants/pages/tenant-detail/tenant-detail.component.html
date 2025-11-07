@@ -34,24 +34,46 @@
     @if (!editing) {
       <!-- View Mode -->
       <div class="content">
-        <!-- Tenant Title & Status -->
+        <!-- 1. Header: Tenant Title & Status -->
         <div class="title-section">
-          <h1 class="tenant-title">{{ tenant.name }}</h1>
+          <div class="title-wrapper">
+            <h1 class="tenant-title">{{ tenant.name }}</h1>
+            @if (propertyName || propertyAddress) {
+              <p class="tenant-subtitle">
+                <span class="property-link-text" (click)="goToProperty()" [class.clickable]="tenant.property_id">
+                  📍 {{ propertyName || propertyAddress }}
+                </span>
+              </p>
+            }
+          </div>
           <span class="status-badge" [class]="statusColor">
             <span class="status-dot"></span>
             {{ statusLabel }}
           </span>
         </div>
 
-        <!-- Key Metrics -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <span class="metric-label">Monthly Rent</span>
-            <span class="metric-value">{{ formattedRent }}</span>
+        <!-- 2. Monthly Rent & Deposit -->
+        <div class="section-card rent-deposit-card">
+          <div class="section-header">
+            <h2>Monthly Rent & Deposit</h2>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">Security Deposit</span>
-            <span class="metric-value">{{ formattedDeposit }}</span>
+          <div class="section-content">
+            <div class="rent-deposit-grid">
+              <div class="rent-deposit-item">
+                <span class="detail-label">Monthly Rent</span>
+                <span class="detail-value-large">{{ formattedRent }}</span>
+              </div>
+              <div class="rent-deposit-item">
+                <span class="detail-label">Security Deposit</span>
+                <span class="detail-value-large">{{ formattedDeposit }}</span>
+              </div>
+              @if (tenant.rent_due_date) {
+                <div class="rent-deposit-item next-due-highlight">
+                  <span class="detail-label">Next Due Date</span>
+                  <span class="detail-value-large">{{ formattedRentDueDate }}</span>
+                </div>
+              }
+            </div>
           </div>
         </div>
 
@@ -75,7 +97,6 @@
                     </div>
                     <div class="payment-amount-info">
                       <span class="payment-amount">{{ formatPaymentAmount(payment.amount) }}</span>
-                      <span class="payment-status paid">Paid</span>
                     </div>
                   </div>
                 }
@@ -84,26 +105,26 @@
           </div>
         </div>
 
-        <!-- Tenant Details -->
+        <!-- 4. Contact Information -->
         <div class="section-card">
           <div class="section-header">
             <h2>Contact Information</h2>
           </div>
           <div class="section-content">
-            <div class="detail-grid">
-              <div class="detail-item">
-                <span class="detail-label">Email</span>
-                <span class="detail-value">{{ tenant.email || 'No email provided' }}</span>
+            <div class="contact-table">
+              <div class="contact-row">
+                <span class="contact-label">Email</span>
+                <span class="contact-value">{{ tenant.email || 'No email provided' }}</span>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">Phone</span>
-                <span class="detail-value">{{ tenant.phone || 'No phone provided' }}</span>
+              <div class="contact-row">
+                <span class="contact-label">Phone</span>
+                <span class="contact-value">{{ tenant.phone || 'No phone provided' }}</span>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">Property</span>
-                <span class="detail-value property-link" (click)="goToProperty()" [class.clickable]="tenant?.property_id">
+              <div class="contact-row">
+                <span class="contact-label">Property</span>
+                <span class="contact-value property-link" (click)="goToProperty()" [class.clickable]="tenant.property_id">
                   {{ propertyName || propertyAddress }}
-                  @if (tenant?.property_id) {
+                  @if (tenant.property_id) {
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="link-arrow">
                       <path d="M5 3H3C2.46957 3 1.96086 3.21071 1.58579 3.58579C1.21071 3.96086 1 4.46957 1 5V11C1 11.5304 1.21071 12.0391 1.58579 12.4142C1.96086 12.7893 2.46957 13 3 13H9C9.53043 13 10.0391 12.7893 10.4142 12.4142C10.7893 12.0391 11 11.5304 11 11V9M8 1H13M13 1V6M13 1L5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -114,26 +135,50 @@
           </div>
         </div>
 
-        <!-- Lease Information -->
+        <!-- 5. Lease Information -->
         <div class="section-card">
           <div class="section-header">
             <h2>Lease Information</h2>
           </div>
           <div class="section-content">
-            <div class="detail-grid">
-              <div class="detail-item">
+            <div class="lease-info-grid">
+              <div class="lease-info-item">
                 <span class="detail-label">Lease Start</span>
                 <span class="detail-value">{{ formattedLeaseStart }}</span>
               </div>
-              <div class="detail-item">
+              <div class="lease-info-item">
                 <span class="detail-label">Lease End</span>
                 <span class="detail-value">{{ formattedLeaseEnd }}</span>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">Rent Due Date</span>
+              <div class="lease-info-item">
+                <span class="detail-label">Next Rent Due</span>
                 <span class="detail-value">{{ formattedRentDueDate }}</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- 6. Send Rent Reminder -->
+        <div class="section-card reminder-card">
+          <div class="section-header">
+            <h2>Rent Reminder</h2>
+          </div>
+          <div class="section-content">
+            <p class="reminder-description">
+              Send a payment reminder to the tenant via email.
+            </p>
+            <button 
+              class="btn-outline btn-reminder" 
+              [disabled]="statusColor !== 'danger'"
+              title="{{ statusColor !== 'danger' ? 'Only available for overdue payments' : 'Send rent reminder via email' }}">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 3L7 10L3 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Send Rent Reminder
+            </button>
+            <p class="reminder-hint">
+              {{ statusColor !== 'danger' ? '✓ Reminders are only sent for overdue payments' : 'This will send an email to ' + (tenant.email || 'the tenant') }}
+            </p>
           </div>
         </div>
 

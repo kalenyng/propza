@@ -108,6 +108,13 @@
 
 .form-label {
   color: var(--text);
+
+  .optional-tag {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: color-mix(in srgb, var(--text) 60%, #888 40%);
+    font-style: italic;
+  }
 }
 
 .form-control, .form-select {
@@ -156,7 +163,7 @@
     border: none;
     padding: 8px;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;

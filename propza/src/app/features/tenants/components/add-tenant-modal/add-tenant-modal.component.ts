@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { PropertyService } from '../../../../core/services/property.service';
 import { RentHelperService } from '../../../../core/services/rent-helper.service';
+import { RentDueService } from '../../../../core/services/rent-due.service';
 import { TranslationService } from '../../../../core/services/translation.service';
 import { SanitizationService } from '../../../../core/services/sanitization.service';
 
@@ -22,9 +23,28 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
   private supabase = inject(SupabaseService);
   private propertyService = inject(PropertyService);
   private rentHelper = inject(RentHelperService);
+  private rentDueService = inject(RentDueService);
   private destroy$ = new Subject<void>();
   translate = inject(TranslationService);
   private sanitizer = inject(SanitizationService);
+
+  // Optional email validator: only validates format if a value is provided
+  optionalEmailValidator = (control: any) => {
+    const value = control.value;
+    if (!value || value.trim() === '') {
+      return null; // Empty is valid (optional field)
+    }
+    return Validators.email(control); // Validate format if provided
+  };
+
+  // Optional phone validator: only validates format if a value is provided
+  optionalPhoneValidator = (control: any) => {
+    const value = control.value;
+    if (!value || value.trim() === '') {
+      return null; // Empty is valid (optional field)
+    }
+    return Validators.pattern(/^\+27\s?\d{2}\s?\d{3}\s?\d{4}$/)(control); // Validate format if provided
+  };
 
   vacantProperties: Array<{ id: string; name: string; address: string; rent_amount: number }> = [];
   loading = false;
@@ -71,8 +91,8 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
-    email: ['', [Validators.email]],
-    phone: ['', [Validators.pattern(/^\+27\s?\d{2}\s?\d{3}\s?\d{4}$/)]],
+    email: ['', [this.optionalEmailValidator]], // Optional: only validate format if provided
+    phone: ['', [this.optionalPhoneValidator]], // Optional: only validate format if provided
     propertyId: ['', Validators.required],
     rentAmount: [0, [Validators.required, Validators.min(1)]],
     deposit: [0, [Validators.min(0)]],
@@ -109,18 +129,62 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
         }
       }
 
-      // Determine initial rent status based on whether currently paid
-      const initialRentStatus = formValue.currentlyPaid ? 'paid' : 'upcoming';
+      // Calculate next due date based on "Currently Paid" checkbox
+      // "Currently Paid" means: tenant has paid for the CURRENT period
+      // Their NEXT payment is still due on the rent due date entered
+      // We use the entered rent due date as-is for both cases
+      const nextDueDate = this.rentDueService.toDateOnlyZA(formValue.rentDueDate!);
 
-      // Create tenant record
+      // Convert next due date to ISO string for database
+      const nextDueDateISO = nextDueDate.toISOString().split('T')[0];
+
+      // Create a temporary tenant object to calculate status
+      const tempTenant = {
+        id: '',
+        name: formValue.name!,
+        email: formValue.email || null,
+        phone: formValue.phone || null,
+        property_id: formValue.propertyId!,
+        rent_amount: formValue.rentAmount!,
+        rent_status: 'upcoming' as const,
+        rent_due_date: nextDueDateISO,
+        lease_start_date: formValue.leaseStartDate!,
+        lease_end_date: formValue.leaseEndDate || null,
+        deposit_amount: formValue.deposit || 0,
+        notes: formValue.notes || null,
+        created_at: new Date().toISOString()
+      };
+
+      // Calculate actual status using RentDueService
+      const calculatedStatus = this.rentDueService.getTenantStatus(tempTenant);
+      const dbStatus = this.rentDueService.mapToDatabaseStatus(calculatedStatus);
+
+      // Log tenant creation details
+      const dueDate = new Date(formValue.rentDueDate!);
+      const rentDueDay = dueDate.getDate();
+      const currentPeriod = this.rentHelper.getCurrentRentPeriod(rentDueDay);
+      
+      console.log('🏘️ NEW TENANT ADDED:', {
+        name: formValue.name,
+        originalRentDueDate: formValue.rentDueDate,
+        nextDueDate: nextDueDateISO,
+        rentDueDay: rentDueDay,
+        selectedRentalPeriod: currentPeriod,
+        rentAmount: formValue.rentAmount,
+        currentlyPaid: formValue.currentlyPaid,
+        calculatedStatus: calculatedStatus,
+        dbStatus: dbStatus
+      });
+
+      // Create tenant record with calculated status and next due date
       const { error: tenantErr } = await this.supabase.supabase.from('tenants').insert({
       name: this.sanitizer.sanitizeText(formValue.name!),
       email: this.sanitizer.sanitizeEmail(formValue.email || ''),
       phone: this.sanitizer.sanitizePhone(formValue.phone || ''),
       property_id: formValue.propertyId!,
       rent_amount: this.sanitizer.sanitizeNumber(formValue.rentAmount!) || 0,
-      rent_status: initialRentStatus,
-      rent_due_date: formValue.rentDueDate!,
+      rent_status: dbStatus,  // Use calculated status, not hardcoded 'paid'
+      rent_due_date: nextDueDateISO,  // Use next due date, not original rentDueDate
       lease_start_date: formValue.leaseStartDate!,
       lease_end_date: formValue.leaseEndDate || null,
       deposit_amount: this.sanitizer.sanitizeNumber(formValue.deposit) || 0,
@@ -152,6 +216,8 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
       }
 
       // Create payment record if currently paid
+      // The payment covers the CURRENT period (e.g., October)
+      // Next due date is set to the entered date (e.g., Nov 1)
       if (formValue.currentlyPaid) {
         const dueDate = new Date(formValue.rentDueDate!);
         const rentDueDay = dueDate.getDate();
@@ -159,20 +225,32 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
         // Calculate the CURRENT rent period (which period this payment covers)
         const currentPeriod = this.rentHelper.getCurrentRentPeriod(rentDueDay);
         
-        const { error: paymentErr } = await this.supabase.supabase
+        // Check if payment already exists for this property/period
+        const { data: existingPayments } = await this.supabase.supabase
           .from('payments')
-          .insert({
-            property_id: formValue.propertyId!,
-            period: currentPeriod,  // Use current rent period, not due date month
-            amount: formValue.rentAmount!,
-            payment_date: new Date().toISOString().split('T')[0],
-            payment_method: 'initial_payment',
-            notes: 'Initial payment - tenant currently paid'
-          });
+          .select('id')
+          .eq('property_id', formValue.propertyId!)
+          .eq('period', currentPeriod);
 
-        if (paymentErr) {
-          console.error('Error creating payment record:', paymentErr);
-          // Continue anyway - tenant was created successfully
+        if (!existingPayments || existingPayments.length === 0) {
+          // Only insert if no payment exists
+          const { error: paymentErr } = await this.supabase.supabase
+            .from('payments')
+            .insert({
+              property_id: formValue.propertyId!,
+              period: currentPeriod,
+              amount: formValue.rentAmount!,
+              payment_date: new Date().toISOString().split('T')[0],
+              payment_method: 'initial_payment',
+              notes: 'Initial payment - tenant currently paid'
+            });
+
+          if (paymentErr) {
+            console.error('Error creating payment record:', paymentErr);
+            // Continue anyway - tenant was created successfully
+          }
+        } else {
+          console.log(`Payment already exists for property ${formValue.propertyId} period ${currentPeriod}, skipping creation`);
         }
       }
 
