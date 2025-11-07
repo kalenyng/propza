@@ -403,212 +403,27 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   font-weight: 500;
 }
 
-// Rent Performance Chart (Line Graph)
-.rent-performance-chart {
-  margin-top: $spacing-lg;
-}
-
-.chart-legend {
-  display: flex;
-  align-items: center;
-  gap: $spacing-lg;
-  margin-bottom: $spacing-md;
-  justify-content: center;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.legend-line {
-  width: 24px;
-  height: 3px;
-  border-radius: 2px;
-  
-  &.expected {
-    background: linear-gradient(90deg, #9ca3af 50%, transparent 50%);
-    background-size: 8px 3px;
-  }
-  
-  &.paid {
-    background: #16a34a;
-  }
-}
-
-.legend-label {
-  font-size: $font-size-sm;
-  color: color-mix(in srgb, var(--text) 70%, #888 30%);
-  font-weight: 500;
-}
-
-// Line Chart Container
-.line-chart-container {
-  display: flex;
-  gap: $spacing-md;
-  background: color-mix(in srgb, var(--bg) 98%, #000 2%);
-  border-radius: $border-radius-sm;
-  border: 1px solid rgba(229, 231, 235, 0.15);
-  padding: $spacing-lg;
-}
-
-// Y-Axis
-.y-axis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-right: $spacing-sm;
-  min-width: 60px;
-}
-
-.y-label {
-  font-size: 11px;
-  color: color-mix(in srgb, var(--text) 55%, #888 45%);
-  font-weight: 500;
-  text-align: right;
-}
-
-// Chart Area
-.chart-area {
-  flex: 1;
-  position: relative;
-  height: 220px;
-  display: flex;
-  flex-direction: column;
-}
-
-// Grid Lines
-.grid-lines {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 32px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  pointer-events: none;
-}
-
-.grid-line {
-  height: 1px;
-  background: rgba(229, 231, 235, 0.2);
-  width: 100%;
-}
-
-// SVG Line Chart
-.line-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 32px;
-  width: 100%;
-  height: calc(100% - 32px);
-  pointer-events: none;
-}
-
-.line-expected {
-  stroke: #9ca3af;
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
-}
-
-.line-paid {
-  stroke: #16a34a;
-  stroke-width: 3;
-  vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 2px 4px rgba(22, 163, 74, 0.2));
-}
-
-.area-paid {
-  pointer-events: none;
-}
-
-// Data Points
-.data-points {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 32px;
-  pointer-events: none;
-}
-
-.point-group {
-  position: absolute;
-  transform: translate(-50%, 50%);
-  pointer-events: all;
-}
-
-.point {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #16a34a;
-  border: 2px solid white;
-  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-
-  &:hover {
-    transform: scale(1.5);
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.5);
-  }
-}
-
-// X-Axis Labels
-.x-axis-labels {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 32px;
-  display: flex;
-  align-items: center;
-}
-
-.x-label {
-  position: absolute;
-  transform: translateX(-50%);
-  font-size: $font-size-xs;
-  font-weight: 600;
-  color: color-mix(in srgb, var(--text) 60%, #888 40%);
-  text-align: center;
-}
-
-.no-chart-data {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: $spacing-xl * 2;
-  background: color-mix(in srgb, var(--bg) 98%, #000 2%);
-  border: 1px dashed rgba(229, 231, 235, 0.3);
-  border-radius: $border-radius-sm;
-  text-align: center;
-  gap: $spacing-sm;
-  
-  svg {
-    color: color-mix(in srgb, var(--text) 30%, #888 70%);
-    margin-bottom: $spacing-xs;
-  }
-  
-  p {
-    font-size: $font-size-md;
-    font-weight: 500;
-    color: color-mix(in srgb, var(--text) 60%, #888 40%);
-    margin: 0;
-  }
-  
-  .hint {
-    font-size: $font-size-xs;
-    color: color-mix(in srgb, var(--text) 45%, #888 55%);
-    font-style: italic;
-  }
-}
+// Chart styles
+.rent-performance-chart { margin-top: $spacing-lg; }
+.chart-legend { display: flex; gap: $spacing-lg; margin-bottom: $spacing-md; justify-content: center; }
+.legend-item { display: flex; gap: 8px; }
+.legend-line { width: 24px; height: 3px; &.expected { background: linear-gradient(90deg, #9ca3af 50%, transparent 50%); background-size: 8px 3px; } &.paid { background: #16a34a; } }
+.legend-label { font-size: 14px; color: color-mix(in srgb, var(--text) 70%, #888 30%); }
+.line-chart-container { display: flex; gap: 16px; background: color-mix(in srgb, var(--bg) 98%, #000 2%); border-radius: 8px; border: 1px solid rgba(229, 231, 235, 0.15); padding: 20px; }
+.y-axis { display: flex; flex-direction: column; justify-content: space-between; padding-right: 12px; min-width: 60px; }
+.y-label { font-size: 11px; color: color-mix(in srgb, var(--text) 55%, #888 45%); text-align: right; }
+.chart-area { flex: 1; position: relative; height: 220px; }
+.grid-lines { position: absolute; inset: 0 0 32px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; }
+.grid-line { height: 1px; background: rgba(229, 231, 235, 0.2); }
+.line-svg { position: absolute; inset: 0 0 32px; width: 100%; height: calc(100% - 32px); pointer-events: none; }
+.line-expected { stroke: #9ca3af; stroke-width: 2; }
+.line-paid { stroke: #16a34a; stroke-width: 3; filter: drop-shadow(0 2px 4px rgba(22, 163, 74, 0.2)); }
+.data-points { position: absolute; inset: 0 0 32px; pointer-events: none; }
+.point-group { position: absolute; transform: translate(-50%, 50%); pointer-events: all; }
+.point { width: 10px; height: 10px; border-radius: 50%; background: #16a34a; border: 2px solid white; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3); cursor: pointer; &:hover { transform: scale(1.5); } }
+.x-axis-labels { position: absolute; inset: auto 0 0; height: 32px; }
+.x-label { position: absolute; transform: translateX(-50%); font-size: 12px; font-weight: 600; color: color-mix(in srgb, var(--text) 60%, #888 40%); }
+.no-chart-data { display: flex; flex-direction: column; align-items: center; padding: 48px; background: color-mix(in srgb, var(--bg) 98%, #000 2%); border: 1px dashed rgba(229, 231, 235, 0.3); border-radius: 8px; gap: 12px; svg { color: color-mix(in srgb, var(--text) 30%, #888 70%); } p { font-size: 16px; color: color-mix(in srgb, var(--text) 60%, #888 40%); margin: 0; } .hint { font-size: 12px; color: color-mix(in srgb, var(--text) 45%, #888 55%); font-style: italic; } }
 
 // Tenant Info Grid
 .tenant-info-grid {
@@ -951,242 +766,25 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   line-height: $line-height;
 }
 
-// Edit Form
-.edit-form {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-lg;
-}
+// Forms
+.edit-form { display: flex; flex-direction: column; gap: 20px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; label { font-size: 14px; color: color-mix(in srgb, var(--text) 75%, #888 25%); .optional-tag { font-size: 12px; color: color-mix(in srgb, var(--text) 60%, #888 40%); font-style: italic; } } input, textarea, select { padding: 12px 14px; border: 1px solid rgba(229, 231, 235, 0.2); border-radius: 8px; font-size: 16px; color: var(--text); background: var(--card); &:focus-visible { outline: none; border-color: var(--text); } } textarea { min-height: 120px; } }
+.form-actions { display: flex; gap: 12px; justify-content: flex-end; padding-top: 16px; }
+.btn-primary, .btn-secondary { padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+.btn-primary { background: var(--text); color: var(--bg); border: none; }
+.btn-secondary { background: transparent; color: var(--text); border: 1px solid rgba(229, 231, 235, 0.2); }
+.form-subtitle { font-size: 16px; font-weight: 600; color: var(--text); margin: 0 0 16px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px; }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-xs;
-
-  label {
-    font-size: $font-size-sm;
-    font-weight: 500;
-    color: color-mix(in srgb, var(--text) 75%, #888 25%);
-
-    .optional-tag {
-      font-size: 0.75rem;
-      font-weight: 400;
-      color: color-mix(in srgb, var(--text) 60%, #888 40%);
-      font-style: italic;
-    }
-  }
-
-  input,
-  textarea {
-    padding: 12px 14px;
-    border: 1px solid rgba(229, 231, 235, 0.2);
-    border-radius: $border-radius-sm;
-    font-size: $font-size-md;
-    color: var(--text);
-    font-family: inherit;
-    background: var(--card);
-    transition: all 0.2s ease;
-
-    &:focus-visible {
-      outline: none;
-      border-color: var(--text);
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
-    }
-
-    &::placeholder {
-      color: color-mix(in srgb, var(--text) 65%, #888 35%);
-    }
-  }
-
-  textarea {
-    resize: vertical;
-    min-height: 120px;
-    line-height: 1.5;
-  }
-
-  .form-helper {
-    font-size: $font-size-xs;
-    color: color-mix(in srgb, var(--text) 65%, #888 35%);
-    margin-top: 4px;
-    display: block;
-  }
-}
-
-.form-actions {
-  display: flex;
-  gap: $spacing-sm;
-  justify-content: flex-end;
-  padding-top: $spacing-md;
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: 12px 24px;
-  border-radius: $border-radius-sm;
-  font-size: $font-size-md;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-primary {
-  background: var(--text);
-  color: var(--bg);
-
-  &:hover {
-    background: color-mix(in srgb, var(--text) 85%, #000 15%);
-  }
-}
-
-.btn-secondary {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid rgba(229, 231, 235, 0.2);
-
-  &:hover {
-    background: var(--card);
-  }
-}
-
-// Payment Form
-.payment-form {
-  padding-top: $spacing-sm;
-}
-
-.form-subtitle {
-  font-size: $font-size-md;
-  font-weight: 600;
-  color: var(--text);
-  margin: 0 0 $spacing-md 0;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: $spacing-md;
-  margin-bottom: $spacing-md;
-}
-
-select {
-  padding: 12px 14px;
-  border: 1px solid rgba(229, 231, 235, 0.2);
-  border-radius: $border-radius-sm;
-  font-size: $font-size-md;
-  color: var(--text);
-  font-family: inherit;
-  background: var(--card);
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: var(--text);
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-  }
-}
-
-// Payment List
-.payment-list {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-sm;
-}
-
-.payment-item {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: $spacing-md;
-  background: var(--card);
-  border-radius: $border-radius-sm;
-  gap: $spacing-md;
-}
-
-.payment-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.payment-amount {
-  font-size: $font-size-lg;
-  font-weight: 700;
-  color: var(--text);
-  line-height: $line-height;
-}
-
-.payment-meta {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  font-size: $font-size-sm;
-  color: color-mix(in srgb, var(--text) 70%, #888 30%);
-}
-
-.payment-separator {
-  color: rgba(229, 231, 235, 0.3);
-}
-
-.payment-date,
-.payment-method {
-  font-weight: 500;
-}
-
-.payment-notes {
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-  margin: 4px 0 0 0;
-  font-style: italic;
-}
-
-.payment-check {
-  flex-shrink: 0;
-}
-
-.payment-actions {
-  display: flex;
-  gap: $spacing-xs;
-  flex-shrink: 0;
-}
-
-.payment-action-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid rgba(229, 231, 235, 0.2);
-  border-radius: $border-radius-sm;
-  color: color-mix(in srgb, var(--text) 70%, #888 30%);
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: var(--card);
-    border-color: rgba(209, 213, 219, 0.3);
-    color: var(--text);
-  }
-
-  &.delete:hover {
-    background: rgba($color-danger, 0.1);
-    border-color: $color-danger;
-    color: $color-danger;
-  }
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-}
-
-.payment-period {
-  font-size: $font-size-xs;
-  color: color-mix(in srgb, var(--text) 65%, #888 35%);
-  font-family: monospace;
-}
+// Payments
+.payment-list { display: flex; flex-direction: column; gap: 12px; }
+.payment-item { display: flex; justify-content: space-between; padding: 16px; background: var(--card); border-radius: 8px; gap: 16px; }
+.payment-main { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.payment-amount { font-size: 20px; font-weight: 700; color: var(--text); }
+.payment-meta { display: flex; gap: 8px; font-size: 14px; color: color-mix(in srgb, var(--text) 70%, #888 30%); }
+.payment-separator { color: rgba(229, 231, 235, 0.3); }
+.payment-actions { display: flex; gap: 8px; }
+.payment-action-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(229, 231, 235, 0.2); border-radius: 8px; cursor: pointer; &.delete:hover { background: rgba(220, 38, 38, 0.1); border-color: #dc2626; color: #dc2626; } svg { width: 16px; height: 16px; } }
 
 // Responsive
 @media (max-width: 640px) {
