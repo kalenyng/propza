@@ -184,11 +184,13 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   &.occupied {
     background: color-mix(in srgb, #10b981 20%, transparent);
     color: #34d399;
+    .status-dot { background: #16a34a; }
   }
 
   &.vacant {
     background: color-mix(in srgb, #9ca3af 20%, transparent);
     color: #9ca3af;
+    .status-dot { background: #9ca3af; }
   }
 }
 

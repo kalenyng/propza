@@ -227,26 +227,31 @@ $shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   &.success {
     background: color-mix(in srgb, #10b981 20%, transparent);
     color: #34d399;
+    .status-dot { background: #16a34a; }
   }
 
   &.danger {
     background: rgba(220, 38, 38, 0.1);
     color: #dc2626;
+    .status-dot { background: #dc2626; }
   }
 
   &.warning, &.warning-light {
     background: rgba(245, 158, 11, 0.1);
     color: #f59e0b;
+    .status-dot { background: #f59e0b; }
   }
 
   &.neutral {
     background: color-mix(in srgb, #9ca3af 20%, transparent);
     color: #9ca3af;
+    .status-dot { background: #9ca3af; }
   }
 
   &.info {
     background: rgba(59, 130, 246, 0.1);
     color: #3b82f6;
+    .status-dot { background: #3b82f6; }
   }
 }
 
