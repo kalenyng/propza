@@ -1,3 +1,8 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
 .landing-container {
   min-height: 100vh;
   background: var(--bg);
@@ -27,18 +32,24 @@
 }
 
 .hero-content {
+  width: 100%;
   max-width: 800px;
+  margin-inline: auto;
   text-align: center;
   position: relative;
   z-index: 1;
 }
 
 .logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 40px;
   animation: fadeInUp 0.6s ease-out;
 }
 
 .hero-logo {
+  display: block;
   width: 120px;
   height: 120px;
   border-radius: 20px;
@@ -68,9 +79,10 @@
 
 .cta-buttons {
   display: flex;
-  gap: 16px;
+  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  gap: 16px;
   animation: fadeInUp 0.6s ease-out 0.3s both;
 }
 
@@ -116,6 +128,38 @@
   }
   60% {
     transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+/* Secondary CTAs on green gradients ("I have a code", Sign In, install, etc.) */
+.hero-section .btn-secondary,
+.cta-section .btn-secondary {
+  color: rgba(255, 255, 255, 0.78);
+  border-color: rgba(255, 255, 255, 0.32);
+  background: transparent;
+
+  &:active:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.35);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.5);
+      color: rgba(255, 255, 255, 0.92);
+    }
+  }
+
+  &:disabled {
+    color: rgba(255, 255, 255, 0.32);
+    border-color: rgba(255, 255, 255, 0.16);
+    background: transparent;
   }
 }
 
@@ -386,6 +430,7 @@
     font-size: 40px;
     font-weight: 700;
     margin: 0 0 16px;
+    color: #fff;
   }
 
   p {
@@ -490,7 +535,11 @@
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-  .hero-section { min-height: auto; padding: 50px 20px; }
+  /* Extra bottom padding so the absolute scroll-indicator clears CTAs / install row */
+  .hero-section {
+    min-height: auto;
+    padding: 50px 20px 7.5rem;
+  }
   .hero-logo { width: 80px; height: 80px; }
   .hero-title { font-size: 32px; }
   .hero-subtitle { font-size: 17px; }
@@ -502,7 +551,9 @@
 }
 
 @media (max-width: 480px) {
-  .hero-section { padding: 40px 16px; }
+  .hero-section {
+    padding: 40px 16px 7rem;
+  }
   .hero-logo { width: 70px; height: 70px; }
   .hero-title { font-size: 28px; }
   .hero-subtitle { font-size: 15px; }
