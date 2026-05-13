@@ -1,0 +1,20 @@
+/* Opacity-only: route-in uses transform, which breaks position:fixed descendants
+   (e.g. bottom nav) — they would scroll with this root instead of the viewport. */
+@keyframes app-root-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.app-root {
+  animation: app-root-fade-in 280ms ease both;
+}
+
+// When navigating between routes, reduce opacity slightly as a subtle cue
+.app-root.navigating {
+  opacity: 0.7;
+  transition: opacity 120ms ease;
+}

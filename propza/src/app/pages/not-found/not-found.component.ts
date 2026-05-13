@@ -25,7 +25,7 @@ export class NotFoundComponent {
     
     if (isAuthenticated) {
       // Logged in users go to dashboard
-      this.router.navigate(['/home']);
+      this.router.navigate(['/dashboard']);
     } else {
       // Not logged in users go to landing page
       this.router.navigate(['/']);

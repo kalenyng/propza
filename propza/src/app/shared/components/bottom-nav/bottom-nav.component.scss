@@ -1,40 +1,93 @@
 .nav {
+  /* Docked to viewport bottom — stays above scrolling content on mobile */
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
+  transform: none;
+  width: 100%;
+  max-width: none;
   margin: 0;
-  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
-  border-radius: 0;
-  padding: 13px 26px;
+  padding: 8px max(12px, env(safe-area-inset-left, 0px)) calc(8px + env(safe-area-inset-bottom, 0px))
+    max(12px, env(safe-area-inset-right, 0px));
   display: flex;
   justify-content: space-around;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 100;
+  align-items: center;
+  gap: 4px;
+  background: color-mix(in srgb, var(--surface-secondary) 22%, var(--color-neutral-900) 78%);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border: 1px solid color-mix(in srgb, var(--border) 28%, rgba(255, 255, 255, 0.12) 72%);
+  border-bottom: none;
+  z-index: 300;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 -8px 28px rgba(15, 23, 42, 0.18);
 }
+
 .tab {
   background: transparent;
   border: none;
-  color: var(--text);
-  font-size: 31px;
-  padding: 0;
+  color: color-mix(in srgb, var(--text-muted) 45%, #fff 55%);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px 5px;
+  min-width: 56px;
+  min-height: 46px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
+
 .tab.active {
-  color: var(--text);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 38%, transparent 62%),
+    color-mix(in srgb, var(--accent) 18%, transparent 82%)
+  );
+  color: color-mix(in srgb, var(--accent) 30%, #dcfce7 70%);
+  transform: translateY(-1px);
 }
 
-.tab img {
-  width: 35px;
-  height: 35px;
-  display: block;
-  filter: brightness(0) invert(1) opacity(0.6) drop-shadow(0 0 1px rgba(0,0,0,0.4));
-  transform: scale(1);
-  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
-  will-change: transform, filter;
+.tab-icon {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 }
 
-.tab.active img {
-  filter: brightness(0) invert(1) opacity(1) drop-shadow(0 0 2px rgba(0,0,0,0.5));
-  transform: scale(1.18);
+.tab-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
 }
 
+.tab:active {
+  transform: scale(0.96);
+}
+
+@media (max-width: 390px) {
+  .tab {
+    min-width: 52px;
+    padding: 8px 6px 7px;
+  }
+
+  .tab-label {
+    font-size: 0.625rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav {
+    display: none;
+  }
+}

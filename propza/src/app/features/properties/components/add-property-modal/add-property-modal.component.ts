@@ -7,6 +7,7 @@ import { TranslationService } from '../../../../core/services/translation.servic
 import { RentHelperService } from '../../../../core/services/rent-helper.service';
 import { RentDueService } from '../../../../core/services/rent-due.service';
 import { SanitizationService } from '../../../../core/services/sanitization.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 
 @Component({
   selector: 'app-add-property-modal',
@@ -23,6 +24,7 @@ export class AddPropertyModalComponent {
   private rentHelper = inject(RentHelperService);
   private rentDueService = inject(RentDueService);
   private sanitizer = inject(SanitizationService);
+  private toast = inject(ToastService);
 
   // Optional email validator: only validates format if a value is provided
   optionalEmailValidator = (control: any) => {
@@ -37,7 +39,10 @@ export class AddPropertyModalComponent {
   leaseFile?: File;
 
   form = this.fb.group({
-    name: ['', [Validators.required, Validators.maxLength(120)]],
+    address_line1: ['', [Validators.required, Validators.maxLength(120)]],
+    address_line2: ['', [Validators.maxLength(120)]],
+    address_city: ['', [Validators.required, Validators.maxLength(80)]],
+    address_postcode: ['', [Validators.maxLength(16)]],
     rent_amount: [null as number | null, [Validators.required, Validators.min(0)]],
     occupied: [false, [Validators.required]],
     tenant: [''],
@@ -296,6 +301,13 @@ export class AddPropertyModalComponent {
 
     const v = this.form.value;
     const occupied = !!v.occupied;
+    const propertyName = this.sanitizer.sanitizeText(v.address_line1 || '');
+    const fullAddress = [
+      this.sanitizer.sanitizeText(v.address_line1 || ''),
+      this.sanitizer.sanitizeText(v.address_line2 || ''),
+      this.sanitizer.sanitizeText(v.address_city || ''),
+      this.sanitizer.sanitizeText(v.address_postcode || ''),
+    ].filter((x) => !!x && x.trim().length > 0).join(', ');
 
     // 1) Upload lease if occupied + file provided (to storage bucket "leases")
     let lease_url: string | null = null;
@@ -316,13 +328,12 @@ export class AddPropertyModalComponent {
       .insert([
         {
           owner_id: userId,
-          name: this.sanitizer.sanitizeText(v.name || ''),
+          name: propertyName,
           rent_amount: this.sanitizer.sanitizeNumber(v.rent_amount) || 0,
           status: occupied ? 'occupied' : 'vacant',
           lease_url: lease_url || null,
           currency: 'ZAR', // ensure non-null text
-          address: this.sanitizer.sanitizeAddress(v.name || 'No address'),
-          tenant: occupied ? this.sanitizer.sanitizeText(v.tenant || '') : null,
+          address: this.sanitizer.sanitizeAddress(fullAddress || propertyName),
         }
       ])
       .select()
@@ -337,7 +348,10 @@ export class AddPropertyModalComponent {
     // 3) Insert tenancy only if occupied
     if (occupied) {
       if (!v.tenant?.trim() || !v.tenancy_start || !v.next_payment_due) {
-        alert('Please fill in all tenancy details before saving an occupied property.');
+        this.toast.warning(
+          'Missing tenancy details',
+          'Fill in tenant name, lease start, and next payment due for an occupied property.'
+        );
         this.loading = false;
         return;
       }
@@ -355,8 +369,8 @@ export class AddPropertyModalComponent {
 
       if (tenancyErr) {
         console.error('Tenancy insert error:', tenancyErr);
-        alert(`Property created but tenancy failed: ${tenancyErr.message}`);
-        await this.supa.refreshAll(); // Refresh to show the property that was created
+        this.toast.error('Property saved, tenancy failed', tenancyErr.message);
+        this.supa.triggerRefreshAll(); // Refresh to show the property that was created
         this.loading = false;
         this.activeModal.close(true);
         return;
@@ -397,7 +411,7 @@ export class AddPropertyModalComponent {
       const period = this.rentHelper.getCurrentRentPeriod(logRentDueDay);
       
       console.log('🏡 NEW PROPERTY WITH TENANT ADDED:', {
-        propertyName: v.name,
+        propertyName,
         tenantName: v.tenant,
         originalNextPaymentDue: v.next_payment_due,
         nextDueDate: nextDueDateISO,
@@ -425,8 +439,8 @@ export class AddPropertyModalComponent {
 
       if (tenantErr) {
         console.error('Tenant insert error:', tenantErr);
-        alert(`Property and tenancy created but tenant record failed: ${tenantErr.message}`);
-        await this.supa.refreshAll(); // Refresh to show what was created
+        this.toast.error('Tenant record failed', tenantErr.message);
+        this.supa.triggerRefreshAll(); // Refresh to show what was created
         this.loading = false;
         this.activeModal.close(true);
         return;
@@ -459,7 +473,7 @@ export class AddPropertyModalComponent {
 
           if (paymentErr) {
             console.error('Payment insert error:', paymentErr);
-            alert(`Property, tenancy, and tenant created but payment record failed: ${paymentErr.message}`);
+            this.toast.warning('Payment not recorded', paymentErr.message);
           }
         } else {
           console.log(`Payment already exists for property ${prop.id} period ${period}, skipping creation`);
@@ -468,7 +482,7 @@ export class AddPropertyModalComponent {
     }
 
     // Refresh all data to keep everything in sync
-    await this.supa.refreshAll();
+    this.supa.triggerRefreshAll();
 
     this.loading = false;
     this.activeModal.close(true); // signal success

@@ -1,0 +1,269 @@
+<div class="app-inner-page">
+  <header class="app-inner-header dashboard-header">
+    <div class="app-inner-title">
+      <h1>Dashboard</h1>
+    </div>
+    <div class="dashboard-header-controls">
+      <label class="app-inner-search dashboard-header-search" aria-label="Search">
+        <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          type="text"
+          placeholder="Search properties, tenants…"
+          [(ngModel)]="searchQuery"
+        />
+      </label>
+      <div class="dashboard-header-actions">
+        <button type="button" class="dashboard-header-icon-btn" aria-label="Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
+        <button type="button" class="dashboard-header-icon-btn" aria-label="Profile menu">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-inner-main">
+    @if (showSkeleton) {
+      <section class="app-inner-stats" aria-label="Loading statistics">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <article class="app-inner-stat dashboard-stat-skeleton">
+            <div class="app-inner-stat-icon skeleton-line dashboard-skeleton-icon" aria-hidden="true"></div>
+            <div class="app-inner-stat-copy">
+              <span class="skeleton-line dashboard-skeleton-label" aria-hidden="true"></span>
+              <span class="skeleton-line dashboard-skeleton-value" aria-hidden="true"></span>
+            </div>
+          </article>
+        }
+      </section>
+
+      <div class="dashboard-widget-grid">
+        <article class="app-inner-panel dashboard-widget-chart">
+          <div class="skeleton-line dashboard-skeleton-panel-title" aria-hidden="true"></div>
+          <div class="dashboard-skeleton-bars">
+            @for (h of [55, 80, 40, 100, 70, 90]; track $index) {
+              <div class="dashboard-skeleton-bar skeleton-line" [style.height.%]="h"></div>
+            }
+          </div>
+        </article>
+        <article class="app-inner-panel dashboard-widget-progress">
+          <div class="skeleton-line dashboard-skeleton-panel-title" aria-hidden="true"></div>
+        </article>
+        <article class="app-inner-panel dashboard-widget-upcoming">
+          <div class="skeleton-line dashboard-skeleton-panel-title" aria-hidden="true"></div>
+        </article>
+        <article class="app-inner-panel dashboard-widget-activity">
+          <div class="skeleton-line dashboard-skeleton-panel-title" aria-hidden="true"></div>
+        </article>
+      </div>
+
+    } @else {
+
+      <!-- Stat summary -->
+      <section class="app-inner-stats" aria-label="Portfolio summary">
+        <article class="app-inner-stat">
+          <div class="app-inner-stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div class="app-inner-stat-copy">
+            <span class="app-inner-stat-label">Properties</span>
+            <span class="app-inner-stat-value">{{ metrics.totalProperties }}</span>
+          </div>
+        </article>
+        <article class="app-inner-stat">
+          <div class="app-inner-stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="app-inner-stat-copy">
+            <span class="app-inner-stat-label">Tenants</span>
+            <span class="app-inner-stat-value">{{ metrics.totalTenants }}</span>
+          </div>
+        </article>
+        <article class="app-inner-stat">
+          <div class="app-inner-stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="app-inner-stat-copy">
+            <span class="app-inner-stat-label">Expected rent</span>
+            <span class="app-inner-stat-value">{{ formatMoney(metrics.totalExpected) }}</span>
+          </div>
+        </article>
+        <article class="app-inner-stat">
+          <div class="app-inner-stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 12 20 22 4 22 4 12"/>
+              <rect x="2" y="7" width="20" height="5" rx="1"/>
+              <line x1="12" y1="22" x2="12" y2="7"/>
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+            </svg>
+          </div>
+          <div class="app-inner-stat-copy">
+            <span class="app-inner-stat-label">Collected</span>
+            <span class="app-inner-stat-value">{{ formatMoney(metrics.totalCollected) }}</span>
+          </div>
+        </article>
+      </section>
+
+      <div class="dashboard-widget-grid">
+        <article class="app-inner-panel dashboard-widget-chart">
+          <div class="app-inner-panel-head">
+            <h2>Rent overview</h2>
+            <span class="muted-chip">Last 6 months</span>
+          </div>
+          @if (chartData.length === 0) {
+            <div class="empty-state">
+              <div class="empty-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                  <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+              </div>
+              <h3 class="empty-title">No payment data yet</h3>
+              <p class="empty-description">Record payments on a property to see rent trends here.</p>
+            </div>
+          } @else {
+            <div class="chart" role="img" aria-label="Recorded rent collected per calendar month, last six months">
+              @for (point of chartData; track trackByLabel($index, point)) {
+                <div
+                  class="bar-wrap"
+                  [attr.title]="point.label + ' — ' + formatMoney(point.collected) + ' collected (recorded payments)'"
+                >
+                  <span class="bar-value" [class.bar-value--empty]="point.collected <= 0">{{
+                    point.collected > 0 ? formatMoney(point.collected) : '—'
+                  }}</span>
+                  <div class="bar-track">
+                    <div
+                      class="bar"
+                      [class.bar--zero]="point.collected <= 0"
+                      [style.height.%]="point.collected > 0 ? (point.collected / maxChartValue) * 100 : null"
+                      [attr.aria-label]="point.label + ': ' + formatMoney(point.collected)"
+                      role="presentation"
+                    ></div>
+                  </div>
+                  <span class="bar-label">{{ chartAxisLabel(point.label) }}</span>
+                </div>
+              }
+            </div>
+          }
+        </article>
+
+        <article class="app-inner-panel dashboard-widget-progress">
+          <div class="app-inner-panel-head">
+            <h2>Collection progress</h2>
+          </div>
+          <div class="ring-wrap">
+            <div class="ring" [style.background]="progressRingStyle" role="img" [attr.aria-label]="collectionRate + '% collected'">
+              <div class="ring-inner">{{ collectionRate }}%</div>
+            </div>
+          </div>
+          <div class="status-lines">
+            <div class="status-row">
+              <span>Remaining</span>
+              <strong>{{ formatMoney(metrics.totalRemaining) }}</strong>
+            </div>
+            <div class="status-row">
+              <span>Up to date</span>
+              <strong>{{ metrics.upToDateCount }}</strong>
+            </div>
+            <div class="status-row overdue">
+              <span>Overdue</span>
+              <strong>{{ metrics.overdueCount }}</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="app-inner-panel dashboard-widget-upcoming">
+          <div class="app-inner-panel-head">
+            <h2>Upcoming rent</h2>
+            <button class="btn-link" type="button" (click)="openProperties()">See all</button>
+          </div>
+          @if (upcomingRents.length === 0) {
+            <div class="empty-state">
+              <div class="empty-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </div>
+              <h3 class="empty-title">No upcoming rents</h3>
+              <p class="empty-description">Add tenants and due dates to see what is coming up.</p>
+            </div>
+          } @else {
+            <ul class="upcoming-list">
+              @for (rent of upcomingRents; track rent.tenantName + rent.dueDate) {
+                <li>
+                  <div>
+                    <strong>{{ rent.tenantName }}</strong>
+                    <span>{{ rent.dueDate | date: 'mediumDate' }}</span>
+                  </div>
+                  <div class="rent-right">
+                    <em class="pill" [class.overdue]="rent.status === 'overdue'">{{ getStatusLabel(rent.status) }}</em>
+                    <strong>{{ formatMoney(rent.amount) }}</strong>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </article>
+
+        <article class="app-inner-panel dashboard-widget-activity">
+          <div class="app-inner-panel-head">
+            <h2>Recent activity</h2>
+            <button class="btn-link" type="button" (click)="openPayments()">View all</button>
+          </div>
+          @if (activityItems.length === 0) {
+            <div class="empty-state">
+              <div class="empty-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+              </div>
+              <h3 class="empty-title">No recent activity</h3>
+              <p class="empty-description">Payments and changes will show up here as you use Propza.</p>
+            </div>
+          } @else {
+            <ul class="activity-list">
+              @for (activity of activityItems; track activity.title + activity.date + activity.subtitle) {
+                <li>
+                  <div class="activity-icon" aria-hidden="true"></div>
+                  <div class="activity-copy">
+                    <strong>{{ activity.title }}</strong>
+                    <span>{{ activity.subtitle }}</span>
+                  </div>
+                  <div class="activity-right">
+                    @if (activity.amount) {
+                      <strong>{{ formatMoney(activity.amount) }}</strong>
+                    }
+                    <span>{{ activity.date | date: 'mediumDate' }}</span>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </article>
+      </div>
+
+    }
+  </div>
+</div>

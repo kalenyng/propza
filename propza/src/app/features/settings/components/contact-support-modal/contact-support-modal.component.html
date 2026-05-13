@@ -1,0 +1,23 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ translate.t('support.emailSupport') }}</h4>
+  <button type="button" class="btn-close" (click)="close()" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <p class="contact-support-lead">{{ translate.t('support.contactDescription') }}</p>
+  <p class="contact-support-address">
+    <a [href]="mailtoHref">{{ supportEmail }}</a>
+  </p>
+  <div class="contact-support-actions">
+    <a class="btn btn-primary" [href]="mailtoHref">{{ translate.t('support.openEmailApp') }}</a>
+    <button type="button" class="btn btn-outline-secondary" (click)="copyEmail()">
+      {{ translate.t('support.copyEmail') }}
+    </button>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">{{ translate.t('button.close') }}</button>
+</div>

@@ -1,38 +1,104 @@
 .banner {
   position: sticky;
   top: 0;
-  z-index: 5;
-  background: linear-gradient(135deg, #0E3D2E 0%, #16a34a 100%);
-  color: #fff;
-  border-radius: 0;
-  padding: 30px 28px;
+  z-index: 25;
+  background: linear-gradient(135deg, var(--color-success-500), var(--color-success-400));
+  color: var(--surface);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  padding: calc(env(safe-area-inset-top, 0px) + 14px) var(--space-lg) var(--space-md);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
 }
+
+.banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.26), transparent 42%),
+    radial-gradient(circle at 90% 18%, rgba(255, 255, 255, 0.16), transparent 45%);
+  pointer-events: none;
+}
+
+.left,
+.logo {
+  position: relative;
+  z-index: 1;
+}
+
 .subtitle {
-  font-size: 16px;
-  opacity: 0.9;
+  font-size: 0.8125rem;
+  opacity: 0.85;
 }
 
 .greeting {
-  font-size: 24px;
+  font-size: clamp(1rem, 1rem + 1.2vw, 1.3rem);
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .logo {
-  width: 56px;
-  height: 56px;
-  border-radius: 0px;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden; /* ensures logo doesn't spill out */
+  overflow: hidden;
+  background: color-mix(in srgb, var(--surface) 18%, transparent 82%);
+  flex-shrink: 0;
 }
 
 .logo img {
-  width: 70%;   /* adjust between 60–80% to taste */
+  width: 70%;
   height: auto;
   display: block;
 }
 
+@media (min-width: 768px) {
+  .banner {
+    background: color-mix(in srgb, var(--surface) 92%, transparent 8%);
+    color: var(--text-strong);
+    border-radius: 0;
+    border-bottom: 1px solid var(--border);
+    box-shadow: none;
+    padding: var(--space-sm) var(--space-md);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .banner::before {
+    display: none;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    opacity: 1;
+  }
+
+  .greeting {
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  .logo {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-xs);
+    background: var(--surface-secondary);
+  }
+}
+
+@media (min-width: 1024px) {
+  .banner {
+    padding: var(--space-xs) var(--space-lg);
+  }
+
+  .greeting {
+    font-size: 0.9rem;
+  }
+}

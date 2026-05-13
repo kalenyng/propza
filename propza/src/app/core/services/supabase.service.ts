@@ -1,18 +1,15 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
-
-interface ServiceWithRefresh {
-  refreshProperties?: () => Promise<void>;
-  refreshTenants?: () => Promise<void>;
-  refreshPayments?: () => Promise<void>;
-}
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
   private client: SupabaseClient;
-  private _propertyService?: ServiceWithRefresh;
-  private _tenantService?: ServiceWithRefresh;
+
+  private refreshAllSubject = new Subject<void>();
+  /** Emits whenever a full data refresh is requested across all services. */
+  readonly refreshAll$ = this.refreshAllSubject.asObservable();
 
   constructor() {
     this.client = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
@@ -30,39 +27,9 @@ export class SupabaseService {
     return this.client;
   }
 
-  registerPropertyService(service: ServiceWithRefresh): void {
-    this._propertyService = service;
-  }
-
-  registerTenantService(service: ServiceWithRefresh): void {
-    this._tenantService = service;
-  }
-
-  async refreshProperties(): Promise<void> {
-    if (this._propertyService?.refreshProperties) {
-      await this._propertyService.refreshProperties();
-    }
-  }
-
-  async refreshTenants(): Promise<void> {
-    if (this._tenantService?.refreshTenants) {
-      await this._tenantService.refreshTenants();
-    }
-  }
-
-  async refreshPayments(): Promise<void> {
-    if (this._propertyService?.refreshPayments) {
-      await this._propertyService.refreshPayments();
-    }
-  }
-
-  // Refresh everything - useful after operations that affect multiple entities
-  async refreshAll(): Promise<void> {
-    await Promise.all([
-      this.refreshProperties(),
-      this.refreshTenants(),
-      this.refreshPayments()
-    ]);
+  /** Signals all subscribed services to refresh their data. */
+  triggerRefreshAll(): void {
+    this.refreshAllSubject.next();
   }
 }
 

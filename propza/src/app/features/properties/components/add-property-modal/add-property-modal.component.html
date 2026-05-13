@@ -7,30 +7,64 @@
 
 <div class="modal-body">
   <form [formGroup]="form" (ngSubmit)="save()" novalidate>
-    <!-- Property name -->
+    <!-- Address -->
     <div class="mb-3">
-      <label class="form-label" for="property-name">Property name</label>
+      <label class="form-label" for="address-line1">Address line 1 *</label>
       <input
-        id="property-name"
+        id="address-line1"
         class="form-control"
-        [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
-        formControlName="name"
-        placeholder="e.g. 238 Howick Road"
-        aria-describedby="name-error"
+        [class.is-invalid]="form.get('address_line1')?.invalid && form.get('address_line1')?.touched"
+        formControlName="address_line1"
+        placeholder="Street number and name"
+        aria-describedby="address1-error"
       />
-      <div 
-        id="name-error" 
-        class="invalid-feedback" 
+      <div
+        id="address1-error"
+        class="invalid-feedback"
         aria-live="polite"
-        *ngIf="form.get('name')?.errors?.['required'] && form.get('name')?.touched">
-        Property name is required.
+        *ngIf="form.get('address_line1')?.errors?.['required'] && form.get('address_line1')?.touched">
+        Address line 1 is required.
       </div>
-      <div 
-        class="invalid-feedback" 
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="address-line2">Address line 2 <span class="optional-tag">(Optional)</span></label>
+      <input
+        id="address-line2"
+        class="form-control"
+        formControlName="address_line2"
+        placeholder="Apartment, unit, complex, etc."
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="address-city">City *</label>
+      <input
+        id="address-city"
+        class="form-control"
+        [class.is-invalid]="form.get('address_city')?.invalid && form.get('address_city')?.touched"
+        formControlName="address_city"
+        placeholder="e.g. Durban"
+        aria-describedby="city-error"
+      />
+      <div
+        id="city-error"
+        class="invalid-feedback"
         aria-live="polite"
-        *ngIf="form.get('name')?.errors?.['maxlength'] && form.get('name')?.touched">
-        Name is too long (max 120 characters).
+        *ngIf="form.get('address_city')?.errors?.['required'] && form.get('address_city')?.touched">
+        City is required.
       </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="address-postcode">Postcode <span class="optional-tag">(Optional)</span></label>
+      <input
+        id="address-postcode"
+        class="form-control"
+        formControlName="address_postcode"
+        placeholder="e.g. 4001"
+        inputmode="numeric"
+      />
     </div>
 
     <!-- Rent amount -->

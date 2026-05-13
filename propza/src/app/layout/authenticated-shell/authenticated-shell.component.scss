@@ -1,0 +1,785 @@
+/* --------------------------------------------------------------------------
+   Authenticated layout
+   Mobile (<1024px): document scroll — fixed green hero + title; white sheet
+   scrolls up over the hero; bottom nav fixed to viewport
+   Desktop (>=1024px): sidebar grid + scroll column
+   -------------------------------------------------------------------------- */
+
+.app-shell {
+  --mobile-tab-bar-h: 56px;
+  --mobile-content-radius: 32px;
+  --mobile-content-sheet-margin-top: 0px;
+  --mobile-surface-pad-x: 16px;
+  --mobile-surface-pad-y: 16px;
+  /* Compact hero (~20% feel): cap ~140px, never shorter than safe area + title */
+  --mobile-hero-h: clamp(128px, calc(env(safe-area-inset-top, 0px) + 92px), 142px);
+  --mobile-sheet-overlap: 36px;
+
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  background: var(--bg);
+}
+
+.sidebar {
+  display: none;
+}
+
+.shell-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+}
+
+/* ========== Mobile: document scroll — fixed hero, sheet moves over it ========== */
+
+@media (max-width: 1023px) {
+  .app-shell {
+    min-height: 100dvh;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    /* Let html/body branded backdrop show — avoids white bleeding past sheet radius */
+    background: transparent;
+  }
+
+  .shell-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: visible;
+    background: transparent;
+  }
+
+  .mobile-app-shell {
+    position: relative;
+    width: 100%;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: visible;
+    z-index: 1;
+  }
+
+  /* Full-bleed routes (e.g. settings): no green hero strip — content starts under status bar. */
+  .mobile-app-shell--no-hero {
+    .mobile-hero,
+    .mobile-hero-spacer {
+      display: none !important;
+    }
+
+    .mobile-content-surface {
+      margin-top: 0;
+      border-radius: 0;
+    }
+  }
+
+  /* Fixed behind scrolling content */
+  .mobile-hero {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--mobile-hero-h);
+    z-index: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    isolation: isolate;
+  }
+
+  .mobile-background-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 120% 80% at 50% -20%, rgba(255, 255, 255, 0.16), transparent 55%),
+      radial-gradient(ellipse 70% 50% at 100% 30%, rgba(34, 197, 94, 0.22), transparent 50%),
+      linear-gradient(
+        168deg,
+        color-mix(in srgb, var(--color-success-600) 48%, #0a1510 52%) 0%,
+        color-mix(in srgb, var(--color-success-600) 36%, #07120d 64%) 45%,
+        color-mix(in srgb, var(--color-success-500) 22%, #040a08 78%) 100%
+      );
+  }
+
+  :host-context(body.dark-theme) .mobile-background-layer {
+    background:
+      radial-gradient(ellipse 100% 70% at 40% -10%, rgba(255, 255, 255, 0.06), transparent 50%),
+      linear-gradient(
+        168deg,
+        color-mix(in srgb, #14532d 55%, #030806 45%) 0%,
+        color-mix(in srgb, #166534 35%, #020504 65%) 100%
+      );
+  }
+
+  .mobile-header {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    box-sizing: border-box;
+    min-height: 0;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 20px);
+    padding-right: var(--shell-mobile-gutter, 16px);
+    padding-bottom: 36px;
+    padding-left: var(--shell-mobile-gutter, 16px);
+    background: transparent;
+  }
+
+  .mobile-header-title {
+    margin: 0;
+    padding-top: 0;
+    font-family: var(--font-heading);
+    font-size: clamp(1.45rem, 1.2vw + 1.05rem, 1.95rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.08;
+    color: color-mix(in srgb, #fff 94%, transparent 6%);
+    text-shadow: 0 2px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Pushes first paint below the fixed hero; document scroll starts here */
+  .mobile-hero-spacer {
+    height: var(--mobile-hero-h);
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+
+  /* In document flow: no inner scroll — moves up and covers the hero */
+  .mobile-content-surface {
+    position: relative;
+    z-index: 2;
+    isolation: isolate;
+    min-width: 0;
+    overflow-x: hidden;
+    overflow-y: visible;
+
+    margin-top: calc(
+      var(--mobile-content-sheet-margin-top, 0px) - var(--mobile-sheet-overlap)
+    );
+    padding: var(--mobile-surface-pad-y) var(--mobile-surface-pad-x)
+      calc(
+        var(--mobile-surface-pad-y) + var(--mobile-tab-bar-h) + env(safe-area-inset-bottom, 0px) + 16px
+      );
+    background: var(--mobile-content-surface-bg, var(--surface));
+    border-radius: var(--mobile-content-radius) var(--mobile-content-radius) 0 0;
+    box-shadow:
+      0 -12px 48px rgba(15, 23, 42, 0.14),
+      0 -1px 0 rgba(255, 255, 255, 0.45) inset;
+  }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 4px;
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+    min-height: calc(var(--mobile-tab-bar-h) + env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--surface) 96%, var(--bg) 4%);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -6px 32px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(16px);
+  }
+}
+
+.mobile-bottom-nav__link {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 6px 4px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 12px;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    transform var(--transition-fast);
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.mobile-bottom-nav__icon {
+  display: grid;
+  place-items: center;
+  color: currentColor;
+
+  svg {
+    display: block;
+  }
+}
+
+.mobile-bottom-nav__label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.mobile-bottom-nav__link:hover {
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--surface-secondary) 75%, transparent 25%);
+}
+
+.mobile-bottom-nav__link.active {
+  color: var(--color-success-600);
+  background: var(--accent-soft);
+}
+
+:host-context(body.dark-theme) .mobile-bottom-nav__link {
+  color: #cbd5e1;
+}
+
+:host-context(body.dark-theme) .mobile-bottom-nav__link:hover {
+  color: #f8fafc;
+}
+
+:host-context(body.dark-theme) .mobile-bottom-nav__link.active {
+  color: var(--color-success-400);
+}
+
+:host-context(body.dark-theme) .mobile-bottom-nav {
+  background: color-mix(in srgb, var(--surface) 88%, #000 12%);
+  box-shadow: 0 -8px 36px rgba(0, 0, 0, 0.45);
+}
+
+/* ========== Desktop (>=1024px) ========== */
+
+@media (min-width: 1024px) {
+  .app-shell {
+    --sidebar-w: 240px;
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    background: var(--bg);
+    /* Lock shell to the viewport so `.mobile-content-surface` is the scrollport;
+       otherwise the page grows and the window scrolls, which breaks `position: sticky`
+       on `.app-inner-header`. */
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    transition: grid-template-columns 320ms cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .app-shell.sidebar-collapsed {
+    --sidebar-w: 72px;
+  }
+
+  .shell-content {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .mobile-app-shell {
+    position: relative;
+    inset: auto;
+    width: auto;
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: auto;
+  }
+
+  .mobile-hero,
+  .mobile-hero-spacer {
+    display: none !important;
+  }
+
+  .mobile-content-surface {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-top: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    overflow-x: visible;
+    overflow-y: auto;
+    z-index: auto;
+  }
+
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) 14px 18px;
+    transition: padding 320ms cubic-bezier(0.33, 1, 0.68, 1), gap 320ms cubic-bezier(0.33, 1, 0.68, 1);
+    position: relative;
+    isolation: isolate;
+    /* Same chrome as `preloader.component.scss` */
+    background: linear-gradient(135deg, #0E3D2E, #16a34a);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    backdrop-filter: blur(12px);
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sidebar-collapse-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border-radius: var(--radius-md);
+    border: none;
+    background: transparent;
+    color: color-mix(in srgb, var(--surface) 52%, transparent 48%);
+    cursor: pointer;
+    transition:
+      background-color 220ms ease,
+      color 220ms ease;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+
+    svg {
+      flex-shrink: 0;
+      display: block;
+    }
+
+    &:hover {
+      background: color-mix(in srgb, var(--surface) 12%, transparent 88%);
+      color: color-mix(in srgb, var(--surface) 88%, transparent 12%);
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--surface) 45%, transparent 55%);
+      outline-offset: 2px;
+    }
+  }
+
+  .sidebar-collapse-toggle__icon {
+    display: grid;
+    place-items: center;
+    transition: transform 320ms cubic-bezier(0.33, 1, 0.68, 1);
+    transform: scaleX(1);
+  }
+
+  .sidebar-collapse-toggle__icon--collapsed {
+    transform: scaleX(-1);
+  }
+
+  .app-shell.sidebar-collapsed .brand-copy,
+  .app-shell.sidebar-collapsed .sidebar-link__label,
+  .app-shell.sidebar-collapsed .profile-copy {
+    display: none;
+  }
+
+  .app-shell.sidebar-collapsed .brand {
+    justify-content: center;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .app-shell.sidebar-collapsed .sidebar-nav {
+    align-items: stretch;
+  }
+
+  .app-shell.sidebar-collapsed .sidebar-link {
+    justify-content: center;
+    padding: 10px;
+    gap: 0;
+  }
+
+  .app-shell.sidebar-collapsed .sidebar-collapse-toggle {
+    align-self: center;
+  }
+
+  .app-shell.sidebar-collapsed .sidebar-link:hover {
+    transform: none;
+  }
+
+  .app-shell.sidebar-collapsed .settings-profile {
+    justify-content: center;
+    padding: 10px;
+    gap: 0;
+  }
+
+  .app-shell.sidebar-collapsed .sidebar {
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 14px;
+  }
+
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 1;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    transition: padding 320ms cubic-bezier(0.33, 1, 0.68, 1);
+    position: relative;
+    z-index: 1;
+  }
+
+  .brand-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--surface) 22%, transparent 78%),
+      color-mix(in srgb, var(--surface) 12%, transparent 88%)
+    );
+    border: 1px solid color-mix(in srgb, var(--surface) 42%, transparent 58%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .brand-mark__logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    flex-shrink: 0;
+    /* propza-main.png has uneven transparent padding; nudge for optical center in the chip */
+    transform: translate(2px, 0.5px);
+  }
+
+  .brand-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .brand-name {
+    font-weight: 700;
+    color: var(--surface);
+    line-height: 1.1;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sidebar-link {
+    text-decoration: none;
+    color: color-mix(in srgb, var(--surface) 78%, transparent 22%);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      transform var(--transition-fast),
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast),
+      padding 320ms cubic-bezier(0.33, 1, 0.68, 1),
+      gap 320ms cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .nav-icon {
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: currentColor;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .sidebar-link:hover {
+    background: color-mix(in srgb, var(--surface) 18%, transparent 82%);
+    color: var(--surface);
+    transform: translateX(2px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+  }
+
+  .sidebar-link.active {
+    background: color-mix(in srgb, var(--surface) 28%, transparent 72%);
+    color: var(--surface);
+    border: 1px solid color-mix(in srgb, var(--surface) 38%, transparent 62%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 6px 16px rgba(15, 23, 42, 0.12);
+    backdrop-filter: blur(14px);
+  }
+
+  .settings-profile {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    border: 1px solid color-mix(in srgb, var(--surface) 26%, transparent 74%);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--surface) 14%, transparent 86%);
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
+    transition:
+      background-color var(--transition-base),
+      border-color var(--transition-base),
+      box-shadow var(--transition-base),
+      padding 320ms cubic-bezier(0.33, 1, 0.68, 1),
+      gap 320ms cubic-bezier(0.33, 1, 0.68, 1);
+    position: relative;
+    z-index: 1;
+  }
+
+  .settings-profile:hover {
+    background: color-mix(in srgb, var(--surface) 22%, transparent 78%);
+    border-color: color-mix(in srgb, var(--surface) 34%, transparent 66%);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid color-mix(in srgb, var(--surface) 50%, transparent 50%);
+  }
+
+  .avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    font-size: 0.875rem;
+    letter-spacing: 0;
+    background: color-mix(in srgb, var(--surface) 28%, transparent 72%);
+    color: var(--surface);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .profile-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .settings-label {
+    font-size: 0.75rem;
+    color: color-mix(in srgb, var(--surface) 74%, transparent 26%);
+    font-weight: 500;
+  }
+
+  .profile-name {
+    color: var(--surface);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.86rem;
+  }
+
+  /* Dark app theme: `--surface` is dark ink — sidebar must use light text on the green chrome (gradient matches preloader) */
+  :host-context(body.dark-theme) .brand-mark {
+    background: linear-gradient(
+      145deg,
+      color-mix(in srgb, #fff 24%, transparent 76%),
+      color-mix(in srgb, #fff 14%, transparent 86%)
+    );
+    border: 1px solid color-mix(in srgb, #fff 44%, transparent 56%);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  }
+
+  :host-context(body.dark-theme) .brand-name {
+    color: #fff;
+  }
+
+  /* Solid / rgba colors — `color-mix(…, transparent)` muddies white and reads too dim on the gradient */
+  :host-context(body.dark-theme) .sidebar-collapse-toggle {
+    color: rgba(255, 255, 255, 0.9);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.55);
+    }
+  }
+
+  :host-context(body.dark-theme) .sidebar-link {
+    color: #f1f5f9;
+  }
+
+  :host-context(body.dark-theme) .sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  }
+
+  :host-context(body.dark-theme) .sidebar-link.active {
+    background: rgba(255, 255, 255, 0.26);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 6px 18px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(14px);
+  }
+
+  /* Profile strip: frosted panel + explicit light text (`<button>` / spans override inheritance) */
+  :host-context(body.dark-theme) .sidebar .settings-profile {
+    border-color: rgba(255, 255, 255, 0.32);
+    background: rgba(0, 0, 0, 0.22);
+    color: #f8fafc;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 4px 16px rgba(0, 0, 0, 0.28);
+  }
+
+  :host-context(body.dark-theme) .sidebar .settings-profile:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 8px 22px rgba(0, 0, 0, 0.35);
+  }
+
+  :host-context(body.dark-theme) .sidebar .settings-label {
+    color: #e2e8f0;
+    font-weight: 600;
+  }
+
+  :host-context(body.dark-theme) .sidebar .profile-name {
+    color: #f8fafc;
+    font-weight: 600;
+  }
+
+  :host-context(body.dark-theme) .sidebar .settings-profile .avatar {
+    border-color: rgba(255, 255, 255, 0.48);
+  }
+
+  :host-context(body.dark-theme) .sidebar .settings-profile .avatar-fallback {
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+  .app-shell,
+  .sidebar,
+  .brand {
+    transition: none;
+  }
+
+  .sidebar-collapse-toggle__icon {
+    transition: none;
+  }
+
+  .sidebar-link {
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      transform var(--transition-fast),
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast);
+  }
+
+  .settings-profile {
+    transition:
+      background-color var(--transition-base),
+      border-color var(--transition-base),
+      box-shadow var(--transition-base);
+  }
+}
+
+@media (min-width: 1024px) {
+  html.propza-reduce-motion .app-shell,
+  html.propza-reduce-motion .sidebar,
+  html.propza-reduce-motion .brand {
+    transition: none;
+  }
+
+  html.propza-reduce-motion .sidebar-collapse-toggle__icon {
+    transition: none;
+  }
+
+  html.propza-reduce-motion .sidebar-link {
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      transform var(--transition-fast),
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast);
+  }
+
+  html.propza-reduce-motion .settings-profile {
+    transition:
+      background-color var(--transition-base),
+      border-color var(--transition-base),
+      box-shadow var(--transition-base);
+  }
+}

@@ -1,3 +1,6 @@
 <app-preloader *ngIf="showPreloader" />
-<router-outlet *ngIf="!showPreloader" />
+<div *ngIf="!showPreloader" class="app-root" [class.navigating]="isNavigating">
+  <router-outlet />
+</div>
 <app-confirmation-modal />
+<app-toast />

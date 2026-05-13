@@ -1,39 +1,54 @@
+@use '../../../../shared/styles/variables' as *;
+
+$row-gap: $spacing-sm;
+$meta-line-min-height: 1.3125rem;
+$pill-min-height: 26px;
+
+:host {
+  display: block;
+  height: 100%;
+}
+
 .tenant-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 248px;
+  box-sizing: border-box;
   background: var(--card);
-  border-radius: 12px;
-  padding: 16px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
+  border-radius: var(--radius-card);
+  padding: $spacing-md $spacing-lg;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
   cursor: pointer;
-  border: 1px solid transparent;
-  min-height: 96px;
   -webkit-tap-highlight-color: transparent;
+  transition:
+    box-shadow var(--transition-base),
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    background-color var(--transition-base);
 
-  // Mobile tap feedback (all devices)
   &:active {
     transform: scale(0.98);
     opacity: 0.95;
   }
 
-  // Hover only for devices with hover capability (desktop)
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+      box-shadow: var(--shadow-md);
       transform: translateY(-2px);
-      border-color: rgba(229, 231, 235, 0.2);
-      background: color-mix(in srgb, var(--card) 92%, #000 8%);
 
-      .chevron-icon {
-        transform: translateY(-50%) translateX(2px);
-        color: var(--text);
+      .card-footer-chevron {
+        color: var(--text-muted);
+        transform: translateX(2px);
       }
     }
   }
 
-  &.overdue {
-    border-color: rgba(239, 68, 68, 0.3);
-    background: color-mix(in srgb, var(--card) 96%, #ef4444 4%);
+  &--overdue {
+    border-color: color-mix(in srgb, var(--color-danger-500) 30%, var(--border) 70%);
+    background: color-mix(in srgb, var(--card) 94%, var(--color-danger-500) 6%);
   }
 }
 
@@ -41,174 +56,233 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 12px;
-  padding-right: 28px; // Space for chevron
-}
-
-.card-left {
-  flex: 1;
-  min-width: 0; // Allow text truncation
+  gap: $spacing-md;
+  flex-shrink: 0;
+  margin-bottom: $spacing-2xs;
 }
 
 .tenant-name {
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--text);
+  flex: 1;
+  min-width: 0;
   margin: 0;
-  margin-bottom: 2px;
-}
-
-.property-address {
-  font-size: 14px;
-  line-height: 1.4;
-  color: color-mix(in srgb, var(--text) 60%, #888 40%);
-  margin: 0;
-}
-
-.card-right {
-  flex-shrink: 0;
-  margin-left: 16px;
+  font-size: $font-size-lg;
+  font-weight: 700;
+  line-height: $line-height;
+  color: var(--text-strong);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 .status-pill {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 11px;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: $pill-min-height;
+  padding: 4px 11px;
+  box-sizing: border-box;
+  border-radius: var(--radius-pill);
+  font-size: $font-size-xs;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  line-height: 1.25;
 
-  &[data-color="red"] {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
+  &[data-color='success'] {
+    background: color-mix(in srgb, var(--color-success-500) 16%, transparent 84%);
+    color: var(--color-success-500);
+    .status-dot {
+      background: var(--color-success-500);
+    }
   }
 
-  &[data-color="gray"] {
-    background: rgba(107, 114, 128, 0.1);
-    color: #6b7280;
+  &[data-color='partial'] {
+    background: color-mix(in srgb, var(--color-accent-500) 14%, transparent 86%);
+    color: var(--color-accent-500);
+    .status-dot {
+      background: var(--color-accent-500);
+    }
   }
 
-  .status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
+  &[data-color='danger'] {
+    background: color-mix(in srgb, var(--color-danger-500) 14%, transparent 86%);
+    color: var(--color-danger-500);
+    .status-dot {
+      background: var(--color-danger-500);
+    }
+  }
+
+  &[data-color='warning'] {
+    background: color-mix(in srgb, var(--color-warning-500) 14%, transparent 86%);
+    color: var(--color-warning-500);
+    .status-dot {
+      background: var(--color-warning-500);
+    }
+  }
+
+  &[data-color='info'] {
+    background: color-mix(in srgb, var(--color-accent-500) 14%, transparent 86%);
+    color: var(--color-accent-500);
+    .status-dot {
+      background: var(--color-accent-500);
+    }
+  }
+
+  &[data-color='neutral'] {
+    background: color-mix(in srgb, var(--text-muted) 14%, transparent 86%);
+    color: var(--text-muted);
+    .status-dot {
+      background: var(--text-muted);
+    }
   }
 }
 
-.card-body {
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: block;
+  align-self: center;
+}
+
+.status-label {
+  white-space: nowrap;
+  line-height: 1.25;
+}
+
+.address-row {
+  flex-shrink: 0;
+  margin: 0 0 $row-gap;
+  min-height: $meta-line-min-height;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  line-height: $line-height;
+  color: var(--text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--placeholder {
+    color: color-mix(in srgb, var(--text-soft) 72%, transparent 28%);
+  }
+}
+
+.meta-content {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding-right: 28px; // Space for chevron
+  flex-direction: column;
+  gap: $spacing-2xs;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: $row-gap;
 }
 
-.card-bottom-left {
-  flex: 1;
-  min-width: 0;
-}
-
-.due-date {
-  font-size: 14px;
-  line-height: 1.4;
-  color: color-mix(in srgb, var(--text) 70%, #888 30%);
+.meta-due {
   margin: 0;
+  min-height: $meta-line-min-height;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  line-height: $line-height;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
-  &.overdue {
-    color: #dc2626;
+  &--overdue {
+    color: var(--color-danger-500);
+  }
+
+  &--muted {
+    color: color-mix(in srgb, var(--text-muted) 78%, transparent 22%);
     font-weight: 500;
   }
 }
 
-.card-bottom-right {
+.meta-contact-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-height: $meta-line-min-height;
+  margin: 0;
+  font-size: $font-size-sm;
+  line-height: $line-height;
+  color: var(--text-soft);
+
+  svg {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    opacity: 0.65;
+  }
+
+  &--placeholder {
+    color: color-mix(in srgb, var(--text-soft) 72%, transparent 28%);
+
+    svg {
+      opacity: 0.45;
+    }
+  }
+}
+
+.meta-contact-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  margin-top: auto;
   flex-shrink: 0;
-  text-align: right;
-  margin-left: 16px;
+  padding-top: $spacing-2xs;
 }
 
 .rent-amount {
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--text);
+  flex: 1;
+  min-width: 0;
   margin: 0;
+  font-size: $font-size-lg;
+  font-weight: 700;
+  line-height: $line-height;
+  color: var(--text-strong);
 }
 
-.contact-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 4px;
-
-  .contact-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: color-mix(in srgb, var(--text) 70%, #888 30%);
-    margin: 0;
-
-    svg {
-      flex-shrink: 0;
-      opacity: 0.7;
-      width: 12px;
-      height: 12px;
-    }
-
-    span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
+.rent-suffix {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  margin-left: 0.125rem;
 }
 
-.chevron-icon {
-  position: absolute;
-  top: 50%;
-  right: 16px;
-  transform: translateY(-50%);
-  color: color-mix(in srgb, var(--text) 60%, #888 40%);
+.card-footer-chevron {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease;
+  color: var(--text-soft);
+  transition:
+    color var(--transition-base),
+    transform var(--transition-base);
 }
 
-
-// Dark theme overrides
-:host-context(.dark-theme) {
+@media (max-width: 640px) {
   .tenant-card {
-    // Hover only for devices with hover capability (desktop)
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background: color-mix(in srgb, var(--card) 92%, #000 8%);
-        border-color: rgba(255, 255, 255, 0.1);
-      }
-    }
+    padding: $spacing-sm $spacing-md;
+    min-height: 236px;
   }
 
-  .status-pill {
-    &[data-color="red"] {
-      background: rgba(239, 68, 68, 0.2);
-      color: #f87171;
-    }
-
-    &[data-color="gray"] {
-      background: rgba(107, 114, 128, 0.2);
-      color: #9ca3af;
-    }
+  .tenant-name {
+    font-size: 1.05rem;
   }
 
-  .contact-info .contact-item {
-    color: color-mix(in srgb, var(--text) 60%, #888 40%);
-  }
-
-  .chevron-icon {
-    color: color-mix(in srgb, var(--text) 40%, #888 60%);
+  .rent-amount {
+    font-size: 1.05rem;
   }
 }

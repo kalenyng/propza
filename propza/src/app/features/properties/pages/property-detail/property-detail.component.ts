@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -14,6 +14,8 @@ import { FormsModule } from '@angular/forms';
 import { Tenant } from '../../../../core/services/tenant.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddTenantModalComponent } from '../../../tenants/components/add-tenant-modal/add-tenant-modal.component';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
+import { PropzaModalOptionsService } from '../../../../core/services/propza-modal-options.service';
 
 // Extended Property interface with additional fields for detail view
 interface Property extends Omit<PropertyData, 'tenants'> {
@@ -30,6 +32,7 @@ interface Tenancy {
 
 interface TenantData {
   id?: string;
+  name: string | null;
   email: string | null;
   phone: string | null;
   lease_start_date: string;
@@ -61,7 +64,10 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // Edit form fields
-  editName: string = '';
+  editAddressLine1 = '';
+  editAddressLine2 = '';
+  editCity = '';
+  editPostcode = '';
   editRentAmount: number = 0;
   editTenant: string = '';
   editTenantEmail: string = '';
@@ -71,6 +77,37 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   editNotes: string = '';
   editNextPaymentDue: string = '';
 
+  private parseAddressParts(address: string | null | undefined, fallbackLine1: string): {
+    line1: string;
+    line2: string;
+    city: string;
+    postcode: string;
+  } {
+    const raw = (address || '').trim();
+    if (!raw) {
+      return { line1: fallbackLine1, line2: '', city: '', postcode: '' };
+    }
+    const parts = raw
+      .split(/,|\r?\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    return {
+      line1: parts[0] || fallbackLine1,
+      line2: parts[1] || '',
+      city: parts[2] || '',
+      postcode: parts[3] || ''
+    };
+  }
+
+  private buildFullAddress(): string {
+    return [
+      (this.editAddressLine1 || '').trim(),
+      (this.editAddressLine2 || '').trim(),
+      (this.editCity || '').trim(),
+      (this.editPostcode || '').trim()
+    ].filter(Boolean).join(', ');
+  }
+
   // Payment form fields
   paymentAmount: number = 0;
   paymentDate: string = new Date().toISOString().split('T')[0];
@@ -78,12 +115,14 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   paymentNotes: string = '';
   editingPaymentId: string | null = null;
 
-  // Chart data for rent performance
-  chartData: { month: string; expected: number; paid: number; paidPercentage: number; shortMonth: string }[] = [];
+  /** When set via router `state`, `goBack` returns here (e.g. from tenant detail). */
+  private backUrl: string | null = null;
+
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private location: Location,
     private supabase: SupabaseService,
     private propertyService: PropertyService,
     private tenantService: TenantService,
@@ -91,8 +130,14 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     private rentDueService: RentDueService,
     public translate: TranslationService,
     private modalService: NgbModal,
-    private confirmationService: ConfirmationModalService
-  ) {}
+    private confirmationService: ConfirmationModalService,
+    private toast: ToastService,
+    private modalOptions: PropzaModalOptionsService
+  ) {
+    const nav = this.router.getCurrentNavigation();
+    const state = nav?.extras?.state as { backUrl?: string } | undefined;
+    this.backUrl = state?.backUrl?.trim() ? state.backUrl.trim() : null;
+  }
 
   ngOnInit(): void {
     this.propertyId = this.route.snapshot.paramMap.get('id') || '';
@@ -120,8 +165,6 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe(payments => {
           this.payments = payments.filter(p => p.property_id === this.propertyId);
-          // Rebuild chart data when payments change
-          this.buildPerformanceData();
         });
 
       // Don't subscribe to global loading$ - use local loading state only
@@ -144,7 +187,6 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       address: prop.address,
       rent_amount: prop.rent_amount,
       currency: prop.currency,
-      tenant: prop.tenant,
       status: prop.status,
       owner_id: prop.owner_id,
       created_at: prop.created_at,
@@ -155,13 +197,14 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     // Extract tenant data from nested tenants array
     if (prop.tenants && prop.tenants.length > 0) {
       const tenant = prop.tenants[0];
-      // Preserve existing id and contact info if already loaded
+      // Preserve existing id and contact info if already loaded from loadPropertyDetails
       const existingId = this.tenantData?.id;
       const existingEmail = this.tenantData?.email;
       const existingPhone = this.tenantData?.phone;
-      
+
       this.tenantData = {
-        id: existingId, // Preserve the id from full tenant load
+        id: existingId,
+        name: tenant.name,
         email: existingEmail || null,
         phone: existingPhone || null,
         lease_start_date: tenant.lease_start_date || '',
@@ -175,42 +218,18 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
 
   get displayStatus(): string {
     if (!this.property) return 'Vacant';
-    
-    // If property status is explicitly vacant, it's vacant
-    if (this.property.status === 'vacant') {
-      return 'Vacant';
-    }
-    
-    // Check if there's actually a tenant assigned (most reliable)
-    // Must have both tenant name and tenant data (actual tenant record)
-    if (this.property.tenant && this.tenantData && this.tenantData.id) {
+    if (this.property.status === 'occupied' && (this.tenantData?.id || this.tenancy)) {
       return 'Occupied';
     }
-    
-    // If property has no tenant name, it's vacant
-    if (!this.property.tenant || this.property.tenant.trim() === '') {
-      return 'Vacant';
-    }
-    
-    // Check property status (new system)
-    if (this.property.status === 'occupied' && this.property.tenant) {
-      return 'Occupied';
-    }
-    
-    // Fallback to tenancy check (legacy system) - only if there's actually a tenant name
-    if (this.tenancy && this.property.tenant) {
-      return 'Occupied';
-    }
-    
     return 'Vacant';
   }
 
   async loadPropertyDetails(): Promise<void> {
-    // Load tenant data with full details (email, phone, id)
+    // Load tenant data with full details (name, email, phone, id)
     if (this.property?.status === 'occupied') {
       const { data: tenant } = await this.supabase.supabase
         .from('tenants')
-        .select('id, email, phone, lease_start_date, lease_end_date, rent_due_date')
+        .select('id, name, email, phone, lease_start_date, lease_end_date, rent_due_date')
         .eq('property_id', this.propertyId)
         .single();
       
@@ -382,13 +401,13 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       // Recalculate tenant status after deletion
       await this.recalculateTenantStatusFromPayments();
     } catch (error) {
-      alert('Failed to delete payment. Please try again.');
+      this.toast.error('Could not delete payment', 'Please try again.');
     }
   }
 
   async savePayment(): Promise<void> {
     if (!this.property || this.paymentAmount <= 0) {
-      alert('Please enter a valid payment amount');
+      this.toast.warning('Invalid amount', 'Enter a payment amount greater than zero.');
       return;
     }
 
@@ -397,18 +416,18 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     try {
       // Calculate the current rent period using centralized service
       if (!this.tenantData?.rent_due_date) {
-        alert('Cannot create payment: Tenant rent due date is required.');
+        this.toast.warning('Rent due date required', 'Set the tenant rent due date before logging a payment.');
         return;
       }
 
       // Create a tenant object for the service (we need full tenant record)
       if (!this.tenantData.id) {
-        alert('Cannot create payment: Tenant ID is required.');
+        this.toast.warning('Tenant ID missing', 'Cannot create payment without a tenant record.');
         return;
       }
       const tenant = this.tenantService.getTenantById(this.tenantData.id);
       if (!tenant) {
-        alert('Cannot create payment: Tenant record not found.');
+        this.toast.warning('Tenant not found', 'Refresh the page and try again.');
         return;
       }
 
@@ -489,16 +508,16 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       }
       
       if (errorCode === '42P01') {
-        alert('Payments table not found. Please run the database migration first.');
+        this.toast.error('Payments table missing', 'Run the database migration, then try again.');
       } else if (errorCode === '23503') {
         // Foreign key violation
-        alert('Cannot create payment: Property or tenant reference is invalid.');
+        this.toast.error('Invalid reference', 'Property or tenant link is invalid.');
       } else if (errorMessage.includes('NavigatorLockAcquireTimeoutError')) {
-        alert('Authentication timeout. Please try again.');
+        this.toast.warning('Session busy', 'Please try again in a moment.');
       } else if (errorMessage.includes('JWT') || errorMessage.includes('token')) {
-        alert('Authentication error. Please refresh the page and try again.');
+        this.toast.error('Session error', 'Refresh the page and sign in again.');
       } else {
-        alert(`Failed to save payment: ${errorMessage}`);
+        this.toast.error('Payment not saved', errorMessage);
       }
     } finally {
       this.savingPayment = false;
@@ -524,13 +543,17 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   async startEdit(): Promise<void> {
     if (!this.property) return;
     this.editing = true;
-    this.editName = this.property.name;
+    const parts = this.parseAddressParts(this.property.address, this.property.name);
+    this.editAddressLine1 = parts.line1;
+    this.editAddressLine2 = parts.line2;
+    this.editCity = parts.city;
+    this.editPostcode = parts.postcode;
     this.editRentAmount = this.property.rent_amount;
-    this.editTenant = this.property.tenant || '';
+    this.editTenant = this.tenantData?.name || '';
     this.editNotes = this.property.notes || '';
-    
+
     // Load tenant data if exists
-    if (this.property.tenant && this.property.status === 'occupied') {
+    if (this.property.status === 'occupied') {
       const { data: tenant } = await this.supabase.supabase
         .from('tenants')
         .select('email, lease_start_date, lease_end_date, rent_due_date')
@@ -572,14 +595,16 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     const hasTenant = !!this.editTenant?.trim();
 
     try {
+      const propertyName = (this.editAddressLine1 || '').trim();
+      const fullAddress = this.buildFullAddress();
+
       // Update basic property info using service
       await this.propertyService.updateProperty(this.propertyId, {
-        name: this.editName,
-        address: this.editName,
+        name: propertyName,
+        address: fullAddress || propertyName,
         rent_amount: this.editRentAmount,
-        tenant: hasTenant ? this.editTenant : null,
         status: hasTenant ? 'occupied' : 'vacant'
-      } as any);
+      });
 
       // Try to update notes separately if we have them
       if (this.editNotes) {
@@ -594,7 +619,7 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       if (hasTenant) {
         // Validate required tenant fields
         if (!this.editLeaseStartDate || !this.editRentDueDate) {
-          alert('Please fill in the Lease Start Date and Rent Due Date for the tenant.');
+          this.toast.warning('Missing tenant dates', 'Fill in lease start and rent due date.');
           return;
         }
 
@@ -650,7 +675,7 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       await this.loadPropertyDetails();
     } catch (error) {
       console.error('Error saving changes:', error);
-      alert('Failed to save changes. Please try again.');
+      this.toast.error('Save failed', 'Please try again.');
     } finally {
       this.saving = false;
     }
@@ -683,11 +708,10 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
         .delete()
         .eq('property_id', this.propertyId);
       
-      // Always update property status to vacant and clear tenant name
+      // Always update property status to vacant
       await this.propertyService.updateProperty(this.propertyId, {
-        status: 'vacant',
-        tenant: null
-      } as any);
+        status: 'vacant'
+      });
       
       // Clear tenant data and tenancy locally
       this.tenantData = null;
@@ -697,7 +721,7 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       await this.loadPropertyDetails();
     } catch (error) {
       console.error('Error deleting tenant:', error);
-      alert('Failed to remove tenant');
+      this.toast.error('Could not remove tenant', 'Please try again.');
     } finally {
       this.deletingTenant = false;
     }
@@ -726,30 +750,33 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
       await this.propertyService.deleteProperty(this.propertyId);
 
       // Navigate away (refresh happens automatically in service)
-      this.router.navigate(['/home']);
+      this.router.navigate(['/properties']);
     } catch (error) {
       console.error('Error deleting property:', error);
-      alert('Failed to delete property');
+      this.toast.error('Could not delete property', 'Please try again.');
     } finally {
       this.deletingProperty = false;
     }
   }
 
   goBack(): void {
-    this.router.navigate(['/home']);
+    if (this.backUrl) {
+      void this.router.navigateByUrl(this.backUrl);
+      return;
+    }
+    this.location.back();
   }
 
   goToTenant(): void {
     if (this.tenantData?.id) {
-      this.router.navigate(['/tenant', this.tenantData.id]);
+      void this.router.navigate(['/tenant', this.tenantData.id], {
+        state: { backUrl: `/property/${this.propertyId}` }
+      });
     }
   }
 
   async openAddTenantModal(): Promise<void> {
-    const modalRef = this.modalService.open(AddTenantModalComponent, {
-      size: 'lg',
-      centered: true
-    });
+    const modalRef = this.modalService.open(AddTenantModalComponent, this.modalOptions.createEntityFlow());
 
     // Pre-select the current property if it's vacant
     // Use setTimeout to allow the modal component to initialize and populate vacantProperties
@@ -882,95 +909,15 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     return colorMap[status] || 'neutral';
   }
 
-  /**
-   * Build chart data for rent performance visualization
-   * Shows last 6 months of expected vs paid rent
-   */
-  buildPerformanceData(): void {
-    if (!this.property) {
-      this.chartData = [];
-      return;
-    }
-
-    const now = new Date();
-    const months: { month: string; expected: number; paid: number; paidPercentage: number; shortMonth: string }[] = [];
-
-    // Generate data for last 6 months
-    for (let i = 5; i >= 0; i--) {
-      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthLabel = date.toLocaleString('default', { month: 'long', year: 'numeric' });
-      const shortMonth = date.toLocaleString('default', { month: 'short' });
-      
-      // Calculate period string (YYYY-MM format) to match payment periods
-      const periodString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-
-      // Sum all payments for this period
-      const paidSum = this.payments
-        .filter(p => p.period === periodString)
-        .reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
-
-      const expected = this.property.rent_amount || 0;
-      const paidPercentage = expected > 0 ? Math.min((paidSum / expected) * 100, 100) : 0;
-
-      months.push({
-        month: monthLabel,
-        shortMonth: shortMonth,
-        expected,
-        paid: paidSum,
-        paidPercentage
-      });
-    }
-
-    this.chartData = months;
+  /** Label for the header status-pill (rent status, or Occupied / Vacant). */
+  get propertyStatusPillLabel(): string {
+    return this.statusLabel || this.displayStatus;
   }
 
-  /**
-   * Get X position for a data point (0-100 scale)
-   */
-  getPointX(index: number): number {
-    if (this.chartData.length <= 1) return 50;
-    return (index / (this.chartData.length - 1)) * 100;
+  /** `data-color` for the header status-pill. */
+  get propertyStatusPillColor(): string {
+    if (this.displayStatus === 'Vacant') return 'neutral';
+    return this.statusColor;
   }
 
-  /**
-   * Get SVG points for expected rent line (horizontal line at 100%)
-   */
-  getExpectedLinePoints(): string {
-    if (this.chartData.length === 0) return '';
-    
-    return this.chartData
-      .map((_, i) => `${this.getPointX(i)},0`)
-      .join(' ');
-  }
-
-  /**
-   * Get SVG points for paid rent line
-   */
-  getPaidLinePoints(): string {
-    if (this.chartData.length === 0) return '';
-    
-    return this.chartData
-      .map((data, i) => `${this.getPointX(i)},${100 - data.paidPercentage}`)
-      .join(' ');
-  }
-
-  /**
-   * Get SVG points for paid area fill (area under the line)
-   */
-  getPaidAreaPoints(): string {
-    if (this.chartData.length === 0) return '';
-    
-    // Start from bottom-left
-    let points = '0,100 ';
-    
-    // Add all data points
-    points += this.chartData
-      .map((data, i) => `${this.getPointX(i)},${100 - data.paidPercentage}`)
-      .join(' ');
-    
-    // Close at bottom-right
-    points += ' 100,100';
-    
-    return points;
-  }
 }

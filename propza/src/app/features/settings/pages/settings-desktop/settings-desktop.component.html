@@ -1,0 +1,348 @@
+<div class="app-inner-page settings-desk">
+  <header class="app-inner-header settings-desk__page-header">
+    <div class="app-inner-title">
+      <h1>{{ translate.t('settings.title') }}</h1>
+    </div>
+  </header>
+
+  <div class="app-inner-main settings-desk__main-wrap">
+    <div class="settings-desk__workspace">
+      <aside class="settings-desk__rail" [attr.aria-label]="translate.t('settings.title')">
+        <nav class="settings-desk__nav">
+          @for (item of nav; track item.id) {
+            <button
+              type="button"
+              class="settings-desk__nav-item"
+              [class.settings-desk__nav-item--active]="section === item.id"
+              (click)="selectSection(item.id)">
+              {{ translate.t(item.labelKey) }}
+            </button>
+          }
+        </nav>
+      </aside>
+
+      <section
+        class="settings-desk__content"
+        role="region"
+        [attr.aria-labelledby]="'settings-desk-heading'">
+        <div class="settings-desk__scroll">
+          <h2 id="settings-desk-heading" class="settings-desk__heading">{{ translate.t(currentSectionLabelKey()) }}</h2>
+
+          @switch (section) {
+            @case ('account') {
+              <div class="settings-desk__sections">
+                <div class="settings-desk__identity">
+                  <div class="settings-profile-card settings-profile-card--compact">
+                    <div class="settings-profile-card__avatar" aria-hidden="true">
+                      @if (showAvatarImage()) {
+                        <img [src]="avatarUrl" [alt]="displayName || 'Profile'" />
+                      } @else {
+                        <span class="settings-profile-card__initials">{{ profileInitials() }}</span>
+                      }
+                    </div>
+                    <div class="settings-profile-card__body">
+                      <div class="settings-profile-card__top">
+                        <span class="settings-profile-card__name">{{ displayName || translate.t('settings.profile') }}</span>
+                        <span class="settings-profile-card__plan">{{ translate.t('settings.planPro') }}</span>
+                      </div>
+                      @if (userEmail) {
+                        <a class="settings-profile-card__email" [href]="'mailto:' + userEmail">{{ userEmail }}</a>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-group">
+                  <h3 class="settings-section-label">{{ translate.t('settings.profile') }}</h3>
+                  <div class="settings-group-card">
+                    <div class="settings-row settings-row--static">
+                      <span class="settings-row__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      </span>
+                      <span class="settings-row__label">{{ translate.t('settings.name') }}</span>
+                      <span class="settings-row__value">{{ displayName || (firstName + ' ' + lastName) || '—' }}</span>
+                    </div>
+                    <button type="button" class="settings-row" (click)="openEditName()">
+                      <span class="settings-row__label settings-row__label--solo">{{ translate.t('settings.editName') }}</span>
+                      <span class="settings-row__chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg></span>
+                    </button>
+                    <div class="settings-row settings-row--static settings-row--last">
+                      <span class="settings-row__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                      </span>
+                      <span class="settings-row__label">{{ translate.t('settings.email') }}</span>
+                      <span class="settings-row__value settings-row__value--truncate">{{ userEmail }}</span>
+                    </div>
+                  </div>
+                  <p class="settings-footnote">{{ translate.t('settings.memberSince') }} · {{ createdAt }}</p>
+                </div>
+
+                <div class="settings-group">
+                  <h3 class="settings-section-label">{{ translate.t('settings.security') }}</h3>
+                  <form class="settings-password-form" (ngSubmit)="submitPasswordReset()" #deskPwdForm="ngForm">
+                    <div class="settings-group-card">
+                      <div class="form-group settings-password-form__field">
+                        <label for="deskPasswordResetEmail">{{ translate.t('passwordReset.email') }}</label>
+                        <input
+                          type="email"
+                          id="deskPasswordResetEmail"
+                          name="deskPasswordResetEmail"
+                          [(ngModel)]="passwordResetEmail"
+                          class="form-control"
+                          [placeholder]="translate.t('passwordReset.emailPlaceholder')"
+                          required
+                          email
+                          #deskEmailField="ngModel"
+                          autocomplete="email" />
+                        <div class="invalid-feedback" *ngIf="deskEmailField.invalid && deskEmailField.touched">
+                          @if (deskEmailField.errors?.['required']) {
+                            {{ translate.t('passwordReset.emailRequired') }}
+                          } @else if (deskEmailField.errors?.['email']) {
+                            {{ translate.t('passwordReset.emailInvalid') }}
+                          }
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="info-box" *ngIf="!passwordResetSuccess">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                      </svg>
+                      <p>{{ translate.t('passwordReset.info') }}</p>
+                    </div>
+
+                    <div class="success-box" *ngIf="passwordResetSuccess">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22,4 12,14.01 9,11.01"/>
+                      </svg>
+                      <p>{{ translate.t('passwordReset.success') }}</p>
+                    </div>
+
+                    <div class="error-box" *ngIf="passwordResetError">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                      </svg>
+                      <p>{{ passwordResetError }}</p>
+                    </div>
+
+                    <div class="settings-password-actions">
+                      <button
+                        type="submit"
+                        class="btn btn-primary settings-password-actions__btn"
+                        [disabled]="deskPwdForm.invalid || passwordResetSubmitting || passwordResetSuccess">
+                        @if (passwordResetSubmitting) {
+                          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          {{ translate.t('loading.sending') }}
+                        } @else {
+                          {{ translate.t('button.sendResetLink') }}
+                        }
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="settings-group settings-group--danger">
+                  <h3 class="settings-section-label">{{ translate.t('settings.security') }}</h3>
+                  <div class="settings-group-card">
+                    <button type="button" class="settings-row settings-row--danger settings-row--last" (click)="confirmDelete()" [disabled]="deletingAccount">
+                      @if (deletingAccount) {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="settings-row__label">{{ translate.t('loading.deleting') }}</span>
+                      } @else {
+                        <span class="settings-row__icon" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </span>
+                        <span class="settings-row__label">{{ translate.t('settings.deleteAccount') }}</span>
+                      }
+                    </button>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group--signout">
+                  <button type="button" class="settings-row settings-row--signout" (click)="signOut()" [disabled]="signingOut || deletingAccount">
+                    @if (signingOut) {
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      <span class="settings-row__label">{{ translate.t('loading.signingOut') }}</span>
+                    } @else {
+                      <span class="settings-row__icon settings-row__icon--plain" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                      </span>
+                      <span class="settings-row__label">{{ translate.t('button.signOut') }}</span>
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+
+            @case ('property') {
+              <div class="settings-group">
+                <p class="settings-desk__lead">{{ translate.t('settings.sectionProperty') }}</p>
+                <div class="settings-group-card" role="list">
+                  <button type="button" class="settings-row" (click)="featureComingSoon()">
+                    <span class="settings-row__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    </span>
+                    <span class="settings-row__label">{{ translate.t('settings.currency') }}</span>
+                    <span class="settings-row__value">ZAR</span>
+                  </button>
+                  <button type="button" class="settings-row" (click)="featureComingSoon()">
+                    <span class="settings-row__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </span>
+                    <span class="settings-row__label">{{ translate.t('settings.rentDefaults') }}</span>
+                    <span class="settings-row__value">{{ translate.t('settings.comingSoonShort') }}</span>
+                  </button>
+                  <button type="button" class="settings-row settings-row--last" (click)="featureComingSoon()">
+                    <span class="settings-row__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </span>
+                    <span class="settings-row__label">{{ translate.t('settings.reminderTiming') }}</span>
+                    <span class="settings-row__value">{{ translate.t('settings.comingSoonShort') }}</span>
+                  </button>
+                </div>
+              </div>
+            }
+
+            @case ('appearance') {
+              <div class="settings-group">
+                <div class="settings-group-card" role="list">
+                  <div class="settings-row settings-row--static settings-row--with-toggle" role="group" [attr.aria-label]="translate.t('settings.theme')">
+                    <span class="settings-row__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    </span>
+                    <span class="settings-row__label">{{ translate.t('settings.theme') }}</span>
+                    <div class="settings-binary-toggle">
+                      <button type="button" class="settings-binary-toggle__btn" [class.active]="selectedTheme === 'light'" (click)="setTheme('light')">{{ translate.t('settings.themeLight') }}</button>
+                      <button type="button" class="settings-binary-toggle__btn" [class.active]="selectedTheme === 'dark'" (click)="setTheme('dark')">{{ translate.t('settings.themeDark') }}</button>
+                    </div>
+                  </div>
+                  <button type="button" class="settings-row" (click)="cycleLanguage()">
+                    <span class="settings-row__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </span>
+                    <span class="settings-row__label">{{ translate.t('settings.language') }}</span>
+                    <span class="settings-row__value">{{ languageDisplayLabel() }}</span>
+                  </button>
+                  <button type="button" class="settings-row" (click)="toggleCompactUi()">
+                    <span class="settings-row__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+                    </span>
+                    <span class="settings-row__label">{{ translate.t('settings.compactMode') }}</span>
+                    <span class="settings-row__value">{{ compactUi ? translate.t('settings.stateOn') : translate.t('settings.stateOff') }}</span>
+                  </button>
+                  <button type="button" class="settings-row settings-row--last" (click)="toggleReduceMotionUi()">
+                    <span class="settings-row__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </span>
+                    <span class="settings-row__label">{{ translate.t('settings.reduceAnimations') }}</span>
+                    <span class="settings-row__value">{{ reduceMotionUi ? translate.t('settings.stateOn') : translate.t('settings.stateOff') }}</span>
+                  </button>
+                </div>
+              </div>
+            }
+
+            @case ('notifications') {
+              <div class="settings-group">
+                <div class="settings-group-card">
+                  <div class="settings-row settings-row--static settings-row--last">
+                    <span class="settings-row__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+                    </span>
+                    <div class="settings-row__stack">
+                      <span class="settings-row__label">{{ translate.t('settings.emailNotifications') }}</span>
+                      <span class="settings-row__hint">{{ translate.t('settings.comingSoon') }}</span>
+                    </div>
+                    <label class="settings-switch" aria-label="Notifications">
+                      <input type="checkbox" [checked]="notificationsEnabled" (change)="toggleNotifications()" disabled />
+                      <span class="settings-switch__slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @case ('data') {
+              <div class="settings-group">
+                <p class="settings-lead">{{ translate.t('settings.exportSummary') }}</p>
+                <button type="button" class="settings-row settings-row--cta" (click)="exportMyData()" [disabled]="exportingData">
+                  @if (exportingData) {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="settings-row__label">{{ translate.t('loading.exporting') }}</span>
+                  } @else {
+                    <span class="settings-row__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </span>
+                    <span class="settings-row__label">{{ translate.t('settings.exportData') }}</span>
+                  }
+                </button>
+              </div>
+            }
+
+            @case ('support') {
+              <div class="settings-desk__support-grid">
+                <div class="settings-group">
+                  <h3 class="settings-section-label">{{ translate.t('settings.helpCenter') }}</h3>
+                  <div class="settings-group-card">
+                    <button type="button" class="settings-row" (click)="openQuickStartGuide()">
+                      <span class="settings-row__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      </span>
+                      <span class="settings-row__label">{{ translate.t('support.viewGuide') }}</span>
+                    </button>
+                    <button type="button" class="settings-row settings-row--last" (click)="contactSupport()">
+                      <span class="settings-row__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>
+                      </span>
+                      <span class="settings-row__label">{{ translate.t('support.emailSupport') }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="settings-group">
+                  <h3 class="settings-section-label">{{ translate.t('support.reportIssues') }}</h3>
+                  <div class="settings-group-card">
+                    <button type="button" class="settings-row" (click)="openBugReport()">
+                      <span class="settings-row__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg>
+                      </span>
+                      <span class="settings-row__label">{{ translate.t('support.bugReport') }}</span>
+                    </button>
+                    <button type="button" class="settings-row settings-row--last" (click)="openFeatureRequest()">
+                      <span class="settings-row__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      </span>
+                      <span class="settings-row__label">{{ translate.t('support.featureRequest') }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="settings-group">
+                  <h3 class="settings-section-label">{{ translate.t('settings.legal') }}</h3>
+                  <div class="settings-group-card">
+                    <button type="button" class="settings-row" (click)="openPrivacyPolicy()">
+                      <span class="settings-row__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                      </span>
+                      <span class="settings-row__label">{{ translate.t('support.privacyPolicy') }}</span>
+                    </button>
+                    <button type="button" class="settings-row settings-row--last" (click)="openTermsAndConditions()">
+                      <span class="settings-row__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      </span>
+                      <span class="settings-row__label">{{ translate.t('support.termsAndConditions') }}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

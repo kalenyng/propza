@@ -1,0 +1,22 @@
+.contact-support-lead {
+  margin: 0 0 0.75rem;
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: 0.9375rem;
+}
+
+.contact-support-address {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+
+  a {
+    color: inherit;
+    font-weight: 600;
+    word-break: break-all;
+  }
+}
+
+.contact-support-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

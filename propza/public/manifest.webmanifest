@@ -1,7 +1,7 @@
 {
   "name": "Propza",
   "short_name": "Propza",
-  "start_url": "/home",
+  "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0ea472",

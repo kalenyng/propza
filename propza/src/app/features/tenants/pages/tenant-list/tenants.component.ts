@@ -2,14 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HeaderBannerComponent } from '../../../../shared/components/header-banner/header-banner.component';
-import { BottomNavComponent } from '../../../../shared/components/bottom-nav/bottom-nav.component';
 import { TenantCardComponent } from '../../components/tenant-card/tenant-card.component';
 import { AddTenantModalComponent } from '../../components/add-tenant-modal/add-tenant-modal.component';
 import { TranslationService } from '../../../../core/services/translation.service';
 import { TenantService, Tenant } from '../../../../core/services/tenant.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject, takeUntil } from 'rxjs';
+import { PropzaModalOptionsService } from '../../../../core/services/propza-modal-options.service';
+import { Subject, takeUntil, combineLatest } from 'rxjs';
 
 type FilterType = 'all' | 'overdue';
 
@@ -19,8 +18,6 @@ type FilterType = 'all' | 'overdue';
   imports: [
     CommonModule,
     FormsModule,
-    HeaderBannerComponent,
-    BottomNavComponent,
     TenantCardComponent
   ],
   templateUrl: './tenants.component.html',
@@ -40,32 +37,27 @@ export class TenantListComponent implements OnInit, OnDestroy {
   // Loading state
   loading = false;
 
+  /** Mobile: filters collapsed behind launcher (≤899px layout) */
+  mobileFiltersOpen = false;
 
   constructor(
     public translate: TranslationService,
     private tenantService: TenantService,
     private modalService: NgbModal,
-    private router: Router
+    private router: Router,
+    private modalOptions: PropzaModalOptionsService
   ) {}
 
   ngOnInit(): void {
-    // Initialize data loading
-    this.loadTenantsData();
-
-    // Subscribe for future updates
-    this.tenantService.tenants$
+    combineLatest([this.tenantService.tenants$, this.tenantService.loading$])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(tenants => {
+      .subscribe(([tenants, loading]) => {
         this.allTenants = tenants;
+        this.loading = loading;
         this.applyFilters();
       });
 
-    // Subscribe to loading state
-    this.tenantService.loading$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(loading => {
-        this.loading = loading;
-      });
+    void this.loadTenantsData();
   }
 
   private async loadTenantsData(): Promise<void> {
@@ -103,9 +95,6 @@ export class TenantListComponent implements OnInit, OnDestroy {
     // Parse the due date - handle both ISO string and date string formats
     const dueDate = new Date(tenant.rent_due_date);
     dueDate.setHours(0, 0, 0, 0);
-
-    // Debug logging (remove after testing)
-    console.log(`Tenant: ${tenant.name}, Due Date: ${tenant.rent_due_date}, Parsed: ${dueDate.toISOString()}, Today: ${today.toISOString()}, Is Overdue: ${dueDate < today}`);
 
     // If due date has passed, tenant is overdue (unless already paid)
     if (dueDate < today) {
@@ -147,6 +136,23 @@ export class TenantListComponent implements OnInit, OnDestroy {
   setFilter(filter: FilterType): void {
     this.selectedFilter = filter;
     this.applyFilters();
+    this.closeMobileFiltersIfNarrow();
+  }
+
+  toggleMobileFilters(): void {
+    this.mobileFiltersOpen = !this.mobileFiltersOpen;
+  }
+
+  mobileFilterSummary(): string {
+    return this.selectedFilter === 'all'
+      ? this.translate.t('filter.all')
+      : this.translate.t('status.overdue');
+  }
+
+  private closeMobileFiltersIfNarrow(): void {
+    if (typeof window !== 'undefined' && window.innerWidth < 900) {
+      this.mobileFiltersOpen = false;
+    }
   }
 
   getFilterCount(filter: FilterType): number {
@@ -173,15 +179,13 @@ export class TenantListComponent implements OnInit, OnDestroy {
   }
 
   openTenantDetails(tenantId: string): void {
-    // Navigate to tenant detail page instead of opening modal
-    void this.router.navigate(['/tenant', tenantId]);
+    void this.router.navigate(['/tenant', tenantId], {
+      state: { backUrl: '/tenants' }
+    });
   }
 
   async openAddTenantModal(): Promise<void> {
-    const modalRef = this.modalService.open(AddTenantModalComponent, {
-      size: 'lg',
-      centered: true
-    });
+    const modalRef = this.modalService.open(AddTenantModalComponent, this.modalOptions.createEntityFlow());
 
     try {
       const result = await modalRef.result;
@@ -192,7 +196,19 @@ export class TenantListComponent implements OnInit, OnDestroy {
     }
   }
 
-  trackByTenantId(index: number, tenant: Tenant): string {
-    return tenant.id;
+  get statTotalTenants(): number {
+    return this.allTenants.length;
+  }
+
+  get statOverdueTenants(): number {
+    return this.allTenants.filter((t) => this.getActualRentStatus(t) === 'overdue').length;
+  }
+
+  get statPaidTenants(): number {
+    return this.allTenants.filter((t) => this.getActualRentStatus(t) === 'paid').length;
+  }
+
+  get statUpcomingTenants(): number {
+    return this.allTenants.filter((t) => this.getActualRentStatus(t) === 'upcoming').length;
   }
 }

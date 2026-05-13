@@ -1,0 +1,177 @@
+<div class="app-inner-page">
+  <header class="app-inner-header payments-header">
+    <div class="app-inner-title">
+      <h1>Payments</h1>
+    </div>
+    <label class="app-inner-search payments-search" aria-label="Search payments">
+      <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search by property or notes…"
+        [(ngModel)]="searchQuery"
+        (input)="applyFilters()"
+      />
+    </label>
+  </header>
+
+  <div class="app-inner-main">
+    <section class="app-inner-stats" aria-label="Payment metrics">
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">Total collected</span>
+          <span class="app-inner-stat-value">{{ formatMoney(totalCollected) }}</span>
+        </div>
+      </article>
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">Payments</span>
+          <span class="app-inner-stat-value">{{ paymentCount }}</span>
+        </div>
+      </article>
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4M12 8h.01"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">Average payment</span>
+          <span class="app-inner-stat-value">{{ formatMoney(averagePayment) }}</span>
+        </div>
+      </article>
+      <article class="app-inner-stat payments-stat-accent">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3h18v13H9l-6 6V3z"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">Matching filters</span>
+          <span class="app-inner-stat-value">{{ filteredPaymentCount }}</span>
+        </div>
+      </article>
+    </section>
+
+    <div class="payments-widgets">
+      <aside
+        class="app-inner-panel payments-widget-filters payments-filter-aside"
+        [class.is-m-filter-open]="mobileLedgerOpen">
+        <button
+          type="button"
+          class="m-filter-launcher"
+          (click)="toggleMobileLedger()"
+          [attr.aria-expanded]="mobileLedgerOpen"
+          aria-controls="payments-ledger-panel">
+          <span class="m-filter-launcher-label">Search &amp; filters</span>
+          <span class="m-filter-launcher-meta">{{ mobileLedgerSummary() }}</span>
+          <svg class="m-filter-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+
+        <div class="m-filter-body" id="payments-ledger-panel">
+        <div class="app-inner-panel-head m-filter-head-desktop">
+          <h2>Ledger controls</h2>
+        </div>
+        <div class="filter-stack">
+          <label class="app-inner-search mobile-sheet-search payments-mobile-search" aria-label="Search payments">
+            <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input
+              type="text"
+              placeholder="Search by property or notes…"
+              [(ngModel)]="searchQuery"
+              (input)="applyFilters()"
+            />
+          </label>
+          <label class="muted-label" for="payment-property-filter">Property</label>
+          <select id="payment-property-filter" [(ngModel)]="selectedProperty" (change)="onPropertyFilterChange()">
+            <option value="all">All properties</option>
+            @for (property of properties; track property.id) {
+              <option [value]="property.id">{{ property.address }}</option>
+            }
+          </select>
+
+          @if (!loading && paymentCount === 0) {
+            <p class="helper-text">Payments will populate here automatically after recording.</p>
+          }
+        </div>
+        </div>
+      </aside>
+
+      <section class="app-inner-panel payments-widget-ledger">
+        <div class="app-inner-panel-head">
+          <h2>Transaction history</h2>
+          @if (filteredPaymentCount !== paymentCount) {
+            <span class="muted-chip">{{ filteredPaymentCount }} of {{ paymentCount }}</span>
+          } @else {
+            <span class="muted-chip">{{ paymentCount }} total</span>
+          }
+        </div>
+
+        @if (loading && properties.length === 0) {
+          <div class="payment-card-grid">
+            @for (i of [1,2,3,4]; track i) {
+              <div class="skeleton-payment">
+                <div class="skeleton-pay-head">
+                  <div class="skeleton-line sk-address"></div>
+                  <div class="skeleton-line sk-pill"></div>
+                </div>
+                <div class="skeleton-line sk-meta"></div>
+              </div>
+            }
+          </div>
+        } @else if (payments.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+            </div>
+            <h3 class="empty-title">No payments yet</h3>
+            <p class="empty-description">Payments will appear here once you record them on a property or tenant.</p>
+          </div>
+        } @else {
+          <div class="payment-card-grid">
+            @for (payment of payments; track payment.id) {
+              <article class="payment-card">
+                <div class="payment-head">
+                  <strong class="payment-property">{{ payment.propertyAddress }}</strong>
+                  <div class="payment-amount">
+                    <em class="status-pill success">Paid</em>
+                    <strong>{{ formatMoney(payment.amount) }}</strong>
+                  </div>
+                </div>
+                <div class="payment-meta">
+                  <span>{{ payment.payment_date | date:'mediumDate' }}</span>
+                  <span>Period: {{ payment.period }}</span>
+                </div>
+                @if (payment.notes) {
+                  <p class="notes">{{ payment.notes }}</p>
+                }
+              </article>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  </div>
+</div>

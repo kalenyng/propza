@@ -1,54 +1,81 @@
-<div class="detail-container">
-  @if (loading) {
-    <div class="loading">
-      <div class="spinner"></div>
-      <p>Loading property details...</p>
-    </div>
-  } @else if (property) {
-    <!-- Header with Back Button -->
-    <div class="header">
-      <button class="back-btn" (click)="goBack()">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Back home
-      </button>
-      <div class="header-actions">
-        <button class="icon-btn" (click)="startEdit()" title="Edit property" [disabled]="saving || deletingProperty || deletingTenant">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12.5 2.5L15.5 5.5M1 17L4.5 16.5L16.5 4.5C17.3284 3.67157 17.3284 2.32843 16.5 1.5C15.6716 0.671573 14.3284 0.671573 13.5 1.5L1.5 13.5L1 17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <button class="icon-btn danger" (click)="deleteProperty()" title="Delete property" [disabled]="saving || deletingProperty || deletingTenant">
-          @if (deletingProperty) {
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          } @else {
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 5H16M7 8V13M11 8V13M3 5L4 15C4 15.5304 4.21071 16.0391 4.58579 16.4142C4.96086 16.7893 5.46957 17 6 17H12C12.5304 17 13.0391 16.7893 13.4142 16.4142C13.7893 16.0391 14 15.5304 14 15L15 5M6 5V3C6 2.73478 6.10536 2.48043 6.29289 2.29289C6.48043 2.10536 6.73478 2 7 2H11C11.2652 2 11.5196 2.10536 11.7071 2.29289C11.8946 2.48043 12 2.73478 12 3V5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+<div class="app-inner-page property-detail-page">
+  <header class="app-inner-header property-detail-header">
+    <div class="app-inner-title">
+      @if (property) {
+        <div class="detail-header-title-block">
+          <h1>{{ property.name }}</h1>
+          @if (property.address && property.address !== property.name) {
+            <p class="detail-header-subtitle">{{ property.address }}</p>
           }
-        </button>
-      </div>
+        </div>
+      } @else {
+        <h1>Property</h1>
+      }
     </div>
+    <div class="property-detail-header-ghost">
+      <label class="app-inner-search props-header-search property-detail-header-ghost-hide" aria-hidden="true">
+        <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="search" disabled tabindex="-1" value="" />
+      </label>
+      @if (property) {
+        <span class="status-pill property-detail-header-status-pill" [attr.data-color]="propertyStatusPillColor">
+          <span class="status-dot"></span>
+          <span class="status-label">{{ propertyStatusPillLabel }}</span>
+        </span>
+      } @else {
+        <button type="button" class="header-quick-add property-detail-header-ghost-hide" disabled tabindex="-1" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="btn-text">{{ translate.t('button.addProperty') }}</span>
+        </button>
+      }
+    </div>
+  </header>
 
+  <div class="app-inner-main">
+    <div class="app-inner-widgets">
+      <section class="app-inner-widget--primary">
+        <div class="app-inner-panel property-detail-panel">
+          <div class="detail-panel-toolbar">
+            <button type="button" class="back-btn" (click)="goBack()">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              All properties
+            </button>
+            @if (property) {
+              <div class="detail-panel-toolbar-actions">
+                <button type="button" class="icon-btn" (click)="startEdit()" title="Edit property" [disabled]="saving || deletingProperty || deletingTenant">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 2.5L15.5 5.5M1 17L4.5 16.5L16.5 4.5C17.3284 3.67157 17.3284 2.32843 16.5 1.5C15.6716 0.671573 14.3284 0.671573 13.5 1.5L1.5 13.5L1 17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button type="button" class="icon-btn danger" (click)="deleteProperty()" title="Delete property" [disabled]="saving || deletingProperty || deletingTenant">
+                  @if (deletingProperty) {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  } @else {
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 5H16M7 8V13M11 8V13M3 5L4 15C4 15.5304 4.21071 16.0391 4.58579 16.4142C4.96086 16.7893 5.46957 17 6 17H12C12.5304 17 13.0391 16.7893 13.4142 16.4142C13.7893 16.0391 14 15.5304 14 15L15 5M6 5V3C6 2.73478 6.10536 2.48043 6.29289 2.29289C6.48043 2.10536 6.73478 2 7 2H11C11.2652 2 11.5196 2.10536 11.7071 2.29289C11.8946 2.48043 12 2.73478 12 3V5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  }
+                </button>
+              </div>
+            }
+          </div>
+          @if (loading) {
+            <div class="loading">
+              <div class="spinner"></div>
+              <p>Loading property details...</p>
+            </div>
+          } @else if (property) {
     @if (!editing) {
       <!-- View Mode -->
       <div class="content">
-        <!-- 1. Header: Property Title & Status -->
-        <div class="title-section">
-          <div class="title-wrapper">
-            <h1 class="property-title">{{ property.name }}</h1>
-            @if (property.address && property.address !== property.name) {
-              <p class="property-subtitle">{{ property.address }}</p>
-            }
-          </div>
-          <span class="status-badge" [class]="displayStatus.toLowerCase()">
-            <span class="status-dot"></span>
-            {{ displayStatus }}
-          </span>
-        </div>
-
-        <!-- 2. Monthly Rent Overview -->
+        <!-- Monthly Rent Overview -->
         <div class="section-card rent-overview">
           <div class="section-header">
             <h2>Rent Overview</h2>
@@ -94,115 +121,6 @@
                 </div>
               </div>
             }
-            
-            <!-- Rent Performance Chart -->
-            <div class="rent-performance-chart">
-              @if (chartData.length > 0) {
-                <div class="chart-legend">
-                  <div class="legend-item">
-                    <span class="legend-line expected"></span>
-                    <span class="legend-label">Expected Rent</span>
-                  </div>
-                  <div class="legend-item">
-                    <span class="legend-line paid"></span>
-                    <span class="legend-label">Paid Rent</span>
-                  </div>
-                </div>
-                
-                <div class="line-chart-container">
-                  <!-- Y-axis labels -->
-                  <div class="y-axis">
-                    <span class="y-label">{{ formatMoney(property.rent_amount, property.currency) }}</span>
-                    <span class="y-label">{{ formatMoney(property.rent_amount * 0.75, property.currency) }}</span>
-                    <span class="y-label">{{ formatMoney(property.rent_amount * 0.5, property.currency) }}</span>
-                    <span class="y-label">{{ formatMoney(property.rent_amount * 0.25, property.currency) }}</span>
-                    <span class="y-label">R0</span>
-                  </div>
-                  
-                  <!-- Chart area -->
-                  <div class="chart-area">
-                    <!-- Grid lines -->
-                    <div class="grid-lines">
-                      <div class="grid-line"></div>
-                      <div class="grid-line"></div>
-                      <div class="grid-line"></div>
-                      <div class="grid-line"></div>
-                      <div class="grid-line"></div>
-                    </div>
-                    
-                    <!-- SVG for lines -->
-                    <svg class="line-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                      <!-- Expected line (dashed) -->
-                      <polyline
-                        class="line-expected"
-                        [attr.points]="getExpectedLinePoints()"
-                        fill="none"
-                        stroke="#9ca3af"
-                        stroke-width="0.5"
-                        stroke-dasharray="2,2"
-                      />
-                      
-                      <!-- Paid area fill -->
-                      <polygon
-                        class="area-paid"
-                        [attr.points]="getPaidAreaPoints()"
-                        fill="url(#gradient-paid)"
-                        opacity="0.2"
-                      />
-                      
-                      <!-- Paid line (solid) -->
-                      <polyline
-                        class="line-paid"
-                        [attr.points]="getPaidLinePoints()"
-                        fill="none"
-                        stroke="#16a34a"
-                        stroke-width="1"
-                      />
-                      
-                      <!-- Gradient definition -->
-                      <defs>
-                        <linearGradient id="gradient-paid" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" style="stop-color:#16a34a;stop-opacity:0.3" />
-                          <stop offset="100%" style="stop-color:#16a34a;stop-opacity:0" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    
-                    <!-- Data points -->
-                    <div class="data-points">
-                      @for (data of chartData; track data.month; let i = $index) {
-                        <div 
-                          class="point-group" 
-                          [style.left.%]="getPointX(i)"
-                          [style.bottom.%]="data.paidPercentage">
-                          <div class="point point-paid" 
-                               [attr.data-amount]="formatMoney(data.paid, property.currency)"
-                               [attr.data-month]="data.month">
-                          </div>
-                        </div>
-                      }
-                    </div>
-                    
-                    <!-- X-axis labels -->
-                    <div class="x-axis-labels">
-                      @for (data of chartData; track data.month; let i = $index) {
-                        <span class="x-label" [style.left.%]="getPointX(i)">
-                          {{ data.shortMonth }}
-                        </span>
-                      }
-                    </div>
-                  </div>
-                </div>
-              } @else {
-                <div class="no-chart-data">
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 3L21 21M9 9V17M15 7V15M3 21H21M5 21V9M19 21V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <p>No payment data available yet</p>
-                  <span class="hint">Payment history will appear here once rent is logged</span>
-                </div>
-              }
-            </div>
           </div>
         </div>
 
@@ -329,7 +247,7 @@
             }
           </div>
           <div class="section-content">
-            @if (property.tenant) {
+            @if (tenantData?.name) {
               @if (tenantStatus) {
                 <span class="status-badge-inline small tenant-status-badge" [class]="statusColor">
                   <span class="status-dot"></span>
@@ -339,7 +257,7 @@
               <div class="tenant-info-grid">
                 <div class="tenant-info-item">
                   <span class="detail-label">Name</span>
-                  <span class="detail-value">{{ property.tenant }}</span>
+                  <span class="detail-value">{{ tenantData?.name }}</span>
                 </div>
                 @if (tenantData && tenantData.email) {
                   <div class="tenant-info-item">
@@ -489,8 +407,23 @@
 
           <form class="edit-form">
             <div class="form-group">
-              <label for="name">Property Name/Address</label>
-              <input type="text" id="name" [(ngModel)]="editName" name="name" required>
+              <label for="address-line1">Address line 1 *</label>
+              <input type="text" id="address-line1" [(ngModel)]="editAddressLine1" name="address_line1" required>
+            </div>
+
+            <div class="form-group">
+              <label for="address-line2">Address line 2 <span class="optional-tag">(Optional)</span></label>
+              <input type="text" id="address-line2" [(ngModel)]="editAddressLine2" name="address_line2">
+            </div>
+
+            <div class="form-group">
+              <label for="address-city">City *</label>
+              <input type="text" id="address-city" [(ngModel)]="editCity" name="address_city" required>
+            </div>
+
+            <div class="form-group">
+              <label for="address-postcode">Postcode <span class="optional-tag">(Optional)</span></label>
+              <input type="text" id="address-postcode" [(ngModel)]="editPostcode" name="address_postcode">
             </div>
 
             <div class="form-group">
@@ -555,5 +488,9 @@
         </div>
       </div>
     }
-  }
+          }
+        </div>
+      </section>
+    </div>
+  </div>
 </div>

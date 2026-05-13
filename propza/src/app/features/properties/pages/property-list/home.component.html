@@ -1,161 +1,229 @@
-<div class="home-container">
-  <app-header-banner logoLetter="P" />
-
-  <!-- Main Content with Rounded White Background -->
-  <div class="main-content">
-    <!-- Sticky Summary Bar -->
-    <div class="summary-bar">
-    <div class="summary-metrics">
-      <div class="metric">
-        <span class="metric-label">{{ translate.t('dashboard.totalRent') }}</span>
-        <span class="metric-value">{{ formatMoney(totalRentDue, 'ZAR') }}</span>
-      </div>
-      <div class="metric">
-        <span class="metric-label">{{ translate.t('dashboard.collected') }}</span>
-        <span class="metric-value">{{ percentCollected }}%</span>
-      </div>
+<div class="app-inner-page">
+  <header class="app-inner-header properties-header">
+    <div class="app-inner-title">
+      <h1>{{ translate.t('dashboard.properties') }}</h1>
     </div>
-
-    <!-- Search and Filters -->
-    <div class="controls-section">
-      <!-- Search Input -->
-      <div class="search-container">
-        <input
-          type="text"
-          class="search-input"
-          [placeholder]="translate.t('properties.searchPlaceholder')"
-          [(ngModel)]="searchQuery"
-          (input)="onSearchChange()">
-        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <div class="properties-header-controls">
+      <label class="app-inner-search props-header-search" [attr.aria-label]="translate.t('properties.searchPlaceholder')">
+        <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/>
           <path d="m21 21-4.35-4.35"/>
         </svg>
-      </div>
-
-      <!-- Filter Chips -->
-      <div class="filter-chips">
-      <button 
-        class="filter-chip" 
-        [class.active]="selectedFilter === 'all'"
-        (click)="setFilter('all')">
-        {{ translate.t('filter.all') }} ({{ getFilterCount('all') }})
-      </button>
-      <button 
-        class="filter-chip filter-overdue" 
-        [class.active]="selectedFilter === 'overdue'"
-        (click)="setFilter('overdue')">
-        {{ translate.t('status.overdue') }} ({{ getFilterCount('overdue') }})
-      </button>
-      <button 
-        class="filter-chip filter-unpaid" 
-        [class.active]="selectedFilter === 'unpaid_period'"
-        (click)="setFilter('unpaid_period')">
-        {{ translate.t('filter.unpaid') }} ({{ getFilterCount('unpaid_period') }})
-      </button>
-      <button 
-        class="filter-chip filter-paid" 
-        [class.active]="selectedFilter === 'paid'"
-        (click)="setFilter('paid')">
-        {{ translate.t('status.paid') }} ({{ getFilterCount('paid') }})
-      </button>
-      <button 
-        class="filter-chip filter-vacant" 
-        [class.active]="selectedFilter === 'vacant'"
-        (click)="setFilter('vacant')">
-        {{ translate.t('status.vacant') }} ({{ getFilterCount('vacant') }})
+        <input
+          type="text"
+          [placeholder]="translate.t('properties.searchPlaceholder')"
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()" />
+      </label>
+      <button type="button" class="header-quick-add" (click)="openAddProperty()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="btn-text">{{ translate.t('button.addProperty') }}</span>
       </button>
     </div>
-  </div>
+  </header>
 
-  <!-- Sort Controls -->
-  <div class="controls-bar">
-    <h2 class="section-title">{{ translate.t('dashboard.properties') }}</h2>
-    <div class="sort-control">
-      <label for="sort-select">{{ translate.t('dashboard.sortBy') }}</label>
-      <select id="sort-select" [(ngModel)]="sortBy" (ngModelChange)="setSortBy($event)">
-        <option value="dueDate">{{ translate.t('dashboard.dueDate') }}</option>
-        <option value="amount">{{ translate.t('dashboard.amount') }}</option>
-        <option value="status">{{ translate.t('dashboard.status') }}</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Properties List -->
-  <div class="properties-list">
-    @if (loading) {
-      <!-- Loading Skeletons -->
-      @for (i of [1,2,3]; track i) {
-        <div class="skeleton-card">
-          <div class="skeleton-header">
-            <div class="skeleton-left">
-              <div class="skeleton-line skeleton-address"></div>
-              <div class="skeleton-line skeleton-tenant"></div>
-            </div>
-            <div class="skeleton-pill"></div>
-          </div>
-          <div class="skeleton-body">
-            <div class="skeleton-line skeleton-date"></div>
-            <div class="skeleton-line skeleton-amount"></div>
-          </div>
-        </div>
-      }
-    } @else if (properties.length === 0) {
-      <!-- Empty State -->
-      <div class="empty-state">
-        <div class="empty-icon">
-          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="16" width="48" height="40" rx="4" stroke="currentColor" stroke-width="3" fill="none"/>
-            <path d="M8 28H56" stroke="currentColor" stroke-width="3"/>
-            <circle cx="20" cy="38" r="3" fill="currentColor"/>
-            <circle cx="32" cy="38" r="3" fill="currentColor"/>
-            <circle cx="44" cy="38" r="3" fill="currentColor"/>
+  <div class="app-inner-main">
+    <section class="app-inner-stats" aria-label="Property metrics">
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
           </svg>
         </div>
-        <h3 class="empty-title">{{ translate.t('empty.noProperties') }}</h3>
-        <p class="empty-description">
-          @if (selectedFilter === 'all') {
-            {{ translate.t('empty.getStarted') }}
-          } @else {
-            {{ translate.t('empty.noMatches') }}
-          }
-        </p>
-        @if (selectedFilter === 'all') {
-          <button class="btn-add-property" (click)="openAddProperty()">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">{{ translate.t('dashboard.properties') }}</span>
+          <span class="app-inner-stat-value">{{ allProperties.length }}</span>
+        </div>
+      </article>
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">{{ translate.t('dashboard.collected') }}</span>
+          <span class="app-inner-stat-value">{{ percentCollected }}%</span>
+        </div>
+      </article>
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">{{ translate.t('dashboard.totalRent') }}</span>
+          <span class="app-inner-stat-value">{{ formatMoney(totalRentDue, 'ZAR') }}</span>
+        </div>
+      </article>
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">{{ translate.t('status.overdue') }}</span>
+          <span class="app-inner-stat-value">{{ overdueCount }}</span>
+        </div>
+      </article>
+    </section>
+
+    <div class="app-inner-widgets app-inner-widgets--split">
+      <aside
+        class="app-inner-widget--filters"
+        [class.is-m-filter-open]="mobileFiltersOpen">
+        <div class="app-inner-panel filter-panel-shell">
+          <button
+            type="button"
+            class="m-filter-launcher"
+            (click)="toggleMobileFilters()"
+            [attr.aria-expanded]="mobileFiltersOpen"
+            aria-controls="property-filters-panel">
+            <span class="m-filter-launcher-label">Filters &amp; sort</span>
+            <span class="m-filter-launcher-meta">{{ mobileFilterSummary() }}</span>
+            <svg class="m-filter-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+
+          <div class="m-filter-body" id="property-filters-panel">
+            <div class="app-inner-panel-head m-filter-head-desktop">
+              <h2>Filters & sort</h2>
+            </div>
+            <label class="app-inner-search mobile-sheet-search props-mobile-search" [attr.aria-label]="translate.t('properties.searchPlaceholder')">
+              <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input
+                type="text"
+                [placeholder]="translate.t('properties.searchPlaceholder')"
+                [(ngModel)]="searchQuery"
+                (input)="onSearchChange()" />
+            </label>
+
+            <div class="filter-chips chips-stack filter-chips--dense-mobile">
+              <button type="button" class="filter-chip" [class.active]="selectedFilter === 'all'" (click)="setFilter('all')">
+                {{ translate.t('filter.all') }} ({{ getFilterCount('all') }})
+              </button>
+              <button type="button" class="filter-chip filter-overdue" [class.active]="selectedFilter === 'overdue'" (click)="setFilter('overdue')">
+                {{ translate.t('status.overdue') }} ({{ getFilterCount('overdue') }})
+              </button>
+              <button type="button" class="filter-chip filter-unpaid" [class.active]="selectedFilter === 'unpaid_period'" (click)="setFilter('unpaid_period')">
+                {{ translate.t('filter.unpaid') }} ({{ getFilterCount('unpaid_period') }})
+              </button>
+              <button type="button" class="filter-chip filter-paid" [class.active]="selectedFilter === 'paid'" (click)="setFilter('paid')">
+                {{ translate.t('status.paid') }} ({{ getFilterCount('paid') }})
+              </button>
+              <button type="button" class="filter-chip filter-vacant" [class.active]="selectedFilter === 'vacant'" (click)="setFilter('vacant')">
+                {{ translate.t('status.vacant') }} ({{ getFilterCount('vacant') }})
+              </button>
+            </div>
+
+            <div class="sort-stack">
+              <label for="sort-select-props">{{ translate.t('dashboard.sortBy') }}</label>
+              <select id="sort-select-props" [(ngModel)]="sortBy" (ngModelChange)="setSortBy($event)">
+                <option value="dueDate">{{ translate.t('dashboard.dueDate') }}</option>
+                <option value="amount">{{ translate.t('dashboard.amount') }}</option>
+                <option value="status">{{ translate.t('dashboard.status') }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="app-inner-widget--primary">
+        @if (loading && properties.length === 0) {
+          <div class="app-inner-panel property-card-grid skeleton-wrap">
+            @for (i of [1,2,3,4]; track i) {
+              <div class="skeleton-card skeleton-tile">
+                <div class="skeleton-header">
+                  <div class="skeleton-line skeleton-address"></div>
+                  <div class="skeleton-pill"></div>
+                </div>
+                <div class="skeleton-content">
+                  <div class="skeleton-line skeleton-tenant"></div>
+                  <div class="skeleton-line skeleton-meta"></div>
+                </div>
+                <div class="skeleton-footer">
+                  <div class="skeleton-line skeleton-amount"></div>
+                  <div class="skeleton-chevron"></div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else if (properties.length === 0) {
+          <div class="app-inner-panel empty-state-panel">
+            <div class="empty-state-inner">
+              <div class="empty-icon">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="8" y="16" width="48" height="40" rx="4" stroke="currentColor" stroke-width="3" fill="none"/>
+                  <path d="M8 28H56" stroke="currentColor" stroke-width="3"/>
+                  <circle cx="20" cy="38" r="3" fill="currentColor"/>
+                  <circle cx="32" cy="38" r="3" fill="currentColor"/>
+                  <circle cx="44" cy="38" r="3" fill="currentColor"/>
+                </svg>
+              </div>
+              <h3 class="empty-title">{{ translate.t('empty.noProperties') }}</h3>
+              <p class="empty-description">
+                @if (selectedFilter === 'all') {
+                  {{ translate.t('empty.getStarted') }}
+                } @else {
+                  {{ translate.t('empty.noMatches') }}
+                }
+              </p>
+              @if (selectedFilter === 'all') {
+                <button type="button" class="btn-primary" (click)="openAddProperty()">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  {{ translate.t('button.addProperty') }}
+                </button>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="app-inner-panel property-card-grid-panel">
+            <div class="app-inner-panel-head">
+              <h2>{{ translate.t('dashboard.properties') }}</h2>
+              <span class="muted-chip">{{ properties.length }} listed</span>
+            </div>
+            <div class="property-card-grid">
+              @for (p of properties; track p.id) {
+                <app-property-card
+                  [address]="p.address"
+                  [tenant]="p.tenant"
+                  [rent]="p.rent"
+                  [status]="p.status"
+                  [rentDueDay]="p.rent_due_day"
+                  [nextDueDate]="p.nextDueDate"
+                  [remainingAmount]="p.remainingAmount"
+                  [collectedAmount]="p.collectedAmount"
+                  (click)="openPropertyDetail(p.id)"
+                />
+              }
+            </div>
+          </div>
+        }
+
+        @if (properties.length > 0) {
+          <button type="button" class="fab-add-mobile" (click)="openAddProperty()" [attr.aria-label]="translate.t('button.addProperty')">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
             {{ translate.t('button.addProperty') }}
           </button>
         }
-      </div>
-    } @else {
-      <!-- Property Cards -->
-      @for (p of properties; track p.id) {
-        <app-property-card
-          [address]="p.address"
-          [tenant]="p.tenant"
-          [rent]="p.rent"
-          [status]="p.status"
-          [rentDueDay]="p.rent_due_day"
-          [nextDueDate]="p.nextDueDate"
-          [remainingAmount]="p.remainingAmount"
-          [collectedAmount]="p.collectedAmount"
-          (click)="openPropertyDetail(p.id)"
-        />
-      }
-    }
+      </section>
+    </div>
   </div>
-
-    <!-- Add Property Button (when properties exist) -->
-    @if (properties.length > 0) {
-      <button class="fab-add" (click)="openAddProperty()">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        Add Property
-      </button>
-    }
-  </div>
-
-  <app-bottom-nav />
 </div>

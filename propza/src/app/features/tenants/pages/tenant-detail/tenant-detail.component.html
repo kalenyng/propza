@@ -1,300 +1,329 @@
-<div class="detail-container">
-  @if (loading) {
-    <div class="loading">
-      <div class="spinner"></div>
-      <p>Loading tenant details...</p>
-    </div>
-  } @else if (tenant) {
-    <!-- Header with Back Button -->
-    <div class="header">
-      <button class="back-btn" (click)="goBack()">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Back to tenants
-      </button>
-      <div class="header-actions">
-        <button class="icon-btn" (click)="startEdit()" title="Edit tenant" [disabled]="saving || deleting">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12.5 2.5L15.5 5.5M1 17L4.5 16.5L16.5 4.5C17.3284 3.67157 17.3284 2.32843 16.5 1.5C15.6716 0.671573 14.3284 0.671573 13.5 1.5L1.5 13.5L1 17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <button class="icon-btn danger" (click)="deleteTenant()" title="Delete tenant" [disabled]="saving || deleting">
-          @if (deleting) {
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          } @else {
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 5H16M7 8V13M11 8V13M3 5L4 15C4 15.5304 4.21071 16.0391 4.58579 16.4142C4.96086 16.7893 5.46957 17 6 17H12C12.5304 17 13.0391 16.7893 13.4142 16.4142C13.7893 16.0391 14 15.5304 14 15L15 5M6 5V3C6 2.73478 6.10536 2.48043 6.29289 2.29289C6.48043 2.10536 6.73478 2 7 2H11C11.2652 2 11.5196 2.10536 11.7071 2.29289C11.8946 2.48043 12 2.73478 12 3V5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+<div class="app-inner-page tenant-detail-page">
+  <header class="app-inner-header tenant-detail-header">
+    <div class="app-inner-title">
+      @if (tenant) {
+        <div class="detail-header-title-block">
+          <h1>{{ tenant.name }}</h1>
+          @if (propertyName || propertyAddress) {
+            <p class="detail-header-subtitle">
+              <span
+                class="property-link-text"
+                (click)="goToProperty()"
+                [class.clickable]="tenant.property_id">
+                {{ propertyName || propertyAddress }}
+              </span>
+            </p>
           }
-        </button>
-      </div>
+        </div>
+      } @else {
+        <h1>Tenant</h1>
+      }
     </div>
+    <div class="tenant-detail-header-ghost">
+      <label class="app-inner-search tenants-header-search tenant-detail-header-ghost-hide" aria-hidden="true">
+        <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="search" disabled tabindex="-1" value="" />
+      </label>
+      @if (tenant) {
+        <span class="status-pill tenant-detail-header-status-pill" [attr.data-color]="statusColor">
+          <span class="status-dot"></span>
+          <span class="status-label">{{ statusLabel }}</span>
+        </span>
+      } @else {
+        <button type="button" class="header-quick-add tenants-quick-add tenant-detail-header-ghost-hide" disabled tabindex="-1" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="btn-text">{{ translate.t('tenants.addTenant') }}</span>
+        </button>
+      }
+    </div>
+  </header>
 
-    @if (!editing) {
-      <!-- View Mode -->
-      <div class="content">
-        <!-- 1. Header: Tenant Title & Status -->
-        <div class="title-section">
-          <div class="title-wrapper">
-            <h1 class="tenant-title">{{ tenant.name }}</h1>
-            @if (propertyName || propertyAddress) {
-              <p class="tenant-subtitle">
-                <span class="property-link-text" (click)="goToProperty()" [class.clickable]="tenant.property_id">
-                  📍 {{ propertyName || propertyAddress }}
-                </span>
-              </p>
+  <div class="app-inner-main">
+    <div class="app-inner-widgets">
+      <section class="app-inner-widget--primary">
+        <div class="app-inner-panel tenant-detail-panel">
+          <div class="detail-panel-toolbar">
+            <button type="button" class="back-btn" (click)="goBack()">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Back to tenants
+            </button>
+            @if (tenant) {
+              <div class="detail-panel-toolbar-actions">
+                <button type="button" class="icon-btn" (click)="startEdit()" title="Edit tenant" [disabled]="saving || deleting">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 2.5L15.5 5.5M1 17L4.5 16.5L16.5 4.5C17.3284 3.67157 17.3284 2.32843 16.5 1.5C15.6716 0.671573 14.3284 0.671573 13.5 1.5L1.5 13.5L1 17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button type="button" class="icon-btn danger" (click)="deleteTenant()" title="Delete tenant" [disabled]="saving || deleting">
+                  @if (deleting) {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  } @else {
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 5H16M7 8V13M11 8V13M3 5L4 15C4 15.5304 4.21071 16.0391 4.58579 16.4142C4.96086 16.7893 5.46957 17 6 17H12C12.5304 17 13.0391 16.7893 13.4142 16.4142C13.7893 16.0391 14 15.5304 14 15L15 5M6 5V3C6 2.73478 6.10536 2.48043 6.29289 2.29289C6.48043 2.10536 6.73478 2 7 2H11C11.2652 2 11.5196 2.10536 11.7071 2.29289C11.8946 2.48043 12 2.73478 12 3V5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  }
+                </button>
+              </div>
             }
           </div>
-          <span class="status-badge" [class]="statusColor">
-            <span class="status-dot"></span>
-            {{ statusLabel }}
-          </span>
-        </div>
-
-        <!-- 2. Monthly Rent & Deposit -->
-        <div class="section-card rent-deposit-card">
-          <div class="section-header">
-            <h2>Monthly Rent & Deposit</h2>
-          </div>
-          <div class="section-content">
-            <div class="rent-deposit-grid">
-              <div class="rent-deposit-item">
-                <span class="detail-label">Monthly Rent</span>
-                <span class="detail-value-large">{{ formattedRent }}</span>
-              </div>
-              <div class="rent-deposit-item">
-                <span class="detail-label">Security Deposit</span>
-                <span class="detail-value-large">{{ formattedDeposit }}</span>
-              </div>
-              @if (tenant.rent_due_date) {
-                <div class="rent-deposit-item next-due-highlight">
-                  <span class="detail-label">Next Due Date</span>
-                  <span class="detail-value-large">{{ formattedRentDueDate }}</span>
-                </div>
-              }
+          @if (loading) {
+            <div class="loading">
+              <div class="spinner"></div>
+              <p>Loading tenant details...</p>
             </div>
-          </div>
-        </div>
-
-        <!-- Payment History -->
-        <div class="section-card">
-          <div class="section-header">
-            <h2>Payment History</h2>
-          </div>
-          <div class="section-content">
-            @if (payments.length === 0) {
-              <div class="empty-payments">
-                <p>No payments recorded yet</p>
-              </div>
-            } @else {
-              <div class="payments-list">
-                @for (payment of payments; track payment.id) {
-                  <div class="payment-item">
-                    <div class="payment-info">
-                      <span class="payment-date">{{ formatPaymentDate(payment.payment_date) }}</span>
-                      <span class="payment-method">{{ payment.payment_method || 'Cash' }}</span>
+          } @else if (tenant) {
+            @if (!editing) {
+              <!-- View Mode -->
+              <div class="content">
+                <!-- Monthly Rent & Deposit -->
+                <div class="section-card rent-deposit-card">
+                  <div class="section-header">
+                    <h2>Monthly Rent & Deposit</h2>
+                  </div>
+                  <div class="section-content">
+                    <div class="rent-deposit-grid">
+                      <div class="rent-deposit-item">
+                        <span class="detail-label">Monthly Rent</span>
+                        <span class="detail-value-large">{{ formattedRent }}</span>
+                      </div>
+                      <div class="rent-deposit-item">
+                        <span class="detail-label">Security Deposit</span>
+                        <span class="detail-value-large">{{ formattedDeposit }}</span>
+                      </div>
+                      @if (tenant.rent_due_date) {
+                        <div class="rent-deposit-item next-due-highlight">
+                          <span class="detail-label">Next Due Date</span>
+                          <span class="detail-value-large">{{ formattedRentDueDate }}</span>
+                        </div>
+                      }
                     </div>
-                    <div class="payment-amount-info">
-                      <span class="payment-amount">{{ formatPaymentAmount(payment.amount) }}</span>
+                  </div>
+                </div>
+
+                <!-- Payment History -->
+                <div class="section-card">
+                  <div class="section-header">
+                    <h2>Payment History</h2>
+                  </div>
+                  <div class="section-content">
+                    @if (payments.length === 0) {
+                      <div class="empty-payments">
+                        <p>No payments recorded yet</p>
+                      </div>
+                    } @else {
+                      <div class="payments-list">
+                        @for (payment of payments; track payment.id) {
+                          <div class="payment-item">
+                            <div class="payment-info">
+                              <span class="payment-date">{{ formatPaymentDate(payment.payment_date) }}</span>
+                              <span class="payment-method">{{ payment.payment_method || 'Cash' }}</span>
+                            </div>
+                            <div class="payment-amount-info">
+                              <span class="payment-amount">{{ formatPaymentAmount(payment.amount) }}</span>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- 4. Contact Information -->
+                <div class="section-card">
+                  <div class="section-header">
+                    <h2>Contact Information</h2>
+                  </div>
+                  <div class="section-content">
+                    <div class="contact-table">
+                      <div class="contact-row">
+                        <span class="contact-label">Email</span>
+                        <span class="contact-value">{{ tenant.email || 'No email provided' }}</span>
+                      </div>
+                      <div class="contact-row">
+                        <span class="contact-label">Phone</span>
+                        <span class="contact-value">{{ tenant.phone || 'No phone provided' }}</span>
+                      </div>
+                      <div class="contact-row">
+                        <span class="contact-label">Property</span>
+                        <span class="contact-value property-link" (click)="goToProperty()" [class.clickable]="tenant.property_id">
+                          {{ propertyName || propertyAddress }}
+                          @if (tenant.property_id) {
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="link-arrow">
+                              <path d="M5 3H3C2.46957 3 1.96086 3.21071 1.58579 3.58579C1.21071 3.96086 1 4.46957 1 5V11C1 11.5304 1.21071 12.0391 1.58579 12.4142C1.96086 12.7893 2.46957 13 3 13H9C9.53043 13 10.0391 12.7893 10.4142 12.4142C10.7893 12.0391 11 11.5304 11 11V9M8 1H13M13 1V6M13 1L5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 5. Lease Information -->
+                <div class="section-card">
+                  <div class="section-header">
+                    <h2>Lease Information</h2>
+                  </div>
+                  <div class="section-content">
+                    <div class="lease-info-grid">
+                      <div class="lease-info-item">
+                        <span class="detail-label">Lease Start</span>
+                        <span class="detail-value">{{ formattedLeaseStart }}</span>
+                      </div>
+                      <div class="lease-info-item">
+                        <span class="detail-label">Lease End</span>
+                        <span class="detail-value">{{ formattedLeaseEnd }}</span>
+                      </div>
+                      <div class="lease-info-item">
+                        <span class="detail-label">Next Rent Due</span>
+                        <span class="detail-value">{{ formattedRentDueDate }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 6. Send Rent Reminder -->
+                <div class="section-card reminder-card">
+                  <div class="section-header">
+                    <h2>Rent Reminder</h2>
+                  </div>
+                  <div class="section-content">
+                    <p class="reminder-description">
+                      Send a payment reminder to the tenant via email.
+                    </p>
+                    <button
+                      class="btn-outline btn-reminder"
+                      [disabled]="statusColor !== 'danger'"
+                      title="{{ statusColor !== 'danger' ? 'Only available for overdue payments' : 'Send rent reminder via email' }}">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 3L7 10L3 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Send Rent Reminder
+                    </button>
+                    <p class="reminder-hint">
+                      {{ statusColor !== 'danger' ? '✓ Reminders are only sent for overdue payments' : 'This will send an email to ' + (tenant.email || 'the tenant') }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Notes -->
+                @if (tenant.notes) {
+                  <div class="section-card">
+                    <div class="section-header">
+                      <h2>Notes</h2>
+                    </div>
+                    <div class="section-content">
+                      <p class="notes-text">{{ tenant.notes }}</p>
                     </div>
                   </div>
                 }
               </div>
+            } @else {
+              <!-- Edit Mode -->
+              <div class="content editing">
+                <div class="edit-form">
+                  <div class="section-card">
+                    <div class="section-header">
+                      <h2>Basic Information</h2>
+                    </div>
+                    <div class="section-content">
+                      <div class="form-grid">
+                        <div class="form-group">
+                          <label for="name">Full Name *</label>
+                          <input type="text" id="name" [(ngModel)]="editName" placeholder="Tenant's full name">
+                        </div>
+                        <div class="form-group">
+                          <label for="email">Email</label>
+                          <input type="email" id="email" [(ngModel)]="editEmail" placeholder="tenant@example.com">
+                        </div>
+                        <div class="form-group">
+                          <label for="phone">Phone</label>
+                          <input type="tel" id="phone" [(ngModel)]="editPhone" placeholder="+27 71 234 5678">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section-card">
+                    <div class="section-header">
+                      <h2>Financial Details</h2>
+                    </div>
+                    <div class="section-content">
+                      <div class="form-grid">
+                        <div class="form-group">
+                          <label for="rent">Monthly Rent (ZAR) *</label>
+                          <input type="number" id="rent" [(ngModel)]="editRentAmount" min="1" step="1">
+                        </div>
+                        <div class="form-group">
+                          <label for="deposit">Security Deposit (ZAR)</label>
+                          <input type="number" id="deposit" [(ngModel)]="editDeposit" min="0" step="1">
+                        </div>
+                        <div class="form-group">
+                          <label for="due-date">Rent Due Date *</label>
+                          <input type="date" id="due-date" [(ngModel)]="editRentDueDate">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section-card">
+                    <div class="section-header">
+                      <h2>Lease Dates</h2>
+                    </div>
+                    <div class="section-content">
+                      <div class="form-grid">
+                        <div class="form-group">
+                          <label for="lease-start">Lease Start Date *</label>
+                          <input type="date" id="lease-start" [(ngModel)]="editLeaseStartDate">
+                        </div>
+                        <div class="form-group">
+                          <label for="lease-end">Lease End Date</label>
+                          <input type="date" id="lease-end" [(ngModel)]="editLeaseEndDate">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section-card">
+                    <div class="section-header">
+                      <h2>Additional Notes</h2>
+                    </div>
+                    <div class="section-content">
+                      <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" [(ngModel)]="editNotes" rows="4" placeholder="Any additional notes about this tenant..."></textarea>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Form Actions -->
+                  <div class="form-actions">
+                    <button type="button" class="btn-secondary" (click)="cancelEdit()" [disabled]="saving">{{ translate.t('button.cancel') }}</button>
+                    <button type="button" class="btn-primary" (click)="saveChanges()" [disabled]="saving">
+                      @if (saving) {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span>{{ translate.t('loading.saving') }}</span>
+                      } @else {
+                        <span>{{ translate.t('button.saveChanges') }}</span>
+                      }
+                    </button>
+                  </div>
+                </div>
+              </div>
             }
-          </div>
+          } @else {
+            <div class="error">
+              <p>Tenant not found</p>
+            </div>
+          }
         </div>
-
-        <!-- 4. Contact Information -->
-        <div class="section-card">
-          <div class="section-header">
-            <h2>Contact Information</h2>
-          </div>
-          <div class="section-content">
-            <div class="contact-table">
-              <div class="contact-row">
-                <span class="contact-label">Email</span>
-                <span class="contact-value">{{ tenant.email || 'No email provided' }}</span>
-              </div>
-              <div class="contact-row">
-                <span class="contact-label">Phone</span>
-                <span class="contact-value">{{ tenant.phone || 'No phone provided' }}</span>
-              </div>
-              <div class="contact-row">
-                <span class="contact-label">Property</span>
-                <span class="contact-value property-link" (click)="goToProperty()" [class.clickable]="tenant.property_id">
-                  {{ propertyName || propertyAddress }}
-                  @if (tenant.property_id) {
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="link-arrow">
-                      <path d="M5 3H3C2.46957 3 1.96086 3.21071 1.58579 3.58579C1.21071 3.96086 1 4.46957 1 5V11C1 11.5304 1.21071 12.0391 1.58579 12.4142C1.96086 12.7893 2.46957 13 3 13H9C9.53043 13 10.0391 12.7893 10.4142 12.4142C10.7893 12.0391 11 11.5304 11 11V9M8 1H13M13 1V6M13 1L5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  }
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. Lease Information -->
-        <div class="section-card">
-          <div class="section-header">
-            <h2>Lease Information</h2>
-          </div>
-          <div class="section-content">
-            <div class="lease-info-grid">
-              <div class="lease-info-item">
-                <span class="detail-label">Lease Start</span>
-                <span class="detail-value">{{ formattedLeaseStart }}</span>
-              </div>
-              <div class="lease-info-item">
-                <span class="detail-label">Lease End</span>
-                <span class="detail-value">{{ formattedLeaseEnd }}</span>
-              </div>
-              <div class="lease-info-item">
-                <span class="detail-label">Next Rent Due</span>
-                <span class="detail-value">{{ formattedRentDueDate }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 6. Send Rent Reminder -->
-        <div class="section-card reminder-card">
-          <div class="section-header">
-            <h2>Rent Reminder</h2>
-          </div>
-          <div class="section-content">
-            <p class="reminder-description">
-              Send a payment reminder to the tenant via email.
-            </p>
-            <button 
-              class="btn-outline btn-reminder" 
-              [disabled]="statusColor !== 'danger'"
-              title="{{ statusColor !== 'danger' ? 'Only available for overdue payments' : 'Send rent reminder via email' }}">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 3L7 10L3 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              Send Rent Reminder
-            </button>
-            <p class="reminder-hint">
-              {{ statusColor !== 'danger' ? '✓ Reminders are only sent for overdue payments' : 'This will send an email to ' + (tenant.email || 'the tenant') }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Notes -->
-        @if (tenant.notes) {
-          <div class="section-card">
-            <div class="section-header">
-              <h2>Notes</h2>
-            </div>
-            <div class="section-content">
-              <p class="notes-text">{{ tenant.notes }}</p>
-            </div>
-          </div>
-        }
-      </div>
-    } @else {
-      <!-- Edit Mode -->
-      <div class="content editing">
-        <div class="title-section">
-          <h1 class="tenant-title">Edit Tenant</h1>
-        </div>
-
-        <div class="edit-form">
-          <div class="section-card">
-            <div class="section-header">
-              <h2>Basic Information</h2>
-            </div>
-            <div class="section-content">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="name">Full Name *</label>
-                  <input type="text" id="name" [(ngModel)]="editName" placeholder="Tenant's full name">
-                </div>
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input type="email" id="email" [(ngModel)]="editEmail" placeholder="tenant@example.com">
-                </div>
-                <div class="form-group">
-                  <label for="phone">Phone</label>
-                  <input type="tel" id="phone" [(ngModel)]="editPhone" placeholder="+27 71 234 5678">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-card">
-            <div class="section-header">
-              <h2>Financial Details</h2>
-            </div>
-            <div class="section-content">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="rent">Monthly Rent (ZAR) *</label>
-                  <input type="number" id="rent" [(ngModel)]="editRentAmount" min="1" step="1">
-                </div>
-                <div class="form-group">
-                  <label for="deposit">Security Deposit (ZAR)</label>
-                  <input type="number" id="deposit" [(ngModel)]="editDeposit" min="0" step="1">
-                </div>
-                <div class="form-group">
-                  <label for="due-date">Rent Due Date *</label>
-                  <input type="date" id="due-date" [(ngModel)]="editRentDueDate">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-card">
-            <div class="section-header">
-              <h2>Lease Dates</h2>
-            </div>
-            <div class="section-content">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="lease-start">Lease Start Date *</label>
-                  <input type="date" id="lease-start" [(ngModel)]="editLeaseStartDate">
-                </div>
-                <div class="form-group">
-                  <label for="lease-end">Lease End Date</label>
-                  <input type="date" id="lease-end" [(ngModel)]="editLeaseEndDate">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-card">
-            <div class="section-header">
-              <h2>Additional Notes</h2>
-            </div>
-            <div class="section-content">
-              <div class="form-group">
-                <label for="notes">Notes</label>
-                <textarea id="notes" [(ngModel)]="editNotes" rows="4" placeholder="Any additional notes about this tenant..."></textarea>
-              </div>
-            </div>
-          </div>
-
-          <!-- Form Actions -->
-          <div class="form-actions">
-            <button type="button" class="btn-secondary" (click)="cancelEdit()" [disabled]="saving">{{ translate.t('button.cancel') }}</button>
-            <button type="button" class="btn-primary" (click)="saveChanges()" [disabled]="saving">
-              @if (saving) {
-                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                <span>{{ translate.t('loading.saving') }}</span>
-              } @else {
-                <span>{{ translate.t('button.saveChanges') }}</span>
-              }
-            </button>
-          </div>
-        </div>
-      </div>
-    }
-  } @else {
-    <div class="error">
-      <p>Tenant not found</p>
-      <button class="btn-primary" (click)="goBack()">Go back to tenants</button>
+      </section>
     </div>
-  }
+  </div>
 </div>

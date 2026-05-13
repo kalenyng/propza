@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../../../core/services/auth.service';
 import { PasswordResetModalComponent } from '../../../settings/components/password-reset-modal/password-reset-modal.component';
+import { PropzaModalOptionsService } from '../../../../core/services/propza-modal-options.service';
 
 @Component({
   selector: 'app-login',
@@ -20,9 +21,10 @@ export class LoginComponent {
   errorMsg = '';
 
   constructor(
-    private auth: AuthService, 
+    private auth: AuthService,
     private router: Router,
-    private modal: NgbModal
+    private modal: NgbModal,
+    private modalOptions: PropzaModalOptionsService
   ) {}
 
   async submit(): Promise<void> {
@@ -34,7 +36,7 @@ export class LoginComponent {
     if (err) {
       this.errorMsg = err.message;
     } else {
-      this.router.navigateByUrl('/home');
+      this.router.navigateByUrl('/dashboard');
     }
   }
 
@@ -52,10 +54,6 @@ export class LoginComponent {
   }
 
   openForgotPassword(): void {
-    this.modal.open(PasswordResetModalComponent, {
-      size: 'md',
-      centered: true,
-      windowClass: 'modal-zoom'
-    });
+    this.modal.open(PasswordResetModalComponent, this.modalOptions.authAuxiliaryModal());
   }
 }

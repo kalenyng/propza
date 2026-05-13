@@ -12,7 +12,7 @@ export const guestGuard: CanActivateFn = async () => {
   const user = auth.user();
   if (user) {
     // User is already logged in, redirect to home
-    router.navigateByUrl('/home');
+    router.navigateByUrl('/dashboard');
     return false;
   }
   return true;

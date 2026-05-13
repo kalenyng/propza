@@ -14,22 +14,41 @@ export class TenantService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
 
+  /** After the first authenticated load finishes, empty lists refetch silently (no blocking skeleton). */
+  private tenantsInitialLoadDone = false;
+
   constructor(private supabaseService: SupabaseService) {
-    // Register this service with SupabaseService to avoid circular dependencies
-    this.supabaseService.registerTenantService(this);
+    this.supabaseService.refreshAll$.subscribe(() => this.refreshTenants());
     this.loadTenants();
   }
 
   async loadTenants(): Promise<void> {
-    this.loadingSubject.next(true);
+    const silent = this.tenantsSubject.value.length > 0 || this.tenantsInitialLoadDone;
+    if (!silent) {
+      this.loadingSubject.next(true);
+    }
+
+    let completedAuthenticatedFetch = false;
 
     try {
+      const { data: userData } = await this.supabaseService.supabase.auth.getUser();
+      const userId = userData.user?.id;
+
+      if (!userId) {
+        this.tenantsSubject.next([]);
+        this.tenantsInitialLoadDone = false;
+        return;
+      }
+
+      completedAuthenticatedFetch = true;
+
       const { data, error } = await this.supabaseService.supabase
         .from('tenants')
         .select(`
           *,
-          properties(address)
+          properties!inner(address, owner_id)
         `)
+        .eq('properties.owner_id', userId)
         .order('rent_due_date', { ascending: true });
 
       if (error) {
@@ -43,6 +62,9 @@ export class TenantService {
       this.tenantsSubject.next([]);
     } finally {
       this.loadingSubject.next(false);
+      if (completedAuthenticatedFetch) {
+        this.tenantsInitialLoadDone = true;
+      }
     }
   }
 
@@ -137,8 +159,8 @@ export class TenantService {
           .eq('id', propertyId);
       }
 
-      // Refresh both tenants and properties to keep everything in sync
-      await this.supabaseService.refreshAll();
+      // Signal all services to refresh — properties need updating too after tenant deletion
+      this.supabaseService.triggerRefreshAll();
     } catch (error) {
       console.error('Error deleting tenant:', error);
       throw error;

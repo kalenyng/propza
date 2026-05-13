@@ -8,6 +8,9 @@ import { PropertyDetailComponent } from './features/properties/pages/property-de
 import { TenantListComponent } from './features/tenants/pages/tenant-list/tenants.component';
 import { TenantDetailComponent } from './features/tenants/pages/tenant-detail/tenant-detail.component';
 import { SettingsComponent } from './features/settings/pages/settings/settings.component';
+import { DashboardComponent } from './features/dashboard/pages/dashboard/dashboard.component';
+import { PaymentsComponent } from './features/payments/pages/payments/payments.component';
+import { AuthenticatedShellComponent } from './layout/authenticated-shell/authenticated-shell.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
@@ -15,19 +18,31 @@ import { betaAccessGuard } from './core/guards/beta-access.guard';
 
 export const routes: Routes = [
   // Public landing page
-  { path: '', component: LandingComponent },
+  { path: '', component: LandingComponent, pathMatch: 'full' },
 
   // Beta access route (not protected by beta access guard)
   { path: 'beta-access', component: BetaAccessComponent },
 
-  // App home - protected by betaAccessGuard and authGuard
-  { path: 'home', component: PropertyListComponent, canActivate: [betaAccessGuard, authGuard] },
-
-  // Protected routes (require beta access and authentication)
-  { path: 'property/:id', component: PropertyDetailComponent, canActivate: [betaAccessGuard, authGuard] },
-  { path: 'tenants', component: TenantListComponent, canActivate: [betaAccessGuard, authGuard] },
-  { path: 'tenant/:id', component: TenantDetailComponent, canActivate: [betaAccessGuard, authGuard] },
-  { path: 'settings', component: SettingsComponent, canActivate: [betaAccessGuard, authGuard] },
+  // Protected app shell routes (require beta access and authentication)
+  {
+    path: '',
+    component: AuthenticatedShellComponent,
+    canActivate: [betaAccessGuard, authGuard],
+    children: [
+      { path: 'dashboard', component: DashboardComponent, data: { mobileShellTitle: 'Dashboard' } },
+      { path: 'properties', component: PropertyListComponent, data: { mobileShellTitle: 'Properties' } },
+      { path: 'home', redirectTo: 'properties', pathMatch: 'full' },
+      { path: 'property/:id', component: PropertyDetailComponent, data: { mobileShellTitle: 'Property' } },
+      { path: 'tenants', component: TenantListComponent, data: { mobileShellTitle: 'Tenants' } },
+      { path: 'tenant/:id', component: TenantDetailComponent, data: { mobileShellTitle: 'Tenant' } },
+      { path: 'payments', component: PaymentsComponent, data: { mobileShellTitle: 'Payments' } },
+      {
+        path: 'settings',
+        component: SettingsComponent,
+        data: { mobileShellTitle: 'Settings', hideMobileHero: true }
+      }
+    ]
+  },
 
   // Auth routes (require beta access, guests only for auth)
   { path: 'login', component: LoginComponent, canActivate: [betaAccessGuard, guestGuard] },

@@ -1,7 +1,6 @@
 export interface Property {
   id: string;
   address: string;
-  tenant: string | null;
   rent_amount: number;
   currency: string;
   status: 'vacant' | 'occupied';
@@ -9,6 +8,7 @@ export interface Property {
   name: string;
   created_at: string;
   tenants?: Array<{
+    name: string;
     rent_status: 'paid' | 'overdue' | 'upcoming' | 'vacant';
     rent_due_date: string;
     rent_amount: number;

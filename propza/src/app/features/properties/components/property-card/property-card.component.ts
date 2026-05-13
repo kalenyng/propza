@@ -1,7 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { DatePipe, CurrencyPipe } from '@angular/common';
-import { RentHelperService, RentStatus } from '../../../../core/services/rent-helper.service';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { RentStatus } from '../../../../core/services/rent-helper.service';
+import { PROPERTY_CARD_STATUS_PRESENTATION } from './property-status.config';
 
 @Component({
   selector: 'app-property-card',
@@ -11,6 +12,9 @@ import { TranslationService } from '../../../../core/services/translation.servic
   styleUrl: './property-card.component.scss'
 })
 export class PropertyCardComponent {
+  /** Non-breaking space — keeps reserved rows from collapsing when empty. */
+  readonly nbsp = '\u00a0';
+
   @Input() address!: string;
   @Input() tenant!: string;
   @Input() rent!: string;
@@ -20,29 +24,22 @@ export class PropertyCardComponent {
   @Input() remainingAmount?: number;
   @Input() collectedAmount?: number;
 
-  constructor(private rentHelper: RentHelperService, public translate: TranslationService) {}
+  constructor(public translate: TranslationService) {}
 
-  // Translated status label
-  get i18nStatusLabel(): string {
-    switch (this.status) {
-      case 'paid': return this.translate.t('status.paid');
-      case 'overdue': return this.translate.t('status.overdue');
-      case 'grace': return this.translate.t('status.late');
-      case 'due_today': return this.translate.t('status.dueToday');
-      case 'due_soon': return this.translate.t('status.dueSoon');
-      case 'partially_paid': return this.translate.t('status.partiallyPaid');
-      case 'upcoming': return this.translate.t('status.upcoming');
-      case 'vacant': return this.translate.t('status.vacant');
-      default: return this.translate.t('status.paid');
-    }
+  /**
+   * UI rule: widgets only show the first address line (street + number).
+   * We treat commas/newlines as separators and keep the first segment.
+   */
+  get addressLine1(): string {
+    const raw = (this.address || '').trim();
+    if (!raw) return '';
+    return raw
+      .split(/\r?\n|,/)
+      .map((s) => s.trim())
+      .filter(Boolean)[0] || raw;
   }
 
-  get statusColor(): string {
-    return this.rentHelper.getStatusColor(this.status);
-  }
-
-  // We now standardize the prefix to a single translated "Due"
-  get duePrefix(): string {
-    return this.translate.t('property.due');
+  get presentation() {
+    return PROPERTY_CARD_STATUS_PRESENTATION[this.status];
   }
 }

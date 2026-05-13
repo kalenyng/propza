@@ -18,15 +18,22 @@ export class PropertyService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
 
+  /** After the first authenticated load finishes, empty lists refetch silently (no blocking skeleton). */
+  private propertiesInitialLoadDone = false;
+
   constructor(private supabaseService: SupabaseService) {
-    // Register this service with SupabaseService to avoid circular dependencies
-    this.supabaseService.registerPropertyService(this);
-    this.loadProperties();
-    this.loadPayments();
+    this.supabaseService.refreshAll$.subscribe(() => this.refreshAll());
+    this.loadProperties().then(() => this.loadPayments());
   }
 
   async loadProperties(): Promise<void> {
-    this.loadingSubject.next(true);
+    const silent =
+      this.propertiesSubject.value.length > 0 || this.propertiesInitialLoadDone;
+    if (!silent) {
+      this.loadingSubject.next(true);
+    }
+
+    let completedAuthenticatedFetch = false;
 
     try {
       const { data: userData } = await this.supabaseService.supabase.auth.getUser();
@@ -34,16 +41,17 @@ export class PropertyService {
 
       if (!userId) {
         this.propertiesSubject.next([]);
-        this.loadingSubject.next(false);
+        this.propertiesInitialLoadDone = false;
         return;
       }
+
+      completedAuthenticatedFetch = true;
 
       const { data, error } = await this.supabaseService.supabase
         .from('properties')
         .select(`
           id,
           address,
-          tenant,
           rent_amount,
           currency,
           status,
@@ -51,6 +59,7 @@ export class PropertyService {
           name,
           created_at,
           tenants (
+            name,
             rent_status,
             rent_due_date,
             rent_amount,
@@ -72,14 +81,32 @@ export class PropertyService {
       this.propertiesSubject.next([]);
     } finally {
       this.loadingSubject.next(false);
+      if (completedAuthenticatedFetch) {
+        this.propertiesInitialLoadDone = true;
+      }
     }
   }
 
   async loadPayments(): Promise<void> {
     try {
+      const { data: userData } = await this.supabaseService.supabase.auth.getUser();
+      const userId = userData.user?.id;
+
+      if (!userId) {
+        this.paymentsSubject.next([]);
+        return;
+      }
+
+      const propertyIds = this.propertiesSubject.value.map(p => p.id);
+      if (propertyIds.length === 0) {
+        this.paymentsSubject.next([]);
+        return;
+      }
+
       const { data, error } = await this.supabaseService.supabase
         .from('payments')
         .select('*')
+        .in('property_id', propertyIds)
         .order('payment_date', { ascending: false });
 
       if (error) {

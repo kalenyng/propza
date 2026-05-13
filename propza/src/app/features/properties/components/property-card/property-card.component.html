@@ -1,40 +1,62 @@
-<div class="property-card" [attr.data-status]="status">
+<div
+  class="property-card"
+  [attr.data-status]="status"
+  [attr.data-status-category]="presentation.category"
+>
   <div class="card-header">
-    <div class="card-left">
-      <h3 class="address">{{ address }}</h3>
-      @if (tenant) {
-        <p class="tenant">{{ tenant }}</p>
-      }
-    </div>
-    <div class="card-right">
-      <div class="status-pill" [attr.data-color]="statusColor">
-        <span class="status-dot"></span>
-        <span class="status-label">{{ i18nStatusLabel }}</span>
-      </div>
+    <h3 class="address">{{ addressLine1 }}</h3>
+    <div class="status-pill" [attr.data-color]="presentation.pillColor">
+      <span class="status-dot"></span>
+      <span class="status-label">{{ translate.t(presentation.labelKey) }}</span>
     </div>
   </div>
-  
-  <div class="card-body">
-    <div class="card-bottom-left">
-      @if (nextDueDate && status !== 'vacant') {
-        <p class="due-date" [class.overdue]="status === 'overdue'">
-          {{ duePrefix }} {{ nextDueDate | date:'dd MMM yyyy' }}
-        </p>
+
+  <div class="card-content">
+    <p
+      class="tenant-row"
+      [class.tenant-row--vacant]="status === 'vacant'"
+      [class.tenant-row--muted]="status === 'vacant' || !tenant.trim()"
+    >
+      @if (status === 'vacant') {
+        {{ translate.t('property.noActiveTenant') }}
+      } @else if (tenant.trim()) {
+        {{ tenant }}
+      } @else {
+        {{ nbsp }}
       }
-      @if (status === 'partially_paid' && remainingAmount && remainingAmount > 0) {
-        <p class="remaining-amount">
-          {{ remainingAmount | currency:'ZAR':'symbol':'1.0-0' }} {{ translate.t('property.remaining') }}
-        </p>
+    </p>
+    <p
+      class="meta-row"
+      [class.meta-row--overdue]="status === 'overdue'"
+      [class.meta-row--partial]="status === 'partially_paid' && remainingAmount != null && remainingAmount > 0"
+      [class.meta-row--muted]="status === 'vacant'"
+    >
+      @if (status === 'vacant') {
+        {{ translate.t('property.availableNow') }}
+      } @else if (status === 'partially_paid' && remainingAmount != null && remainingAmount > 0) {
+        {{ remainingAmount | currency: 'ZAR' : 'symbol-narrow' : '1.0-0' }} {{ translate.t('property.outstanding') }}
+      } @else if (status === 'paid' && nextDueDate) {
+        {{ translate.t('property.paidPrefix') }} {{ nextDueDate | date: 'dd MMM yyyy' }}
+      } @else if (nextDueDate) {
+        {{ translate.t('property.due') }} {{ nextDueDate | date: 'dd MMM yyyy' }}
+      } @else {
+        {{ nbsp }}
       }
-    </div>
-    <div class="card-bottom-right">
-      <p class="rent-amount" [class.vacant]="status === 'vacant'">{{ rent }}</p>
-    </div>
+    </p>
   </div>
-  
-  <div class="chevron-icon">
-    <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M1 1L7 7L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+
+  <div class="card-footer">
+    <p class="rent-amount" [class.rent-amount--muted]="status === 'vacant'">{{ rent }}</p>
+    <div class="card-footer-chevron" aria-hidden="true">
+      <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M1 1L7 7L1 13"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </div>
   </div>
 </div>

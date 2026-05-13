@@ -1,115 +1,210 @@
-<div class="tenants-container">
-  <app-header-banner logoLetter="P" />
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Header with Title -->
-    <div class="content-header">
+<div class="app-inner-page">
+  <header class="app-inner-header tenants-header">
+    <div class="app-inner-title">
       <h1>{{ translate.t('tenants.allTenants') }}</h1>
     </div>
-
-    <!-- Search and Filters -->
-    <div class="controls-section">
-      <!-- Search Input -->
-      <div class="search-container">
-        <input
-          type="text"
-          class="search-input"
-          [placeholder]="translate.t('tenants.searchPlaceholder')"
-          [(ngModel)]="searchQuery"
-          (input)="onSearchChange()">
-        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <div class="tenants-header-controls">
+      <label class="app-inner-search tenants-header-search" [attr.aria-label]="translate.t('tenants.searchPlaceholder')">
+        <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/>
           <path d="m21 21-4.35-4.35"/>
         </svg>
-      </div>
-
-      <!-- Filter Chips -->
-      <div class="filter-chips">
-        <button
-          class="filter-chip"
-          [class.active]="selectedFilter === 'all'"
-          (click)="setFilter('all')">
-          All ({{ getFilterCount('all') }})
-        </button>
-        <button
-          class="filter-chip filter-overdue"
-          [class.active]="selectedFilter === 'overdue'"
-          (click)="setFilter('overdue')">
-          Overdue ({{ getFilterCount('overdue') }})
-        </button>
-      </div>
+        <input
+          type="text"
+          [placeholder]="translate.t('tenants.searchPlaceholder')"
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()" />
+      </label>
+      <button type="button" class="header-quick-add tenants-quick-add" (click)="openAddTenantModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="btn-text">{{ translate.t('tenants.addTenant') }}</span>
+      </button>
     </div>
+  </header>
 
+  <div class="app-inner-main">
+    <section class="app-inner-stats" aria-label="Tenant metrics">
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">Tenants</span>
+          <span class="app-inner-stat-value">{{ statTotalTenants }}</span>
+        </div>
+      </article>
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">{{ translate.t('status.overdue') }}</span>
+          <span class="app-inner-stat-value">{{ statOverdueTenants }}</span>
+        </div>
+      </article>
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">{{ translate.t('status.paid') }}</span>
+          <span class="app-inner-stat-value">{{ statPaidTenants }}</span>
+        </div>
+      </article>
+      <article class="app-inner-stat">
+        <div class="app-inner-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="app-inner-stat-copy">
+          <span class="app-inner-stat-label">Upcoming</span>
+          <span class="app-inner-stat-value">{{ statUpcomingTenants }}</span>
+        </div>
+      </article>
+    </section>
 
-    @if (loading) {
-      <!-- Loading Skeletons -->
-      <div class="tenants-grid">
-        @for (i of [1,2,3]; track i) {
-          <div class="skeleton-card">
-            <div class="skeleton-header">
-              <div class="skeleton-left">
-                <div class="skeleton-line skeleton-name"></div>
-                <div class="skeleton-line skeleton-property"></div>
-              </div>
-              <div class="skeleton-pill"></div>
+    <div class="app-inner-widgets app-inner-widgets--split">
+      <aside
+        class="app-inner-widget--filters"
+        [class.is-m-filter-open]="mobileFiltersOpen">
+        <div class="app-inner-panel filter-panel-shell">
+          <button
+            type="button"
+            class="m-filter-launcher"
+            (click)="toggleMobileFilters()"
+            [attr.aria-expanded]="mobileFiltersOpen"
+            aria-controls="tenant-filters-panel">
+            <span class="m-filter-launcher-label">Filters</span>
+            <span class="m-filter-launcher-meta">{{ mobileFilterSummary() }}</span>
+            <svg class="m-filter-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+
+          <div class="m-filter-body" id="tenant-filters-panel">
+            <div class="app-inner-panel-head m-filter-head-desktop">
+              <h2>Filters</h2>
             </div>
-            <div class="skeleton-body">
-              <div class="skeleton-line skeleton-amount"></div>
-              <div class="skeleton-line skeleton-date"></div>
+            <label class="app-inner-search mobile-sheet-search tenants-mobile-search" [attr.aria-label]="translate.t('tenants.searchPlaceholder')">
+              <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input
+                type="text"
+                [placeholder]="translate.t('tenants.searchPlaceholder')"
+                [(ngModel)]="searchQuery"
+                (input)="onSearchChange()" />
+            </label>
+            <div class="filter-chips chips-stack-vertical filter-chips--dense-mobile">
+              <button
+                type="button"
+                class="filter-chip"
+                [class.active]="selectedFilter === 'all'"
+                (click)="setFilter('all')">
+                All ({{ getFilterCount('all') }})
+              </button>
+              <button
+                type="button"
+                class="filter-chip filter-overdue"
+                [class.active]="selectedFilter === 'overdue'"
+                (click)="setFilter('overdue')">
+                Overdue ({{ getFilterCount('overdue') }})
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="app-inner-widget--primary">
+        @if (loading && allTenants.length === 0) {
+          <div class="app-inner-panel tenant-grid skeleton-tenant-panel">
+            @for (i of [1,2,3,4]; track i) {
+              <div class="skeleton-card skeleton-tile">
+                <div class="skeleton-header">
+                  <div class="skeleton-line skeleton-name"></div>
+                  <div class="skeleton-pill"></div>
+                </div>
+                <div class="skeleton-line skeleton-address"></div>
+                <div class="skeleton-meta">
+                  <div class="skeleton-line skeleton-due"></div>
+                  <div class="skeleton-line skeleton-contact"></div>
+                  <div class="skeleton-line skeleton-contact"></div>
+                </div>
+                <div class="skeleton-footer">
+                  <div class="skeleton-line skeleton-amount"></div>
+                  <div class="skeleton-chevron"></div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else if (filteredTenants.length > 0) {
+          <div class="app-inner-panel tenants-grid-panel">
+            <div class="app-inner-panel-head">
+              <h2>{{ translate.t('tenants.allTenants') }}</h2>
+              <span class="muted-chip">{{ filteredTenants.length }} shown</span>
+            </div>
+            <div class="tenant-grid">
+              @for (tenant of filteredTenants; track tenant.id) {
+                <app-tenant-card
+                  [tenant]="tenant"
+                  (cardClick)="openTenantDetails($event)">
+                </app-tenant-card>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="app-inner-panel empty-state-panel">
+            <div class="empty-state-inner">
+              <div class="empty-icon">
+                <svg width="64" height="64" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="40" cy="30" r="12" stroke="currentColor" stroke-width="3" fill="none"/>
+                  <path d="M20 65C20 55 28 48 40 48C52 48 60 55 60 65" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="empty-title">{{ translate.t('tenants.noTenantsFound') }}</h3>
+              <p class="empty-description">
+                @if (selectedFilter === 'all') {
+                  {{ translate.t('tenants.getStarted') }}
+                } @else {
+                  {{ translate.t('tenants.noMatches') }}
+                }
+              </p>
+              @if (selectedFilter === 'all') {
+                <button type="button" class="btn-primary" (click)="openAddTenantModal()">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  {{ translate.t('tenants.addTenant') }}
+                </button>
+              }
             </div>
           </div>
         }
-      </div>
-    } @else if (filteredTenants.length > 0) {
-      <!-- Tenant Cards Grid -->
-      <div class="tenants-grid">
-        <div *ngFor="let tenant of filteredTenants; trackBy: trackByTenantId">
-          <app-tenant-card
-            [tenant]="tenant"
-            (cardClick)="openTenantDetails($event)">
-          </app-tenant-card>
-        </div>
-      </div>
-    } @else {
-      <!-- Empty State -->
-      <div class="empty-state">
-        <div class="empty-icon">
-          <svg width="64" height="64" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="40" cy="30" r="12" stroke="currentColor" stroke-width="3" fill="none"/>
-            <path d="M20 65C20 55 28 48 40 48C52 48 60 55 60 65" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h3 class="empty-title">{{ translate.t('tenants.noTenantsFound') }}</h3>
-        <p class="empty-description">
-          @if (selectedFilter === 'all') {
-            {{ translate.t('tenants.getStarted') }}
-          } @else {
-            {{ translate.t('tenants.noMatches') }}
-          }
-        </p>
-        @if (selectedFilter === 'all') {
-          <button class="btn-add-tenant-empty" (click)="openAddTenantModal()">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+
+        @if (allTenants.length > 0) {
+          <button type="button" class="fab-add-tenant-mobile" (click)="openAddTenantModal()" [attr.aria-label]="translate.t('tenants.addTenant')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            {{ translate.t('tenants.addTenant') }}
+            <span>{{ translate.t('tenants.addTenant') }}</span>
           </button>
         }
-      </div>
-    }
+      </section>
+    </div>
   </div>
-
-  <!-- Floating Add Button (when tenants exist) -->
-  @if (allTenants.length > 0) {
-    <button class="add-tenant-btn" (click)="openAddTenantModal()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="12" y1="5" x2="12" y2="19"/>
-        <line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-      <span>{{ translate.t('tenants.addTenant') }}</span>
-    </button>
-  }
-
-  <app-bottom-nav />
 </div>

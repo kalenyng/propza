@@ -10,6 +10,7 @@ import { RentHelperService } from '../../../../core/services/rent-helper.service
 import { RentDueService } from '../../../../core/services/rent-due.service';
 import { TranslationService } from '../../../../core/services/translation.service';
 import { SanitizationService } from '../../../../core/services/sanitization.service';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 
 @Component({
   selector: 'app-add-tenant-modal',
@@ -27,6 +28,7 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   translate = inject(TranslationService);
   private sanitizer = inject(SanitizationService);
+  private toast = inject(ToastService);
 
   // Optional email validator: only validates format if a value is provided
   optionalEmailValidator = (control: any) => {
@@ -194,7 +196,7 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
       if (tenantErr) {
         console.error('Error creating tenant:', tenantErr);
         this.saving = false;
-        alert('Failed to create tenant. Please try again.');
+        this.toast.error('Could not create tenant', 'Please try again.');
         return;
       }
 
@@ -211,7 +213,7 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
       if (propertyErr) {
         console.error('Error updating property:', propertyErr);
         this.saving = false;
-        alert('Tenant created but failed to update property.');
+        this.toast.warning('Tenant created', 'Property status could not be updated. Refresh and check the property.');
         return;
       }
 
@@ -255,12 +257,12 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
       }
 
       // Refresh both properties and tenants to keep everything in sync
-      await this.supabase.refreshAll();
+      this.supabase.triggerRefreshAll();
 
       this.activeModal.close(true);
     } catch (error) {
       console.error('Error saving tenant:', error);
-      alert('An error occurred. Please try again.');
+      this.toast.error('Something went wrong', 'Please try again.');
     } finally {
       this.saving = false;
     }

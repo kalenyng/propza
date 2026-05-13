@@ -1,275 +1,250 @@
-// Design Tokens
-$color-success: #16a34a;
-$color-warning: #f59e0b;
-$color-danger: #dc2626;
-$color-neutral: #6b7280;
-$color-neutral-light: #9ca3af;
-$color-text-primary: #111827;
-$color-text-secondary: #4b5563;
-$color-text-muted: #6b7280;
-$color-bg-card: #ffffff;
-$color-bg-hover: #f9fafb;
-$color-border: #e5e7eb;
+@use '../../../../shared/styles/variables' as *;
 
-$spacing-xs: 8px;
-$spacing-sm: 12px;
-$spacing-md: 16px;
-$spacing-lg: 20px;
+$property-card-row-gap: $spacing-sm;
+$tenant-row-min-height: 1.375rem;
+$meta-row-min-height: 1.3125rem;
+$pill-min-height: 26px;
 
-$font-size-lg: 20px;
-$font-size-md: 16px;
-$font-size-sm: 14px;
-$line-height: 1.4;
+:host {
+  display: block;
+  height: 100%;
+}
 
-$border-radius: 12px;
-$shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-$shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
-
-// Property Card Component (Mobile-First)
 .property-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 168px;
+  box-sizing: border-box;
   background: var(--card);
-  border-radius: $border-radius;
+  border-radius: var(--radius-card);
   padding: $spacing-md $spacing-lg;
-  box-shadow: $shadow;
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow var(--transition-base),
+    transform var(--transition-base),
+    border-color var(--transition-base);
   cursor: pointer;
-  border: 1px solid transparent;
-  min-height: 96px;
+  border: 1px solid var(--border);
   -webkit-tap-highlight-color: transparent;
 
-  // Mobile tap feedback (all devices)
   &:active {
     transform: scale(0.98);
     opacity: 0.95;
   }
 
-  // Hover only for devices with hover capability (desktop)
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      box-shadow: $shadow-hover;
+      box-shadow: var(--shadow-md);
       transform: translateY(-2px);
-      border-color: rgba(229, 231, 235, 0.2);
-      background: color-mix(in srgb, var(--card) 92%, #000 8%);
+
+      .card-footer-chevron {
+        color: var(--text-muted);
+      }
     }
   }
 }
 
-// Header section (top row)
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: $spacing-sm;
-  padding-right: 28px; // Space for chevron
-}
-
-.card-left {
-  flex: 1;
-  min-width: 0; // Allow text truncation
+  gap: $spacing-md;
+  flex-shrink: 0;
+  margin-bottom: $property-card-row-gap;
 }
 
 .address {
+  flex: 1;
+  min-width: 0;
   font-size: $font-size-lg;
-  font-weight: 600;
+  font-weight: 700;
   line-height: $line-height;
-  color: var(--text);
+  color: var(--text-strong);
   margin: 0;
-  margin-bottom: 2px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
 }
 
-.tenant {
-  font-size: $font-size-sm;
-  line-height: $line-height;
-  color: color-mix(in srgb, var(--text) 60%, #888 40%);
-  margin: 0;
-}
-
-.card-right {
-  flex-shrink: 0;
-  margin-left: $spacing-md;
-}
-
-// Status Pill
 .status-pill {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: $font-size-sm;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: $pill-min-height;
+  padding: 4px 11px;
+  box-sizing: border-box;
+  border-radius: var(--radius-pill);
+  font-size: $font-size-xs;
   font-weight: 600;
-  line-height: $line-height;
+  line-height: 1.25;
 
-  &[data-color="success"] {
-    background: color-mix(in srgb, #10b981 20%, transparent);
-    color: #34d399;
-    
+  &[data-color='success'] {
+    background: color-mix(in srgb, var(--color-success-500) 16%, transparent 84%);
+    color: var(--color-success-500);
     .status-dot {
-      background: $color-success;
+      background: var(--color-success-500);
     }
   }
 
-  &[data-color="partial"] {
-    background: rgba(14, 165, 233, 0.1);
-    color: #0ea5e9;
-    
+  &[data-color='partial'] {
+    background: color-mix(in srgb, var(--color-accent-500) 14%, transparent 86%);
+    color: var(--color-accent-500);
     .status-dot {
-      background: #0ea5e9;
+      background: var(--color-accent-500);
     }
   }
 
-  &[data-color="danger"] {
-    background: rgba(220, 38, 38, 0.1);
-    color: $color-danger;
-    
+  &[data-color='danger'] {
+    background: color-mix(in srgb, var(--color-danger-500) 14%, transparent 86%);
+    color: var(--color-danger-500);
     .status-dot {
-      background: $color-danger;
+      background: var(--color-danger-500);
     }
   }
 
-  &[data-color="warning"] {
-    background: rgba(245, 158, 11, 0.1);
-    color: $color-warning;
-    
+  &[data-color='warning'] {
+    background: color-mix(in srgb, var(--color-warning-500) 14%, transparent 86%);
+    color: var(--color-warning-500);
     .status-dot {
-      background: $color-warning;
+      background: var(--color-warning-500);
     }
   }
 
-  &[data-color="warning-light"] {
-    background: rgba(251, 191, 36, 0.1);
-    color: #f59e0b;
-    
+  &[data-color='info'] {
+    background: color-mix(in srgb, var(--color-accent-500) 14%, transparent 86%);
+    color: var(--color-accent-500);
     .status-dot {
-      background: #fbbf24;
+      background: var(--color-accent-500);
     }
   }
 
-  &[data-color="info"] {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
-    
+  &[data-color='neutral'] {
+    background: color-mix(in srgb, var(--text-muted) 14%, transparent 86%);
+    color: var(--text-muted);
     .status-dot {
-      background: #3b82f6;
-    }
-  }
-
-  &[data-color="neutral"] {
-    background: color-mix(in srgb, #9ca3af 20%, transparent);
-    color: $color-neutral-light;
-    
-    .status-dot {
-      background: $color-neutral-light;
+      background: var(--text-muted);
     }
   }
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
+  display: block;
+  align-self: center;
 }
 
 .status-label {
   white-space: nowrap;
+  line-height: 1.25;
 }
 
-// Body section (bottom row)
-.card-body {
+.card-content {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding-right: 28px; // Space for chevron
+  flex-direction: column;
+  gap: $spacing-2xs;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-.card-bottom-left {
-  flex: 1;
-  min-width: 0;
-}
-
-.due-date {
-  font-size: $font-size-sm;
-  line-height: $line-height;
-  color: color-mix(in srgb, var(--text) 70%, #888 30%);
+.tenant-row {
+  min-height: $tenant-row-min-height;
   margin: 0;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  line-height: $line-height;
+  color: color-mix(in srgb, var(--text-strong) 72%, transparent 28%);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
-  &.overdue {
-    color: $color-danger;
-    font-weight: 500;
+  &--vacant,
+  &--muted {
+    color: color-mix(in srgb, var(--text-strong) 52%, transparent 48%);
   }
 }
 
-.remaining-amount {
-  font-size: $font-size-sm;
+.meta-row {
+  min-height: $meta-row-min-height;
+  margin: 0;
+  font-size: $font-size-xs;
+  font-weight: 500;
   line-height: $line-height;
-  color: #0ea5e9;
-  font-weight: 600;
-  margin: 2px 0 0 0;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--overdue {
+    color: var(--color-danger-500);
+    font-weight: 600;
+  }
+
+  &--partial {
+    color: var(--color-accent-500);
+    font-weight: 600;
+  }
+
+  &--muted {
+    color: color-mix(in srgb, var(--text-muted) 78%, transparent 22%);
+  }
 }
 
-.card-bottom-right {
+.card-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $spacing-md;
+  margin-top: auto;
   flex-shrink: 0;
-  text-align: right;
-  margin-left: $spacing-md;
+  padding-top: $property-card-row-gap;
 }
 
 .rent-amount {
-  font-size: $font-size-lg;
-  font-weight: 600;
-  line-height: $line-height;
-  color: var(--text);
+  flex: 1;
+  min-width: 0;
   margin: 0;
+  font-size: $font-size-lg;
+  font-weight: 700;
+  line-height: $line-height;
+  color: var(--text-strong);
 
-  &.vacant {
-    color: $color-text-muted;
+  &--muted {
+    color: var(--text-soft);
+    font-weight: 600;
   }
 }
 
-// Chevron Icon
-.chevron-icon {
-  position: absolute;
-  top: 50%;
-  right: $spacing-md;
-  transform: translateY(-50%);
-  color: $color-neutral-light;
+.card-footer-chevron {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease;
+  color: var(--text-soft);
+  transition: color var(--transition-base);
+  transform: translateY(1px);
 }
 
-// Hover only for devices with hover capability (desktop)
-@media (hover: hover) and (pointer: fine) {
-  .property-card:hover .chevron-icon {
-    color: $color-neutral;
-  }
-}
-
-// Responsive adjustments
 @media (max-width: 640px) {
   .property-card {
     padding: $spacing-sm $spacing-md;
+    min-height: 158px;
   }
 
   .address {
-    font-size: 18px;
+    font-size: 1.05rem;
   }
 
   .rent-amount {
-    font-size: 18px;
-  }
-
-  .card-header {
-    padding-right: 24px;
-  }
-
-  .card-body {
-    padding-right: 24px;
-  }
-
-  .chevron-icon {
-    right: $spacing-sm;
+    font-size: 1.05rem;
   }
 }

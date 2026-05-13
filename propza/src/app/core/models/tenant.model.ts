@@ -14,6 +14,7 @@ export interface Tenant {
   created_at: string;
   properties?: {
     address: string;
+    owner_id?: string;
   };
 }
 

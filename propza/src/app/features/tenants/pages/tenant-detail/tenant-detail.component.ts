@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -42,7 +42,10 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
   tenantId: string = '';
   saving = false;
   deleting = false;
-  
+
+  /** When set via router `state`, `goBack` returns here (e.g. from property detail). */
+  private backUrl: string | null = null;
+
   private destroy$ = new Subject<void>();
 
   // Edit form fields
@@ -59,6 +62,7 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private location: Location,
     private tenantService: TenantService,
     private propertyService: PropertyService,
     private supabase: SupabaseService,
@@ -66,7 +70,11 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
     public translate: TranslationService,
     private rentDueService: RentDueService,
     private confirmationService: ConfirmationModalService
-  ) {}
+  ) {
+    const nav = this.router.getCurrentNavigation();
+    const state = nav?.extras?.state as { backUrl?: string } | undefined;
+    this.backUrl = state?.backUrl?.trim() ? state.backUrl.trim() : null;
+  }
 
   ngOnInit(): void {
     this.tenantId = this.route.snapshot.paramMap.get('id') || '';
@@ -328,12 +336,18 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.router.navigate(['/tenants']);
+    if (this.backUrl) {
+      void this.router.navigateByUrl(this.backUrl);
+      return;
+    }
+    this.location.back();
   }
 
   goToProperty(): void {
     if (this.tenant?.property_id) {
-      this.router.navigate(['/property', this.tenant.property_id]);
+      void this.router.navigate(['/property', this.tenant.property_id], {
+        state: { backUrl: `/tenant/${this.tenantId}` }
+      });
     }
   }
 

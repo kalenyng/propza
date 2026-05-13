@@ -588,6 +588,132 @@ export class TranslationService {
       zu: 'Xhumana Nokusekela',
       xh: 'Qhagamshelana Nenkxaso'
     },
+    'settings.sectionAccount': {
+      en: 'Account',
+      af: 'Rekening',
+      zu: 'I-akhawunti',
+      xh: 'Iakhawunti'
+    },
+    'settings.sectionProperty': {
+      en: 'Property management',
+      af: 'Eiendomsbestuur',
+      zu: 'Ukuphathwa kwezimpahla',
+      xh: 'Ulawulo lweepropati'
+    },
+    'settings.sectionAppearance': {
+      en: 'Appearance',
+      af: 'Voorkoms',
+      zu: 'Ukubukeka',
+      xh: 'Ukubonakala'
+    },
+    'settings.sectionSupport': {
+      en: 'Support',
+      af: 'Ondersteuning',
+      zu: 'Ukusekela',
+      xh: 'Inkxaso'
+    },
+    'settings.security': {
+      en: 'Security',
+      af: 'Sekuriteit',
+      zu: 'Ukuphepha',
+      xh: 'Ukhuseleko'
+    },
+    'settings.currency': {
+      en: 'Currency',
+      af: 'Geldeenheid',
+      zu: 'Imali',
+      xh: 'Imali'
+    },
+    'settings.rentDefaults': {
+      en: 'Rent defaults',
+      af: 'Huur verstekke',
+      zu: 'Izilungiselelo zokubhukha',
+      xh: 'Iindlela zokuhlawula'
+    },
+    'settings.reminderTiming': {
+      en: 'Reminder timing',
+      af: 'Herinnering tyding',
+      zu: 'Isikhathi sezikhumbuzo',
+      xh: 'Ixesha lezikhumbuzo'
+    },
+    'settings.compactMode': {
+      en: 'Compact mode',
+      af: 'Kompakte modus',
+      zu: 'Imodi encane',
+      xh: 'Imowudi encinci'
+    },
+    'settings.reduceAnimations': {
+      en: 'Reduce animations',
+      af: 'Verminder animasies',
+      zu: 'Nciphisa izinto ezihambayo',
+      xh: 'Nciphisa iintlobo ezihambayo'
+    },
+    'settings.helpCenter': {
+      en: 'Help center',
+      af: 'Hulp sentrum',
+      zu: 'Isikhungo sosizo',
+      xh: 'Isikhululo soncedo'
+    },
+    'settings.reportBug': {
+      en: 'Report a bug',
+      af: 'Rapporteer \'n fout',
+      zu: 'Bika i-bug',
+      xh: 'Xela i-bug'
+    },
+    'settings.about': {
+      en: 'About',
+      af: 'Oor',
+      zu: 'Mayelana',
+      xh: 'Malunga'
+    },
+    'settings.planPro': {
+      en: 'Pro',
+      af: 'Pro',
+      zu: 'Pro',
+      xh: 'Pro'
+    },
+    'settings.pageSubtitle': {
+      en: 'Workspace, preferences & help',
+      af: 'Werkspasie, voorkeure & hulp',
+      zu: 'Indawo yomsebenzi, okuthandwayo nosizo',
+      xh: 'Indawo yomsebenzi, iikhethwa kuncedo'
+    },
+    'settings.stateOn': {
+      en: 'On',
+      af: 'Aan',
+      zu: 'Kuvuliwe',
+      xh: 'Ivuliwe'
+    },
+    'settings.stateOff': {
+      en: 'Off',
+      af: 'Af',
+      zu: 'Valiwe',
+      xh: 'Icimile'
+    },
+    'settings.tapToChange': {
+      en: 'Tap to change',
+      af: 'Tik om te verander',
+      zu: 'Thepha ukuze ushintshe',
+      xh: 'Cofa ukuze utshintshe'
+    },
+    'settings.comingSoonShort': {
+      en: 'Soon',
+      af: 'Binnekort',
+      zu: 'Maduzane',
+      xh: 'Kungekudala'
+    },
+    'settings.exportSummary': {
+      en: 'Download your data',
+      af: 'Laai jou data af',
+      zu: 'Landa idatha yakho',
+      xh: 'Khuphela idatha yakho'
+    },
+    'settings.legal': {
+      en: 'Legal',
+      af: 'Regs',
+      zu: 'Ezomthetho',
+      xh: 'Ezomthetho'
+    },
     'support.quickStartGuide': {
       en: 'Quick Start Guide',
       af: 'Vinnige Start Gids',
@@ -623,6 +749,30 @@ export class TranslationService {
       af: 'E-pos Ondersteuning',
       zu: 'Ukusekela Kwe-imeyili',
       xh: 'Uxhaso Lwe-imeyili'
+    },
+    'support.openEmailApp': {
+      en: 'Open in email app',
+      af: 'Maak in e-posprogram oop',
+      zu: 'Vula kusofthiwe wama-imeyili',
+      xh: 'Vula kwi-app ye-imeyile'
+    },
+    'support.copyEmail': {
+      en: 'Copy email address',
+      af: 'Kopieer e-posadres',
+      zu: 'Kopisha ikheli le-imeyili',
+      xh: 'Khuphela idilesi ye-imeyile'
+    },
+    'support.emailCopied': {
+      en: 'Email address copied',
+      af: 'E-posadres gekopieer',
+      zu: 'Ikheli le-imeyili likopishwe',
+      xh: 'Idilesi ye-imeyile ikhutshelwe'
+    },
+    'support.emailCopyFailed': {
+      en: 'Could not copy — select the address above to copy manually',
+      af: 'Kon nie kopieer nie — kies die adres hierbo om handmatig te kopieer',
+      zu: 'Ayikwazanga ukukopisha — khetha ikheli ngenhla ukuze ukopishe ngesandla',
+      xh: 'Ayikwazanga ukukopisha — khetha idilesi ngasentla uze ukope ngesandla'
     },
     'support.reportIssues': {
       en: 'Report Issues',
@@ -1371,6 +1521,30 @@ export class TranslationService {
       zu: 'Amanothi (Okukhethwayo)',
       xh: 'Amanothi (Okukhethwayo)'
     },
+    'tenant.noEmailProvided': {
+      en: 'No email provided',
+      af: 'Geen e-pos verskaf',
+      zu: 'Ayikho i-imeyili enikeziwe',
+      xh: 'Ayikho i-imeyile inikiweyo'
+    },
+    'tenant.noPhoneProvided': {
+      en: 'No phone provided',
+      af: 'Geen telefoon verskaf',
+      zu: 'Ayikho inombolo yocingo enikeziwe',
+      xh: 'Ayikho ifowuni inikiweyo'
+    },
+    'tenant.noAddressProvided': {
+      en: 'No address on file',
+      af: 'Geen adres op rekord',
+      zu: 'Ayikho ikheli elifayelini',
+      xh: 'Ayikho idilesi efayelweni'
+    },
+    'tenant.vacantMetaDue': {
+      en: 'No rent schedule',
+      af: 'Geen huur skedule',
+      zu: 'Ayikho isheduli yerenti',
+      xh: 'Ayikho ishedyuli yerenti'
+    },
     
     // Property Details
     'property.addProperty': {
@@ -1414,6 +1588,30 @@ export class TranslationService {
       af: 'oor',
       zu: 'esele',
       xh: 'eseleyo'
+    },
+    'property.paidPrefix': {
+      en: 'Paid',
+      af: 'Betaal',
+      zu: 'Ikhokhiwe',
+      xh: 'Ihlawuliwe'
+    },
+    'property.outstanding': {
+      en: 'outstanding',
+      af: 'uitstaande',
+      zu: 'okusalayo',
+      xh: 'esisaliweyo'
+    },
+    'property.noActiveTenant': {
+      en: 'No active tenant',
+      af: 'Geen aktiewe huurder',
+      zu: 'Akukho umqashi osasebenzayo',
+      xh: 'Akukho umntu ukodwa usebenzayo'
+    },
+    'property.availableNow': {
+      en: 'Available now',
+      af: 'Nou beskikbaar',
+      zu: 'Iyatholakala manje',
+      xh: 'Iyafumaneka ngoku'
     }
   };
 

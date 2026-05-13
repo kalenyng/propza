@@ -1,0 +1,6 @@
+// Toast component styles are in global styles.scss (.toast-stack, .toast-item)
+// Only component-level overrides go here if needed.
+
+:host {
+  display: contents;
+}

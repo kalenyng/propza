@@ -3,9 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { HeaderBannerComponent } from '../../../../shared/components/header-banner/header-banner.component';
 import { PropertyCardComponent } from '../../components/property-card/property-card.component';
-import { BottomNavComponent } from '../../../../shared/components/bottom-nav/bottom-nav.component';
 import { PropertyService, Property, Payment } from '../../../../core/services/property.service';
 import { RentHelperService, RentStatus } from '../../../../core/services/rent-helper.service';
 import { RentDueService, TenantStatus } from '../../../../core/services/rent-due.service';
@@ -14,6 +12,7 @@ import { Tenant } from '../../../../core/services/tenant.service';
 
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddPropertyModalComponent } from '../../components/add-property-modal/add-property-modal.component';
+import { PropzaModalOptionsService } from '../../../../core/services/propza-modal-options.service';
 
 type PropertyStatus = RentStatus;
 
@@ -37,9 +36,7 @@ type PropertyVM = {
   standalone: true,
   imports: [
     FormsModule,
-    HeaderBannerComponent,
     PropertyCardComponent,
-    BottomNavComponent,
     NgbModalModule
   ],
   templateUrl: './home.component.html',
@@ -59,7 +56,10 @@ export class PropertyListComponent implements OnInit, OnDestroy {
   searchQuery: string = '';
   sortBy: 'dueDate' | 'amount' | 'status' = 'dueDate';
   paymentsMap: Map<string, number> = new Map(); // Maps (propertyId-period) to sum of payments
-  
+
+  /** Collapsed by default on narrow viewports — filters live behind launcher (CSS + this flag) */
+  mobileFiltersOpen = false;
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -68,7 +68,8 @@ export class PropertyListComponent implements OnInit, OnDestroy {
     private router: Router,
     private rentHelper: RentHelperService,
     private rentDueService: RentDueService,
-    public translate: TranslationService
+    public translate: TranslationService,
+    private modalOptions: PropzaModalOptionsService
   ) {}
 
   ngOnInit(): void {
@@ -136,7 +137,7 @@ export class PropertyListComponent implements OnInit, OnDestroy {
         // Create a full tenant object for the service
         const tenant: Tenant = {
           id: '', // Not needed for status calculation
-          name: p.tenant || '',
+          name: activeTenant.name || '',
           email: null,
           phone: null,
           property_id: p.id,
@@ -150,15 +151,19 @@ export class PropertyListComponent implements OnInit, OnDestroy {
           created_at: ''
         };
 
-        // Use centralized service for current period (monthly billing)
-        periodKey = this.rentDueService.getCurrentPeriod();
-        
-        // Calculate collected amount for current period
-        collectedAmount = this.rentDueService.getCollectedAmount(
-          payments,
-          p.id,
-          periodKey
-        );
+        // Match RentDueService.getStatusForTenant: payments attach to the tenant's due month,
+        // not necessarily the calendar month of "today" (fixes Collected % stuck at 0).
+        periodKey = undefined;
+        if (activeTenant.rent_due_date) {
+          const d = this.rentDueService.toDateOnlyZA(activeTenant.rent_due_date);
+          const y = d.getUTCFullYear();
+          const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+          periodKey = `${y}-${m}`;
+        }
+
+        collectedAmount = periodKey
+          ? this.rentDueService.getCollectedAmount(payments, p.id, periodKey)
+          : 0;
         
         remaining = Math.max(0, rentAmount - collectedAmount);
         
@@ -180,7 +185,7 @@ export class PropertyListComponent implements OnInit, OnDestroy {
       return {
         id: p.id,
         address: p.address,
-        tenant: p.tenant || '',
+        tenant: activeTenant?.name || '',
         rent: this.formatMoney(p.rent_amount, currency) + '/mo',
         rentAmount,
         status,
@@ -282,6 +287,7 @@ export class PropertyListComponent implements OnInit, OnDestroy {
   setFilter(filter: PropertyStatus | 'all' | 'unpaid_period'): void {
     this.selectedFilter = filter;
     this.applyFiltersAndSort();
+    this.closeMobileFiltersIfNarrow();
   }
 
   onSearchChange(): void {
@@ -291,6 +297,48 @@ export class PropertyListComponent implements OnInit, OnDestroy {
   setSortBy(sortBy: 'dueDate' | 'amount' | 'status'): void {
     this.sortBy = sortBy;
     this.applyFiltersAndSort();
+    this.closeMobileFiltersIfNarrow();
+  }
+
+  toggleMobileFilters(): void {
+    this.mobileFiltersOpen = !this.mobileFiltersOpen;
+  }
+
+  mobileFilterSummary(): string {
+    const sortKey = this.sortBy;
+    const sortLabel =
+      sortKey === 'dueDate'
+        ? this.translate.t('dashboard.dueDate')
+        : sortKey === 'amount'
+          ? this.translate.t('dashboard.amount')
+          : this.translate.t('dashboard.status');
+    let filterLabel: string;
+    switch (this.selectedFilter) {
+      case 'all':
+        filterLabel = this.translate.t('filter.all');
+        break;
+      case 'overdue':
+        filterLabel = this.translate.t('status.overdue');
+        break;
+      case 'unpaid_period':
+        filterLabel = this.translate.t('filter.unpaid');
+        break;
+      case 'paid':
+        filterLabel = this.translate.t('status.paid');
+        break;
+      case 'vacant':
+        filterLabel = this.translate.t('status.vacant');
+        break;
+      default:
+        filterLabel = this.selectedFilter;
+    }
+    return `${filterLabel} · ${sortLabel}`;
+  }
+
+  private closeMobileFiltersIfNarrow(): void {
+    if (typeof window !== 'undefined' && window.innerWidth < 900) {
+      this.mobileFiltersOpen = false;
+    }
   }
 
   /**
@@ -328,11 +376,13 @@ export class PropertyListComponent implements OnInit, OnDestroy {
   }
 
   openPropertyDetail(propertyId: string): void {
-    this.router.navigate(['/property', propertyId]);
+    void this.router.navigate(['/property', propertyId], {
+      state: { backUrl: '/properties' }
+    });
   }
 
   openAddProperty(): void {
-    const ref = this.modal.open(AddPropertyModalComponent, { size: 'lg', backdrop: 'static' });
+    const ref = this.modal.open(AddPropertyModalComponent, this.modalOptions.createEntityFlow());
     ref.result.catch(() => {
       // Modal dismissed - no action needed
     });
