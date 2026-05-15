@@ -56,7 +56,11 @@ export class TenantCardComponent {
   }
 
   get propertyAddress(): string {
-    return this.tenant.properties?.address?.trim() || '';
+    const address = this.tenant.properties?.address?.trim();
+    if (!address) {
+      return '';
+    }
+    return address.split(',')[0].trim();
   }
 
   get emailDisplay(): string {

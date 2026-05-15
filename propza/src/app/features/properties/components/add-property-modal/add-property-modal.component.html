@@ -7,6 +7,18 @@
 
 <div class="modal-body">
   <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="mb-3">
+      <label class="form-label" for="property-name">Property name <span class="optional-tag">(Optional)</span></label>
+      <input
+        id="property-name"
+        class="form-control"
+        formControlName="property_name"
+        placeholder="e.g. Beach flat, Main house"
+        maxlength="120"
+        autocomplete="off"
+      />
+    </div>
+
     <!-- Address -->
     <div class="mb-3">
       <label class="form-label" for="address-line1">Address line 1 *</label>

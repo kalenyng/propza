@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PropertyService, Payment, Property } from '../../../../core/services/property.service';
+import { ShortNumberPipe } from '../../../../shared/pipes/short-number.pipe';
 
 type PaymentVM = Payment & { propertyAddress: string };
 
 @Component({
   selector: 'app-payments',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ShortNumberPipe],
   templateUrl: './payments.component.html',
   styleUrl: './payments.component.scss'
 })

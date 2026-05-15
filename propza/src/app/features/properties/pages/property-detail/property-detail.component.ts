@@ -16,6 +16,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddTenantModalComponent } from '../../../tenants/components/add-tenant-modal/add-tenant-modal.component';
 import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { PropzaModalOptionsService } from '../../../../core/services/propza-modal-options.service';
+import { MobileShellTitleService } from '../../../../core/services/mobile-shell-title.service';
+import { ScrollRestoreService } from '../../../../core/services/scroll-restore.service';
 
 // Extended Property interface with additional fields for detail view
 interface Property extends Omit<PropertyData, 'tenants'> {
@@ -99,6 +101,17 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     };
   }
 
+  private getAddressTailAfterFirstLine(address: string | null | undefined): string | null {
+    const raw = (address || '').trim();
+    if (!raw) return null;
+    const parts = raw
+      .split(/,|\r?\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    if (parts.length <= 1) return null;
+    return parts.slice(1).join(', ');
+  }
+
   private buildFullAddress(): string {
     return [
       (this.editAddressLine1 || '').trim(),
@@ -132,7 +145,9 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     private modalService: NgbModal,
     private confirmationService: ConfirmationModalService,
     private toast: ToastService,
-    private modalOptions: PropzaModalOptionsService
+    private modalOptions: PropzaModalOptionsService,
+    private mobileShellTitleSvc: MobileShellTitleService,
+    private scrollRestore: ScrollRestoreService
   ) {
     const nav = this.router.getCurrentNavigation();
     const state = nav?.extras?.state as { backUrl?: string } | undefined;
@@ -175,6 +190,7 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.mobileShellTitleSvc.clearMobileTitleOverride();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -214,6 +230,16 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     } else {
       this.tenantData = null;
     }
+
+    this.syncMobileShellTitle();
+  }
+
+  private syncMobileShellTitle(): void {
+    if (!this.property) {
+      this.mobileShellTitleSvc.clearMobileTitleOverride();
+      return;
+    }
+    this.mobileShellTitleSvc.setMobileTitleOverride(this.propertyHeaderTitle);
   }
 
   get displayStatus(): string {
@@ -761,6 +787,7 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
 
   goBack(): void {
     if (this.backUrl) {
+      this.scrollRestore.flagRestoreFor(this.backUrl.split('?')[0]);
       void this.router.navigateByUrl(this.backUrl);
       return;
     }
@@ -907,6 +934,27 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     };
     
     return colorMap[status] || 'neutral';
+  }
+
+  /** Header title: name, or first address line when name is empty. */
+  get propertyHeaderTitle(): string {
+    if (!this.property) return 'Property';
+    const name = (this.property.name || '').trim();
+    if (name) return name;
+    const line1 = this.parseAddressParts(this.property.address, '').line1.trim();
+    return line1 || 'Property';
+  }
+
+  /** Header subtitle: full address vs name, or remainder when title is address line 1. */
+  get propertyHeaderSubtitle(): string | null {
+    if (!this.property) return null;
+    const addr = (this.property.address || '').trim();
+    if (!addr) return null;
+    const name = (this.property.name || '').trim();
+    if (name) {
+      return addr !== name ? addr : null;
+    }
+    return this.getAddressTailAfterFirstLine(this.property.address);
   }
 
   /** Label for the header status-pill (rent status, or Occupied / Vacant). */

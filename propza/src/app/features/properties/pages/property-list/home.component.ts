@@ -13,6 +13,7 @@ import { Tenant } from '../../../../core/services/tenant.service';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddPropertyModalComponent } from '../../components/add-property-modal/add-property-modal.component';
 import { PropzaModalOptionsService } from '../../../../core/services/propza-modal-options.service';
+import { ShortNumberPipe } from '../../../../shared/pipes/short-number.pipe';
 
 type PropertyStatus = RentStatus;
 
@@ -37,7 +38,8 @@ type PropertyVM = {
   imports: [
     FormsModule,
     PropertyCardComponent,
-    NgbModalModule
+    NgbModalModule,
+    ShortNumberPipe
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']

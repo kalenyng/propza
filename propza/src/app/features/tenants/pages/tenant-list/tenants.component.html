@@ -87,7 +87,7 @@
             (click)="toggleMobileFilters()"
             [attr.aria-expanded]="mobileFiltersOpen"
             aria-controls="tenant-filters-panel">
-            <span class="m-filter-launcher-label">Filters</span>
+            <span class="m-filter-launcher-label">Filters &amp; sort</span>
             <span class="m-filter-launcher-meta">{{ mobileFilterSummary() }}</span>
             <svg class="m-filter-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <polyline points="6 9 12 15 18 9"/>
@@ -96,7 +96,7 @@
 
           <div class="m-filter-body" id="tenant-filters-panel">
             <div class="app-inner-panel-head m-filter-head-desktop">
-              <h2>Filters</h2>
+              <h2>Filters & sort</h2>
             </div>
             <label class="app-inner-search mobile-sheet-search tenants-mobile-search" [attr.aria-label]="translate.t('tenants.searchPlaceholder')">
               <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

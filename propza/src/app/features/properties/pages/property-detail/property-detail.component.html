@@ -1,11 +1,11 @@
-<div class="app-inner-page property-detail-page">
+<div class="app-inner-page property-detail-page app-inner-page--detail">
   <header class="app-inner-header property-detail-header">
     <div class="app-inner-title">
       @if (property) {
         <div class="detail-header-title-block">
-          <h1>{{ property.name }}</h1>
-          @if (property.address && property.address !== property.name) {
-            <p class="detail-header-subtitle">{{ property.address }}</p>
+          <h1>{{ propertyHeaderTitle }}</h1>
+          @if (propertyHeaderSubtitle) {
+            <p class="detail-header-subtitle">{{ propertyHeaderSubtitle }}</p>
           }
         </div>
       } @else {

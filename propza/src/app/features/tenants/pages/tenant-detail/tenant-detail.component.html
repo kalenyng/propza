@@ -1,9 +1,9 @@
-<div class="app-inner-page tenant-detail-page">
+<div class="app-inner-page tenant-detail-page app-inner-page--detail">
   <header class="app-inner-header tenant-detail-header">
     <div class="app-inner-title">
       @if (tenant) {
         <div class="detail-header-title-block">
-          <h1>{{ tenant.name }}</h1>
+          <h1>{{ tenantHeaderTitle }}</h1>
           @if (propertyName || propertyAddress) {
             <p class="detail-header-subtitle">
               <span

@@ -1,16 +1,29 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  computed,
+  inject,
+  signal
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ActivatedRouteSnapshot,
   NavigationEnd,
+  NavigationStart,
   Router,
   RouterLink,
   RouterLinkActive,
   RouterOutlet
 } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { ScrollRestoreService } from '../../core/services/scroll-restore.service';
 import { AuthService } from '../../core/services/auth.service';
+import { MobileShellTitleService } from '../../core/services/mobile-shell-title.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 
 const SIDEBAR_COLLAPSED_KEY = 'propza.sidebarCollapsed';
@@ -30,11 +43,19 @@ function readSidebarCollapsedPreference(): boolean {
   templateUrl: './authenticated-shell.component.html',
   styleUrl: './authenticated-shell.component.scss'
 })
-export class AuthenticatedShellComponent implements OnInit {
+export class AuthenticatedShellComponent implements OnInit, AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
+  private readonly mobileShellTitleService = inject(MobileShellTitleService);
+  private readonly scrollRestore = inject(ScrollRestoreService);
 
-  readonly mobileShellTitle = signal('Propza');
+  @ViewChild('contentSurface') private contentSurface!: ElementRef<HTMLElement>;
+
+  private readonly routeMobileTitle = signal('Propza');
+  readonly mobileShellTitle = computed(() => {
+    const override = this.mobileShellTitleService.mobileTitleOverride();
+    return override?.trim() ? override.trim() : this.routeMobileTitle();
+  });
   /** Route-driven: full-bleed content (e.g. settings) without fixed green hero + spacer. */
   readonly hideMobileHero = signal(false);
   readonly sidebarCollapsed = signal(readSidebarCollapsedPreference());
@@ -78,10 +99,23 @@ export class AuthenticatedShellComponent implements OnInit {
   ) {
     this.router.events
       .pipe(
-        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        filter((e) => e instanceof NavigationStart || e instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(() => this.syncMobileShellFromRoute());
+      .subscribe((e) => {
+        if (e instanceof NavigationStart) {
+          this.onNavigationStart();
+        } else if (e instanceof NavigationEnd) {
+          this.syncMobileShellFromRoute();
+          this.onNavigationEnd(e.urlAfterRedirects);
+        }
+      });
+  }
+
+  ngAfterViewInit(): void {
+    if (this.contentSurface?.nativeElement) {
+      this.scrollRestore.registerHost(this.contentSurface.nativeElement);
+    }
   }
 
   async ngOnInit(): Promise<void> {
@@ -130,8 +164,43 @@ export class AuthenticatedShellComponent implements OnInit {
     }
   }
 
+  private cleanPath(url: string): string {
+    return (url || '').split(/[?#]/)[0];
+  }
+
+  private onNavigationStart(): void {
+    const path = this.cleanPath(this.router.url);
+    if (path) {
+      this.scrollRestore.saveForPath(path);
+    }
+  }
+
+  private onNavigationEnd(urlAfterRedirects: string): void {
+    const path = this.cleanPath(urlAfterRedirects);
+    if (this.scrollRestore.consumeRestoreFlag(path)) {
+      const saved = this.scrollRestore.popForPath(path);
+      if (saved !== null) {
+        this.restoreScrollWithRetry(saved);
+        return;
+      }
+    }
+    // Forward navigation or no saved position — reset to top after outlet swap
+    requestAnimationFrame(() => this.scrollRestore.writeY(0));
+  }
+
+  private restoreScrollWithRetry(target: number, maxTries = 8, attempt = 0): void {
+    requestAnimationFrame(() => {
+      const max = this.scrollRestore.getScrollMax();
+      if (max >= target || attempt >= maxTries) {
+        this.scrollRestore.writeY(Math.min(target, max));
+      } else {
+        this.restoreScrollWithRetry(target, maxTries, attempt + 1);
+      }
+    });
+  }
+
   private syncMobileShellFromRoute(): void {
-    this.mobileShellTitle.set(this.resolveMobileShellTitle());
+    this.routeMobileTitle.set(this.resolveMobileShellTitle());
     this.hideMobileHero.set(this.resolveHideMobileHero());
     this.syncPrimaryNavActiveFromUrl();
   }

@@ -1,6 +1,12 @@
 <div class="preloader">
   <div class="preloader-content">
-    <div class="logo-wrapper" [class.breathing]="animationComplete" #lottieContainer></div>
+    <div class="logo-wrapper">
+      <div
+        class="logo-breathe"
+        [class.breathing]="animationComplete"
+        #lottieContainer
+      ></div>
+    </div>
     <div class="loading-text">
       Loading<span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span>
     </div>

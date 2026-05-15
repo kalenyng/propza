@@ -11,8 +11,8 @@
   --mobile-content-sheet-margin-top: 0px;
   --mobile-surface-pad-x: 16px;
   --mobile-surface-pad-y: 16px;
-  /* Compact hero (~20% feel): cap ~140px, never shorter than safe area + title */
-  --mobile-hero-h: clamp(128px, calc(env(safe-area-inset-top, 0px) + 92px), 142px);
+  /* Compact hero (~20% feel): cap ~140px, never shorter than safe area + title (+ room below title) */
+  --mobile-hero-h: clamp(136px, calc(env(safe-area-inset-top, 0px) + 104px), 156px);
   --mobile-sheet-overlap: 36px;
 
   display: flex;
@@ -133,7 +133,7 @@
   }
 
   .mobile-header-title {
-    margin: 0;
+    margin: 0 0 var(--space-md) 0;
     padding-top: 0;
     font-family: var(--font-heading);
     font-size: clamp(1.45rem, 1.2vw + 1.05rem, 1.95rem);
@@ -185,12 +185,26 @@
     align-items: stretch;
     justify-content: space-around;
     gap: 4px;
-    padding: 8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
-    min-height: calc(var(--mobile-tab-bar-h) + env(safe-area-inset-bottom, 0px));
+    padding-top: 8px;
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+    padding-left: max(10px, env(safe-area-inset-left, 0px));
+    padding-right: max(10px, env(safe-area-inset-right, 0px));
+    min-height: calc(var(--mobile-tab-bar-h) + max(env(safe-area-inset-bottom, 0px), 8px));
     background: color-mix(in srgb, var(--surface) 96%, var(--bg) 4%);
     border-top: 1px solid var(--border);
     box-shadow: 0 -6px 32px rgba(15, 23, 42, 0.08);
     backdrop-filter: blur(16px);
+  }
+
+  /*
+   * Standalone PWA: WebKit’s layout viewport bottom can sit above the glass edge — a slight
+   * negative bottom removes the stray strip. Full `-env()` overshoots and clips the bar;
+   * subtract an ~11px buffer first, then cap at 0 when inset is small.
+   */
+  @media (display-mode: standalone) {
+    .mobile-bottom-nav {
+      bottom: calc(-1 * max(0px, env(safe-area-inset-bottom, 0px) - 11px));
+    }
   }
 }
 
@@ -333,8 +347,8 @@
   .sidebar {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: calc(env(safe-area-inset-top, 0px) + 16px) 14px 18px;
+    gap: 24px;
+    padding: calc(env(safe-area-inset-top, 0px) + 20px) 16px 20px;
     transition: padding 320ms cubic-bezier(0.33, 1, 0.68, 1), gap 320ms cubic-bezier(0.33, 1, 0.68, 1);
     position: relative;
     isolation: isolate;
@@ -356,18 +370,16 @@
     align-items: center;
     justify-content: center;
     align-self: flex-start;
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     margin: 0;
     padding: 0;
-    border-radius: var(--radius-md);
-    border: none;
+    border: 0;
     background: transparent;
-    color: color-mix(in srgb, var(--surface) 52%, transparent 48%);
+    color: color-mix(in srgb, var(--surface) 88%, transparent 12%);
+    opacity: 0.5;
     cursor: pointer;
-    transition:
-      background-color 220ms ease,
-      color 220ms ease;
+    transition: opacity 220ms ease;
     position: relative;
     z-index: 1;
     flex-shrink: 0;
@@ -375,11 +387,13 @@
     svg {
       flex-shrink: 0;
       display: block;
+      width: 28px;
+      height: 28px;
     }
 
-    &:hover {
-      background: color-mix(in srgb, var(--surface) 12%, transparent 88%);
-      color: color-mix(in srgb, var(--surface) 88%, transparent 12%);
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
     }
 
     &:focus-visible {
@@ -399,16 +413,9 @@
     transform: scaleX(-1);
   }
 
-  .app-shell.sidebar-collapsed .brand-copy,
   .app-shell.sidebar-collapsed .sidebar-link__label,
   .app-shell.sidebar-collapsed .profile-copy {
     display: none;
-  }
-
-  .app-shell.sidebar-collapsed .brand {
-    justify-content: center;
-    padding-left: 8px;
-    padding-right: 8px;
   }
 
   .app-shell.sidebar-collapsed .sidebar-nav {
@@ -431,14 +438,39 @@
 
   .app-shell.sidebar-collapsed .settings-profile {
     justify-content: center;
-    padding: 10px;
+    align-self: center;
+    width: auto;
+    padding: 0;
     gap: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .app-shell.sidebar-collapsed .settings-profile:hover {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .app-shell.sidebar-collapsed .settings-gear-icon {
+    display: flex;
+  }
+
+  .app-shell.sidebar-collapsed .settings-profile__avatar {
+    display: none;
   }
 
   .app-shell.sidebar-collapsed .sidebar {
     padding-left: 10px;
     padding-right: 10px;
     gap: 14px;
+  }
+
+  .app-shell.sidebar-collapsed .brand {
+    justify-content: center;
+    gap: 0;
+    /* Full 40×40 logo: expanded uses horizontal inset; collapsed column is too narrow for 12px + 40px + 12px */
+    padding: 8px 0 24px;
   }
 
   .sidebar::before {
@@ -456,71 +488,46 @@
   .brand {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 10px;
-    padding: 8px;
+    padding: 8px 12px 24px;
+    margin: 0;
     transition: padding 320ms cubic-bezier(0.33, 1, 0.68, 1);
     position: relative;
     z-index: 1;
   }
 
-  .brand-mark {
+  .brand__logo {
     width: 40px;
     height: 40px;
-    border-radius: var(--radius-md);
-    background: linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--surface) 22%, transparent 78%),
-      color-mix(in srgb, var(--surface) 12%, transparent 88%)
-    );
-    border: 1px solid color-mix(in srgb, var(--surface) 42%, transparent 58%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
-    backdrop-filter: blur(10px);
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  .brand-mark__logo {
-    width: 28px;
-    height: 28px;
+    min-width: 40px;
+    min-height: 40px;
     object-fit: contain;
     object-position: center;
     display: block;
     flex-shrink: 0;
-    /* propza-main.png has uneven transparent padding; nudge for optical center in the chip */
-    transform: translate(2px, 0.5px);
-  }
-
-  .brand-copy {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-
-  .brand-name {
-    font-weight: 700;
-    color: var(--surface);
-    line-height: 1.1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12));
   }
 
   .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 2px;
     flex: 1;
     position: relative;
     z-index: 1;
   }
 
   .sidebar-link {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
     text-decoration: none;
-    color: color-mix(in srgb, var(--surface) 78%, transparent 22%);
-    border-radius: var(--radius-md);
-    padding: 10px 12px;
-    font-weight: 600;
+    color: color-mix(in srgb, var(--surface) 72%, transparent 28%);
+    border-radius: 6px;
+    border: none;
+    padding: 8px 12px 8px 14px;
+    font-weight: 500;
     font-size: 0.875rem;
     display: flex;
     align-items: center;
@@ -528,11 +535,25 @@
     transition:
       background-color var(--transition-fast),
       color var(--transition-fast),
-      transform var(--transition-fast),
-      border-color var(--transition-fast),
-      box-shadow var(--transition-fast),
       padding 320ms cubic-bezier(0.33, 1, 0.68, 1),
       gap 320ms cubic-bezier(0.33, 1, 0.68, 1);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 50%;
+      width: 3px;
+      height: 0;
+      border-radius: 2px;
+      background: color-mix(in srgb, var(--surface) 88%, transparent 12%);
+      transform: translateY(-50%);
+      opacity: 0;
+      transition:
+        height 180ms ease,
+        opacity 180ms ease,
+        background-color var(--transition-fast);
+    }
   }
 
   .nav-icon {
@@ -550,20 +571,32 @@
   }
 
   .sidebar-link:hover {
-    background: color-mix(in srgb, var(--surface) 18%, transparent 82%);
-    color: var(--surface);
-    transform: translateX(2px);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    background: color-mix(in srgb, var(--surface) 10%, transparent 90%);
+    color: color-mix(in srgb, var(--surface) 96%, transparent 4%);
+  }
+
+  .sidebar-link:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--surface) 45%, transparent 55%);
+    outline-offset: 2px;
   }
 
   .sidebar-link.active {
-    background: color-mix(in srgb, var(--surface) 28%, transparent 72%);
-    color: var(--surface);
-    border: 1px solid color-mix(in srgb, var(--surface) 38%, transparent 62%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      0 6px 16px rgba(15, 23, 42, 0.12);
-    backdrop-filter: blur(14px);
+    font-weight: 600;
+    background: color-mix(in srgb, var(--surface) 14%, transparent 86%);
+    color: color-mix(in srgb, var(--surface) 98%, transparent 2%);
+
+    &::before {
+      height: 18px;
+      opacity: 1;
+    }
+  }
+
+  .app-shell.sidebar-collapsed .sidebar-link::before {
+    display: none;
+  }
+
+  .app-shell.sidebar-collapsed .sidebar-link.active {
+    background: color-mix(in srgb, var(--surface) 16%, transparent 84%);
   }
 
   .settings-profile {
@@ -572,16 +605,15 @@
     align-items: center;
     width: 100%;
     gap: 10px;
-    border: 1px solid color-mix(in srgb, var(--surface) 26%, transparent 74%);
-    border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--surface) 14%, transparent 86%);
+    border: 1px solid color-mix(in srgb, var(--surface) 16%, transparent 84%);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--surface) 8%, transparent 92%);
     padding: 10px;
     cursor: pointer;
     text-align: left;
     transition:
       background-color var(--transition-base),
       border-color var(--transition-base),
-      box-shadow var(--transition-base),
       padding 320ms cubic-bezier(0.33, 1, 0.68, 1),
       gap 320ms cubic-bezier(0.33, 1, 0.68, 1);
     position: relative;
@@ -589,9 +621,8 @@
   }
 
   .settings-profile:hover {
-    background: color-mix(in srgb, var(--surface) 22%, transparent 78%);
-    border-color: color-mix(in srgb, var(--surface) 34%, transparent 66%);
-    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+    background: color-mix(in srgb, var(--surface) 14%, transparent 86%);
+    border-color: color-mix(in srgb, var(--surface) 22%, transparent 78%);
   }
 
   .avatar {
@@ -642,28 +673,13 @@
   }
 
   /* Dark app theme: `--surface` is dark ink — sidebar must use light text on the green chrome (gradient matches preloader) */
-  :host-context(body.dark-theme) .brand-mark {
-    background: linear-gradient(
-      145deg,
-      color-mix(in srgb, #fff 24%, transparent 76%),
-      color-mix(in srgb, #fff 14%, transparent 86%)
-    );
-    border: 1px solid color-mix(in srgb, #fff 44%, transparent 56%);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
-  }
-
-  :host-context(body.dark-theme) .brand-name {
-    color: #fff;
+  :host-context(body.dark-theme) .brand__logo {
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
   }
 
   /* Solid / rgba colors — `color-mix(…, transparent)` muddies white and reads too dim on the gradient */
   :host-context(body.dark-theme) .sidebar-collapse-toggle {
-    color: rgba(255, 255, 255, 0.9);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.14);
-      color: #fff;
-    }
+    color: #fff;
 
     &:focus-visible {
       outline: 2px solid rgba(255, 255, 255, 0.55);
@@ -675,37 +691,37 @@
   }
 
   :host-context(body.dark-theme) .sidebar-link:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.1);
     color: #fff;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
   }
 
   :host-context(body.dark-theme) .sidebar-link.active {
-    background: rgba(255, 255, 255, 0.26);
+    background: rgba(255, 255, 255, 0.14);
     color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.2),
-      0 6px 18px rgba(0, 0, 0, 0.28);
-    backdrop-filter: blur(14px);
+  }
+
+  :host-context(body.dark-theme) .sidebar-link.active::before {
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  :host-context(body.dark-theme) .sidebar-link:focus-visible {
+    outline-color: rgba(255, 255, 255, 0.55);
+  }
+
+  :host-context(body.dark-theme) .app-shell.sidebar-collapsed .sidebar-link.active {
+    background: rgba(255, 255, 255, 0.16);
   }
 
   /* Profile strip: frosted panel + explicit light text (`<button>` / spans override inheritance) */
   :host-context(body.dark-theme) .sidebar .settings-profile {
-    border-color: rgba(255, 255, 255, 0.32);
-    background: rgba(0, 0, 0, 0.22);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.18);
     color: #f8fafc;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 4px 16px rgba(0, 0, 0, 0.28);
   }
 
   :host-context(body.dark-theme) .sidebar .settings-profile:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(0, 0, 0, 0.3);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      0 8px 22px rgba(0, 0, 0, 0.35);
+    border-color: rgba(255, 255, 255, 0.32);
+    background: rgba(0, 0, 0, 0.26);
   }
 
   :host-context(body.dark-theme) .sidebar .settings-label {
@@ -726,6 +742,17 @@
     background: rgba(255, 255, 255, 0.22);
     color: #fff;
   }
+
+  :host-context(body.dark-theme) .app-shell.sidebar-collapsed .sidebar .settings-profile {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  :host-context(body.dark-theme) .app-shell.sidebar-collapsed .sidebar .settings-profile:hover {
+    border-color: transparent;
+    background: transparent;
+  }
+
 }
 
 @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
@@ -743,16 +770,18 @@
     transition:
       background-color var(--transition-fast),
       color var(--transition-fast),
-      transform var(--transition-fast),
-      border-color var(--transition-fast),
-      box-shadow var(--transition-fast);
+      padding var(--transition-fast),
+      gap var(--transition-fast);
+  }
+
+  .sidebar-link::before {
+    transition: none;
   }
 
   .settings-profile {
     transition:
       background-color var(--transition-base),
-      border-color var(--transition-base),
-      box-shadow var(--transition-base);
+      border-color var(--transition-base);
   }
 }
 
@@ -771,15 +800,17 @@
     transition:
       background-color var(--transition-fast),
       color var(--transition-fast),
-      transform var(--transition-fast),
-      border-color var(--transition-fast),
-      box-shadow var(--transition-fast);
+      padding var(--transition-fast),
+      gap var(--transition-fast);
+  }
+
+  html.propza-reduce-motion .sidebar-link::before {
+    transition: none;
   }
 
   html.propza-reduce-motion .settings-profile {
     transition:
       background-color var(--transition-base),
-      border-color var(--transition-base),
-      box-shadow var(--transition-base);
+      border-color var(--transition-base);
   }
 }

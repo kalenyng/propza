@@ -39,6 +39,7 @@ export class AddPropertyModalComponent {
   leaseFile?: File;
 
   form = this.fb.group({
+    property_name: ['', [Validators.maxLength(120)]],
     address_line1: ['', [Validators.required, Validators.maxLength(120)]],
     address_line2: ['', [Validators.maxLength(120)]],
     address_city: ['', [Validators.required, Validators.maxLength(80)]],
@@ -301,13 +302,14 @@ export class AddPropertyModalComponent {
 
     const v = this.form.value;
     const occupied = !!v.occupied;
-    const propertyName = this.sanitizer.sanitizeText(v.address_line1 || '');
+    const optionalPropertyName = this.sanitizer.sanitizeText((v.property_name || '').trim());
     const fullAddress = [
       this.sanitizer.sanitizeText(v.address_line1 || ''),
       this.sanitizer.sanitizeText(v.address_line2 || ''),
       this.sanitizer.sanitizeText(v.address_city || ''),
       this.sanitizer.sanitizeText(v.address_postcode || ''),
     ].filter((x) => !!x && x.trim().length > 0).join(', ');
+    const addressLine1 = this.sanitizer.sanitizeText(v.address_line1 || '');
 
     // 1) Upload lease if occupied + file provided (to storage bucket "leases")
     let lease_url: string | null = null;
@@ -328,12 +330,12 @@ export class AddPropertyModalComponent {
       .insert([
         {
           owner_id: userId,
-          name: propertyName,
+          name: optionalPropertyName,
           rent_amount: this.sanitizer.sanitizeNumber(v.rent_amount) || 0,
           status: occupied ? 'occupied' : 'vacant',
           lease_url: lease_url || null,
           currency: 'ZAR', // ensure non-null text
-          address: this.sanitizer.sanitizeAddress(fullAddress || propertyName),
+          address: this.sanitizer.sanitizeAddress(fullAddress || addressLine1),
         }
       ])
       .select()
@@ -411,7 +413,7 @@ export class AddPropertyModalComponent {
       const period = this.rentHelper.getCurrentRentPeriod(logRentDueDay);
       
       console.log('🏡 NEW PROPERTY WITH TENANT ADDED:', {
-        propertyName,
+        propertyName: optionalPropertyName || fullAddress,
         tenantName: v.tenant,
         originalNextPaymentDue: v.next_payment_due,
         nextDueDate: nextDueDateISO,

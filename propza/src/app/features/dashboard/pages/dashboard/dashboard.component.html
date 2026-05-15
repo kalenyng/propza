@@ -4,30 +4,56 @@
       <h1>Dashboard</h1>
     </div>
     <div class="dashboard-header-controls">
-      <label class="app-inner-search dashboard-header-search" aria-label="Search">
-        <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"/>
-          <path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input
-          type="text"
-          placeholder="Search properties, tenants…"
-          [(ngModel)]="searchQuery"
-        />
-      </label>
-      <div class="dashboard-header-actions">
-        <button type="button" class="dashboard-header-icon-btn" aria-label="Notifications">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      <div
+        class="dashboard-search-wrap"
+        #searchWrap
+        (focusin)="onSearchWrapFocusIn()"
+      >
+        <label class="app-inner-search dashboard-header-search" aria-label="Search">
+          <svg class="app-inner-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
           </svg>
-        </button>
-        <button type="button" class="dashboard-header-icon-btn" aria-label="Profile menu">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-        </button>
+          <input
+            type="text"
+            placeholder="Search properties, tenants…"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchQueryChange($event)"
+            autocomplete="off"
+            aria-autocomplete="list"
+            [attr.aria-expanded]="searchDropdownOpen && searchQuery.trim().length >= 2"
+            aria-controls="dashboard-search-results"
+          />
+        </label>
+        @if (searchDropdownOpen && searchQuery.trim().length >= 2) {
+          <div
+            id="dashboard-search-results"
+            class="dashboard-search-panel"
+            role="listbox"
+            aria-label="Search results"
+          >
+            @if (searchHits.length > 0) {
+              @for (hit of searchHits; track hit.kind + hit.id) {
+                <a
+                  class="dashboard-search-hit"
+                  role="option"
+                  [routerLink]="hit.kind === 'property' ? ['/property', hit.id] : ['/tenant', hit.id]"
+                  (click)="onSearchHitNavigate()"
+                >
+                  <span class="dashboard-search-hit-kind">{{ hit.kind === 'property' ? 'Property' : 'Tenant' }}</span>
+                  <span class="dashboard-search-hit-title">{{ hit.title }}</span>
+                  @if (hit.subtitle) {
+                    <span class="dashboard-search-hit-sub">{{ hit.subtitle }}</span>
+                  }
+                </a>
+              }
+            } @else if (searchEmpty) {
+              <div class="dashboard-search-empty">No matching properties or tenants.</div>
+            } @else {
+              <div class="dashboard-search-hint">Searching…</div>
+            }
+          </div>
+        }
       </div>
     </div>
   </header>
@@ -104,8 +130,8 @@
             </svg>
           </div>
           <div class="app-inner-stat-copy">
-            <span class="app-inner-stat-label">Expected rent</span>
-            <span class="app-inner-stat-value">{{ formatMoney(metrics.totalExpected) }}</span>
+            <span class="app-inner-stat-label">Expected</span>
+            <span class="app-inner-stat-value">{{ metrics.totalExpected | shortNumber }}</span>
           </div>
         </article>
         <article class="app-inner-stat">
@@ -120,7 +146,7 @@
           </div>
           <div class="app-inner-stat-copy">
             <span class="app-inner-stat-label">Collected</span>
-            <span class="app-inner-stat-value">{{ formatMoney(metrics.totalCollected) }}</span>
+            <span class="app-inner-stat-value">{{ metrics.totalCollected | shortNumber }}</span>
           </div>
         </article>
       </section>

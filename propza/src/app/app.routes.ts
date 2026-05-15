@@ -12,6 +12,7 @@ import { DashboardComponent } from './features/dashboard/pages/dashboard/dashboa
 import { PaymentsComponent } from './features/payments/pages/payments/payments.component';
 import { AuthenticatedShellComponent } from './layout/authenticated-shell/authenticated-shell.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { ResetPasswordComponent } from './features/auth/pages/reset-password/reset-password.component';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
 import { betaAccessGuard } from './core/guards/beta-access.guard';
@@ -47,6 +48,7 @@ export const routes: Routes = [
   // Auth routes (require beta access, guests only for auth)
   { path: 'login', component: LoginComponent, canActivate: [betaAccessGuard, guestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [betaAccessGuard, guestGuard] },
+  { path: 'reset-password', component: ResetPasswordComponent },
 
   // 404 Not Found - must be last
   { path: '**', component: NotFoundComponent }

@@ -58,8 +58,8 @@
           </svg>
         </div>
         <div class="app-inner-stat-copy">
-          <span class="app-inner-stat-label">{{ translate.t('dashboard.totalRent') }}</span>
-          <span class="app-inner-stat-value">{{ formatMoney(totalRentDue, 'ZAR') }}</span>
+          <span class="app-inner-stat-label">Rent due</span>
+          <span class="app-inner-stat-value">{{ totalRentDue | shortNumber }}</span>
         </div>
       </article>
       <article class="app-inner-stat">

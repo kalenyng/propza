@@ -1,12 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { combineLatest, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { PropertyService, Property, Payment } from '../../../../core/services/property.service';
 import { TenantService, Tenant } from '../../../../core/services/tenant.service';
 import { RentDueService } from '../../../../core/services/rent-due.service';
+import { ShortNumberPipe } from '../../../../shared/pipes/short-number.pipe';
 
 type DashboardMetrics = {
   totalProperties: number;
@@ -38,10 +46,17 @@ type ChartPoint = {
   collected: number;
 };
 
+type DashboardSearchHit = {
+  kind: 'property' | 'tenant';
+  id: string;
+  title: string;
+  subtitle: string;
+};
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink, ShortNumberPipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -53,6 +68,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
   activityItems: ActivityItem[] = [];
   chartData: ChartPoint[] = [];
   searchQuery = '';
+  /** Latest lists for client-side search (updated from streams). */
+  private latestProperties: Property[] = [];
+  private latestTenants: Tenant[] = [];
+
+  private readonly searchInput$ = new Subject<string>();
+  searchHits: DashboardSearchHit[] = [];
+  /** True after a debounced lookup with query length ≥ 2 returned no hits. */
+  searchEmpty = false;
+  /** Panel open while input is focused; closed on outside click. */
+  searchDropdownOpen = false;
+
+  @ViewChild('searchWrap', { read: ElementRef }) searchWrap?: ElementRef<HTMLElement>;
+
   metrics: DashboardMetrics = {
     totalProperties: 0,
     totalTenants: 0,
@@ -74,6 +102,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.searchInput$
+      .pipe(debounceTime(200), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((raw) => this.runSearchLookup(raw));
+
     combineLatest([
       this.propertyService.properties$,
       this.propertyService.payments$,
@@ -84,6 +116,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         ([properties, payments, tenants, propertyLoading, tenantLoading]) => {
+          this.latestProperties = properties;
+          this.latestTenants = tenants;
           this.showSkeleton =
             (propertyLoading && properties.length === 0) ||
             (tenantLoading && tenants.length === 0);
@@ -95,6 +129,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.activityItems = this.computeActivityItems(payments, properties, tenants).slice(0, 6);
           this.chartData =
             payments.length === 0 ? [] : this.buildLastSixMonthsCollectionChart(payments);
+          if (this.searchQuery.trim().length >= 2) {
+            this.runSearchLookup(this.searchQuery);
+          }
         }
       );
 
@@ -105,6 +142,74 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.searchInput$.complete();
+  }
+
+  onSearchQueryChange(value: string): void {
+    if (value.trim().length < 2) {
+      this.searchHits = [];
+      this.searchEmpty = false;
+    }
+    this.searchInput$.next(value);
+  }
+
+  onSearchWrapFocusIn(): void {
+    this.searchDropdownOpen = true;
+  }
+
+  onSearchHitNavigate(): void {
+    this.searchDropdownOpen = false;
+    this.searchQuery = '';
+    this.searchHits = [];
+    this.searchEmpty = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const root = this.searchWrap?.nativeElement;
+    if (!root?.contains(event.target as Node)) {
+      this.searchDropdownOpen = false;
+    }
+  }
+
+  private runSearchLookup(raw: string): void {
+    const q = raw.trim();
+    if (q.length < 2) {
+      this.searchHits = [];
+      this.searchEmpty = false;
+      return;
+    }
+    const ql = q.toLowerCase();
+    const maxEach = 8;
+
+    const propertyHits: DashboardSearchHit[] = [];
+    for (const p of this.latestProperties) {
+      if (propertyHits.length >= maxEach) break;
+      const addr = (p.address || '').trim().toLowerCase();
+      const nm = (p.name || '').trim().toLowerCase();
+      if (addr.startsWith(ql) || nm.startsWith(ql)) {
+        const title = (p.name || '').trim() || p.address || 'Property';
+        const subtitle = p.address || '';
+        propertyHits.push({ kind: 'property', id: p.id, title, subtitle });
+      }
+    }
+
+    const tenantHits: DashboardSearchHit[] = [];
+    for (const t of this.latestTenants) {
+      if (tenantHits.length >= maxEach) break;
+      const first =
+        (t.name || '')
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean)[0]?.toLowerCase() || '';
+      if (first.startsWith(ql)) {
+        const subtitle = t.properties?.address?.trim() || 'Tenant';
+        tenantHits.push({ kind: 'tenant', id: t.id, title: t.name || 'Tenant', subtitle });
+      }
+    }
+
+    this.searchHits = [...propertyHits, ...tenantHits];
+    this.searchEmpty = propertyHits.length === 0 && tenantHits.length === 0;
   }
 
   private computeMetrics(properties: Property[], payments: Payment[], tenants: Tenant[]): DashboardMetrics {

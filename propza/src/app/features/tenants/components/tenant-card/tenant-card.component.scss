@@ -72,6 +72,7 @@ $pill-min-height: 26px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
   word-break: break-word;
 }
@@ -272,14 +273,46 @@ $pill-min-height: 26px;
     transform var(--transition-base);
 }
 
+@media (max-width: 1024px) {
+  .tenant-card {
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .address-row {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    display: block;
+  }
+}
+
 @media (max-width: 640px) {
   .tenant-card {
     padding: $spacing-sm $spacing-md;
-    min-height: 236px;
+    min-height: auto;
+  }
+
+  .card-header {
+    flex-wrap: wrap;
   }
 
   .tenant-name {
     font-size: 1.05rem;
+    display: block;
+    -webkit-box-orient: unset;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .meta-contact-row {
+    display: none;
   }
 
   .rent-amount {

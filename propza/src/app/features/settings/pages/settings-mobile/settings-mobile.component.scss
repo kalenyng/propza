@@ -68,7 +68,7 @@
   align-items: center;
   justify-content: space-between;
   /* Top safe area lives on `.settings-main` so we do not double-count the notch. */
-  padding: 8px var(--space-md) 8px;
+  padding: 8px var(--space-md) var(--space-md);
   background: transparent;
 }
 

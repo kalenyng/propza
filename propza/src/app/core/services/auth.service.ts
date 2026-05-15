@@ -173,8 +173,13 @@ export class AuthService {
   // Send password reset email via Supabase
   async sendPasswordReset(email: string): Promise<AuthError | null> {
     const { error } = await this.supabase.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/login`
+      redirectTo: `${window.location.origin}/reset-password`
     });
+    return error ?? null;
+  }
+
+  async updatePassword(newPassword: string): Promise<AuthError | null> {
+    const { error } = await this.supabase.supabase.auth.updateUser({ password: newPassword });
     return error ?? null;
   }
 

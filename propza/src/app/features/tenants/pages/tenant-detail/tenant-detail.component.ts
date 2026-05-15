@@ -11,6 +11,8 @@ import { TranslationService } from '../../../../core/services/translation.servic
 import { RentHelperService, RentStatus } from '../../../../core/services/rent-helper.service';
 import { RentDueService, TenantStatus } from '../../../../core/services/rent-due.service';
 import { ConfirmationModalService } from '../../../../core/services/confirmation-modal.service';
+import { MobileShellTitleService } from '../../../../core/services/mobile-shell-title.service';
+import { ScrollRestoreService } from '../../../../core/services/scroll-restore.service';
 
 interface Payment {
   id: string;
@@ -69,7 +71,9 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
     private rentHelper: RentHelperService,
     public translate: TranslationService,
     private rentDueService: RentDueService,
-    private confirmationService: ConfirmationModalService
+    private confirmationService: ConfirmationModalService,
+    private mobileShellTitleSvc: MobileShellTitleService,
+    private scrollRestore: ScrollRestoreService
   ) {
     const nav = this.router.getCurrentNavigation();
     const state = nav?.extras?.state as { backUrl?: string } | undefined;
@@ -107,6 +111,7 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
               this.property = property;
               this.propertyName = property.name || '';
               this.propertyAddress = property.address || '';
+              this.syncMobileShellTitle();
             }
           }
         });
@@ -128,6 +133,7 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.mobileShellTitleSvc.clearMobileTitleOverride();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -154,6 +160,34 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
     
     // Fetch payments for this tenant's property
     this.fetchPayments();
+
+    this.syncMobileShellTitle();
+  }
+
+  private syncMobileShellTitle(): void {
+    if (!this.tenant) {
+      this.mobileShellTitleSvc.clearMobileTitleOverride();
+      return;
+    }
+    this.mobileShellTitleSvc.setMobileTitleOverride(this.tenantHeaderTitle);
+  }
+
+  /** Sticky / mobile header: tenant name, else property name, else first line of property address. */
+  get tenantHeaderTitle(): string {
+    if (!this.tenant) return 'Tenant';
+    const name = (this.tenant.name || '').trim();
+    if (name) return name;
+    const propName = (this.propertyName || '').trim();
+    if (propName) return propName;
+    const rawAddr = (this.propertyAddress || '').trim();
+    if (rawAddr) {
+      const line1 = rawAddr
+        .split(/,|\r?\n/)
+        .map((p) => p.trim())
+        .filter(Boolean)[0];
+      if (line1) return line1;
+    }
+    return 'Tenant';
   }
 
   private async fetchPayments(): Promise<void> {
@@ -337,6 +371,7 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
 
   goBack(): void {
     if (this.backUrl) {
+      this.scrollRestore.flagRestoreFor(this.backUrl.split('?')[0]);
       void this.router.navigateByUrl(this.backUrl);
       return;
     }

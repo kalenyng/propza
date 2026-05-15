@@ -1593,6 +1593,12 @@ select,
   box-sizing: border-box;
 }
 
+/* Property / tenant detail: no in-page top header (mobile title = shell hero; desktop = panel only).  */
+.property-detail-header.app-inner-header,
+.tenant-detail-header.app-inner-header {
+  display: none !important;
+}
+
 /* Mobile: shell owns hero title; pages keep toolbars only */
 @media (max-width: 1023px) {
   .app-inner-title {
@@ -1601,32 +1607,6 @@ select,
 
   .settings-shell > .app-inner-header {
     display: none !important;
-  }
-
-  /* Detail routes: keep title in inner header (list pages hide title here) */
-  .property-detail-header .app-inner-title,
-  .tenant-detail-header .app-inner-title {
-    display: flex !important;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    min-width: 0;
-  }
-
-  .property-detail-header .detail-header-title-block h1,
-  .tenant-detail-header .detail-header-title-block h1 {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .property-detail-header .detail-header-subtitle,
-  .tenant-detail-header .detail-header-subtitle {
-    color: color-mix(in srgb, var(--surface) 78%, transparent 22%);
-  }
-
-  .property-detail-header .property-detail-header-status-pill,
-  .tenant-detail-header .tenant-detail-header-status-pill {
-    align-self: flex-end;
   }
 
   .app-inner-page {
@@ -1652,17 +1632,6 @@ select,
     border-radius: 0;
     box-shadow: none;
     backdrop-filter: none;
-  }
-
-  .properties-header.app-inner-header,
-  .tenants-header.app-inner-header,
-  .dashboard-header.app-inner-header,
-  .payments-header.app-inner-header,
-  .settings-desk__page-header.app-inner-header,
-  .property-detail-header.app-inner-header,
-  .tenant-detail-header.app-inner-header {
-    min-height: 118px;
-    box-sizing: border-box;
   }
 
   .app-inner-header::before {
@@ -1781,15 +1750,24 @@ select,
   }
 
   .app-inner-stat-label {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     line-height: 1.15;
     color: var(--text-muted);
     display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 360px) {
+    .app-inner-stat-label {
+      font-size: 11px;
+    }
   }
 
   .app-inner-stat-value {
-    font-size: 22px;
+    font-size: 15px;
     font-weight: 700;
     line-height: 1.1;
     color: var(--text-strong);
@@ -2237,6 +2215,10 @@ select,
     padding: var(--space-xl) var(--space-lg) calc(env(safe-area-inset-bottom, 0px) + 100px);
   }
 
+  .app-inner-page--detail .app-inner-main {
+    padding-top: var(--space-md);
+  }
+
   .app-inner-title h1 {
     color: var(--text-strong);
     font-size: clamp(1.05rem, 1rem + 0.55vw, 1.35rem);
@@ -2257,120 +2239,14 @@ select,
     color: var(--text-muted);
   }
 
-  /* Same inner header height on properties / tenants / payments / dashboard / settings / detail */
+  /* List / dashboard headers: stable row height. Detail uses content-sized header. */
   .properties-header.app-inner-header,
   .tenants-header.app-inner-header,
   .dashboard-header.app-inner-header,
   .payments-header.app-inner-header,
-  .settings-desk__page-header.app-inner-header,
-  .property-detail-header.app-inner-header,
-  .tenant-detail-header.app-inner-header {
+  .settings-desk__page-header.app-inner-header {
     min-height: 80px;
     box-sizing: border-box;
-  }
-}
-
-/* Detail inner headers: ghost tools column mirrors list layout (seamless list → detail) */
-.property-detail-header.app-inner-header,
-.tenant-detail-header.app-inner-header {
-  flex-wrap: wrap;
-  align-items: flex-start;
-}
-
-.property-detail-header .property-detail-header-ghost,
-.tenant-detail-header .tenant-detail-header-ghost {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  align-items: stretch;
-  width: 100%;
-  flex: 1;
-  min-width: 0;
-}
-
-.property-detail-header .property-detail-header-ghost-hide,
-.tenant-detail-header .tenant-detail-header-ghost-hide {
-  visibility: hidden;
-  pointer-events: none;
-  user-select: none;
-}
-
-.property-detail-header .property-detail-header-ghost .props-header-search input,
-.tenant-detail-header .tenant-detail-header-ghost .tenants-header-search input {
-  width: 100%;
-}
-
-.property-detail-header .property-detail-header-ghost .header-quick-add,
-.tenant-detail-header .tenant-detail-header-ghost .tenants-quick-add {
-  align-self: flex-start;
-  border: 1px solid var(--border-strong);
-  background: var(--surface);
-  color: var(--text-strong);
-}
-
-@media (min-width: 640px) {
-  .property-detail-header.app-inner-header,
-  .tenant-detail-header.app-inner-header {
-    align-items: center;
-    flex-wrap: nowrap;
-  }
-
-  .property-detail-header .property-detail-header-ghost,
-  .tenant-detail-header .tenant-detail-header-ghost {
-    flex-direction: row;
-    width: auto;
-    justify-content: flex-end;
-    align-items: center;
-    gap: var(--space-sm);
-  }
-
-  .property-detail-header .property-detail-header-ghost .props-header-search,
-  .tenant-detail-header .tenant-detail-header-ghost .tenants-header-search {
-    flex: 1;
-    max-width: 420px;
-  }
-
-  .property-detail-header .property-detail-header-ghost .header-quick-add,
-  .tenant-detail-header .tenant-detail-header-ghost .tenants-quick-add {
-    align-self: center;
-    flex-shrink: 0;
-  }
-
-  .property-detail-header .property-detail-header-status-pill,
-  .tenant-detail-header .tenant-detail-header-status-pill {
-    align-self: center;
-    flex-shrink: 0;
-  }
-}
-
-.detail-header-title-block {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-  width: 100%;
-}
-
-.property-detail-header .detail-header-title-block h1,
-.tenant-detail-header .detail-header-title-block h1 {
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
-}
-
-.detail-header-subtitle {
-  margin: 0 !important;
-  width: 100%;
-  font-size: 0.875rem;
-  line-height: 1.35;
-}
-
-@media (min-width: 1024px) {
-  .property-detail-header .detail-header-subtitle,
-  .tenant-detail-header .detail-header-subtitle {
-    color: var(--text-muted);
   }
 }
 

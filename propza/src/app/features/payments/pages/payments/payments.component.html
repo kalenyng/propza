@@ -27,8 +27,8 @@
           </svg>
         </div>
         <div class="app-inner-stat-copy">
-          <span class="app-inner-stat-label">Total collected</span>
-          <span class="app-inner-stat-value">{{ formatMoney(totalCollected) }}</span>
+          <span class="app-inner-stat-label">Collected</span>
+          <span class="app-inner-stat-value">{{ totalCollected | shortNumber }}</span>
         </div>
       </article>
       <article class="app-inner-stat">
@@ -50,8 +50,8 @@
           </svg>
         </div>
         <div class="app-inner-stat-copy">
-          <span class="app-inner-stat-label">Average payment</span>
-          <span class="app-inner-stat-value">{{ formatMoney(averagePayment) }}</span>
+          <span class="app-inner-stat-label">Average</span>
+          <span class="app-inner-stat-value">{{ averagePayment | shortNumber }}</span>
         </div>
       </article>
       <article class="app-inner-stat payments-stat-accent">
@@ -61,7 +61,7 @@
           </svg>
         </div>
         <div class="app-inner-stat-copy">
-          <span class="app-inner-stat-label">Matching filters</span>
+          <span class="app-inner-stat-label">Filtered</span>
           <span class="app-inner-stat-value">{{ filteredPaymentCount }}</span>
         </div>
       </article>

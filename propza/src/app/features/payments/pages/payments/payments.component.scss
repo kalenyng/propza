@@ -112,6 +112,8 @@
   .payment-card-grid {
     grid-template-columns: 1fr;
     gap: 8px;
+    overflow: hidden;
+    width: 100%;
   }
 
   .skeleton-payment {
@@ -120,6 +122,10 @@
 
   .payment-card {
     padding: 10px 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 }
 
@@ -256,6 +262,20 @@
   font-size: 0.8125rem;
   color: var(--text-muted);
   font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .payment-property {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .payment-head {
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 640px) {
