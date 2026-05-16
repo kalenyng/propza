@@ -83,6 +83,14 @@ export class SettingsDesktopComponent implements OnInit {
     modalDialogClass: 'propza-settings-modal-dialog'
   };
 
+  private readonly supportModal: NgbModalOptions = {
+    size: 'lg',
+    centered: true,
+    scrollable: true,
+    keyboard: true,
+    windowClass: 'propza-support-modal'
+  };
+
   ngOnInit(): void {
     this.selectedTheme = this.themeService.theme();
     this.languageCode = this.translate.currentLanguage();
@@ -329,32 +337,32 @@ export class SettingsDesktopComponent implements OnInit {
 
   contactSupport(): void {
     const user = this.auth.user();
-    const ref = this.modal.open(ContactSupportModalComponent, { ...this.settingsFullscreenModal });
+    const ref = this.modal.open(ContactSupportModalComponent, { ...this.supportModal });
     const inst = ref.componentInstance as ContactSupportModalComponent;
     inst.userEmail = this.userEmail;
     inst.userId = user?.id || '';
   }
 
   openQuickStartGuide(): void {
-    this.modal.open(QuickStartModalComponent, { ...this.settingsFullscreenModal });
+    this.modal.open(QuickStartModalComponent, { ...this.supportModal });
   }
 
   openBugReport(): void {
-    const modalRef = this.modal.open(BugReportModalComponent, { ...this.settingsFullscreenModal });
+    const modalRef = this.modal.open(BugReportModalComponent, { ...this.supportModal });
     modalRef.componentInstance.userEmail = this.userEmail;
   }
 
   openFeatureRequest(): void {
-    const modalRef = this.modal.open(FeatureRequestModalComponent, { ...this.settingsFullscreenModal });
+    const modalRef = this.modal.open(FeatureRequestModalComponent, { ...this.supportModal });
     modalRef.componentInstance.userEmail = this.userEmail;
   }
 
   openPrivacyPolicy(): void {
-    this.modal.open(PrivacyPolicyModalComponent, { ...this.settingsFullscreenModal });
+    this.modal.open(PrivacyPolicyModalComponent, { ...this.supportModal });
   }
 
   openTermsAndConditions(): void {
-    this.modal.open(TermsModalComponent, { ...this.settingsFullscreenModal });
+    this.modal.open(TermsModalComponent, { ...this.supportModal });
   }
 
   async confirmDelete(): Promise<void> {

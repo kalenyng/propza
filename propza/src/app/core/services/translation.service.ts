@@ -1055,10 +1055,10 @@ export class TranslationService {
       xh: 'Kugcina Ukubuyekezwa'
     },
     'privacy.lastUpdatedDate': {
-      en: 'January 1, 2024',
-      af: '1 Januarie 2024',
-      zu: '1 Januwari 2024',
-      xh: '1 Januwari 2024'
+      en: 'May 15, 2026',
+      af: '15 Mei 2026',
+      zu: '15 Meyi 2026',
+      xh: '15 Meyi 2026'
     },
     'privacy.dataCollection': {
       en: 'Data Collection',
@@ -1067,10 +1067,10 @@ export class TranslationService {
       xh: 'Ukuqoqwa Kwedatha'
     },
     'privacy.dataCollectionDescription': {
-      en: 'We collect information necessary to provide our property management services, including property details, tenant information, and payment records.',
-      af: 'Ons versamel inligting wat nodig is om ons eiendom bestuur dienste te lewer, insluitend eiendom besonderhede, huurder inligting en betaling rekords.',
-      zu: 'Siqoqa imininingwane edingekayo ukunikeza izinsiza zethu zokuphatha izakhiwo, kufaka phakathi imininingwane yezakhiwo, imininingwane yabaqashi kanye namarekhodi ezinkokhelo.',
-      xh: 'Siqoqa imininingwane edingekayo ukunikeza izinsiza zethu zokuphatha izakhiwo, kufaka phakathi imininingwane yezakhiwo, imininingwane yabaqashi kanye namarekhodi ezinkokhelo.'
+      en: 'We collect the following categories of personal information in order to provide our property management services: account information such as name and email address (authentication credentials are securely managed by our authentication provider); property details (addresses, rental amounts, lease dates); tenant information (names, email addresses, phone numbers); payment records and financial history; uploaded documents such as signed lease agreements; and usage data such as login activity and in-app actions.',
+      af: 'Ons versamel die volgende kategorieë persoonlike inligting om ons eiendom bestuur dienste te lewer: rekening inligting soos naam en e-posadres (verifikasiebewyse word veilig bestuur deur ons verifikasieverskaffer); eiendom besonderhede (adresse, huurhoeveelhede, huurkontrakdatums); huurder inligting (name, e-posadresse, telefoonnommers); betaling rekords en finansiële geskiedenis; opgelaaide dokumente soos getekende huurkontrakte; en gebruiksdata soos aanteken-aktiwiteit en in-program aksies.',
+      zu: 'Siqoqa lezi zikhlobo ezilandelayo zolwazi lomuntu siqu ukuze sinikeze izinsiza zethu zokuphatha izakhiwo: ulwazi lwe-akhawunti njengegama nekheli le-imeyili (izimpawu zokuqinisekisa zigcinwa ngokukhusela yumhlinzeki wethu wokuqinisekisa); imininingwane yezakhiwo (amakheli, imali yokuqasha, izinsuku ze-inkontileka); imininingwane yabaqashi (amagama, amakheli e-imeyili, izinombolo zohlelo); amarekhodi ezinkokhelo nomlando wezezimali; amadokhumenti aphoswe njengeninkontileka zokuqasha ezisayiniwe; nedatha yokusetshenziswa efana nomsebenzi wokungena nendlela ye-app.',
+      xh: 'Siqoqa ezi zikhondo zilandelayo zolwazi lomuntu siqu ukuze sinikeze iinkonzo zethu zokuphatha iipropati: ulwazi lweakhawunti olufana negama nedilesi ye-imeyile (iimpawu zokuqinisekiswa zigcinwa ngokukhuseleka ngumnikeli wethu wokuqinisekiswa); iinkcukacha zepropati (iidilesi, imixa yerenti, iimini zenkontileka); ulwazi lwabaqeshi (amagama, iidilesi ze-imeyile, iinombolo zomnxeba); amarekhodi entlawulo nomlando wezezimali; amaxwebhu angenisiweyo anjengezivumelwano zokuqasha ezisayiniweyo; nedatha yokusetyenziswa efana nomsebenzi wokungena nakwizenzo ze-app.'
     },
     'privacy.dataUsage': {
       en: 'Data Usage',
@@ -1079,10 +1079,22 @@ export class TranslationService {
       xh: 'Ukusetshenziswa Kwedatha'
     },
     'privacy.dataUsageDescription': {
-      en: 'Your data is used solely to provide and improve our services. We do not sell or share your personal information with third parties.',
-      af: 'Jou data word slegs gebruik om ons dienste te lewer en te verbeter. Ons verkoop of deel nie jou persoonlike inligting met derde partye nie.',
-      zu: 'Idatha yakho isetshenziswa kuphela ukunikeza nokuthuthukisa izinsiza zethu. Asithengisi noma sabelane ngemininingwane yakho yomuntu siqu nabanye abantu.',
-      xh: 'Idatha yakho isetshenziswa kuphela ukunikeza nokuthuthukisa izinsiza zethu. Asithengisi noma sabelane ngemininingwane yakho yomuntu siqu nabanye abantu.'
+      en: 'We use your data for the following purposes: providing and operating the Propza platform; managing your properties, tenants, and payment records; sending payment reminders and notifications; generating reports and financial summaries; authenticating your identity and maintaining account security; improving our service through anonymised usage analytics; and communicating with you about your account or service updates.',
+      af: 'Ons gebruik jou data vir die volgende doeleindes: verskaffing en bedryf van die Propza-platform; bestuur van jou eiendomme, huurders en betalingsrekords; stuur van betalingsherinneringe en kennisgewings; genereer van verslae en finansiële opsommings; verifikasie van jou identiteit en handhawing van rekeningveiligheid; verbetering van ons diens deur geanonimiseerde gebruiksanalise; en kommunikasie met jou oor jou rekening of diensopdaterings.',
+      zu: 'Sisebenzisa idatha yakho ngezinhloso ezilandelayo: ukuhlinzekwa nokuqhuba isikhundla se-Propza; ukuphatha izakhiwo zakho, abaqashi, namarekhodi ezinkokhelo; ukuthumela izikhumbuzo zokukhokha nezaziso; ukukhiqiza imibiko nezibopho zezimali; ukunqinisekisa ubunjalo bakho nokugcina ukuphepha kwe-akhawunti; ukuthuthukisa insiza yethu ngokusebenzisa ukuhlaziywa kokusebenzisa okwenziwe ngaphandle kwegama; nokukhulumisana nawe mayelana ne-akhawunti yakho noma izibuyekezo zensiza.',
+      xh: 'Sisebenzisa idatha yakho ngeenjongo ezilandelayo: ukunikezwa nokusebenziswa kweqonga le-Propza; ukuphatha iipropati zakho, abaqeshi, namarekhodi entlawulo; ukuthumela izikhumbuzo zokuhlawula nezaziso; ukukhiqiza iingxelo nezishwankathelo zemali; ukuqinisekisa isazisi sakho nokugcina ukhuseleko lweakhawunti; ukuphucula inkonzo yethu ngokusetyenziswa kwezinto ezihlaziyiweyo ngaphandle kwegama; nokuxhumana nawe malunga neakhawunti yakho okanye izibuyekezo zenkonzo.'
+    },
+    'privacy.legalBasis': {
+      en: 'Legal Basis for Processing',
+      af: 'Regsgrondslag vir Verwerking',
+      zu: 'Isisekelo Sokomthetho Sokuhlela',
+      xh: 'Isiseko Somthetho Sokucutha'
+    },
+    'privacy.legalBasisDescription': {
+      en: 'We process your personal data on the following legal bases: (1) Contract — processing is necessary to provide the services you have signed up for; (2) Legitimate interest — to improve our platform, detect fraud, and maintain security; (3) Legal obligation — where we are required to retain records under applicable South African law, including the Protection of Personal Information Act, 2013 ("POPIA"). Where we rely on legitimate interest, we balance this against your rights and freedoms.',
+      af: 'Ons verwerk jou persoonlike data op die volgende regsgrondslae: (1) Kontrak — verwerking is nodig om die dienste te lewer waarvoor jy aangemeld het; (2) Geregverdigde belang — om ons platform te verbeter, bedrog op te spoor en sekuriteit te handhaaf; (3) Regsverbintenis — waar ons verplig is om rekords ingevolge toepaslike Suid-Afrikaanse reg te hou, insluitend die Wet op Beskerming van Persoonlike Inligting, 2013 ("POPIA"). Waar ons staat maak op geregverdigde belang, weeg ons dit teen jou regte en vryhede op.',
+      zu: 'Sihlela ulwazi lwakho lomuntu siqu ngezikhalo ezilandelayo zokomthetho: (1) Inkontileka — ukuhlela kudingeka ukunikeza izinsiza ozikhokhelile; (2) Intende efanele — ukuthuthukisa isikhundla sethu, ukuphenywa kobubi, nokugcina ukuphepha; (3) Isibopho sokomthetho — lapho sidingekile ukugcina amarekhodi ngaphansi komthetho waseNingizimu Afrika osebenzayo, kufaka phakathi uMthetho Wokuvikelwa Kolwazi Lomuntu Siqu (POPIA). Lapho sincike entendeni efanele, silinganisa lokhu namalungelo akho nenkululeko.',
+      xh: 'Siyicutha idatha yakho yomuntu siqu ngezikhalazo ezilandelayo zemthetho: (1) Inkontileka — ukucuthwa kudingeka ukunikeza iinkonzo owazibhalelayo; (2) Umdla ofanelekileyo — ukuphucula iqonga lethu, ukuphenywa ubuqhophololo, nokugcina ukhuseleko; (3) Isibopho somthetho — apho sifuneka ukugcina amarekhodi phantsi komthetho waseNtshona Afrika osebenzayo, kubandakanya uMthetho Wokukhusela Ulwazi Lomuntu Siqu (POPIA). Apho sixhomekeka kumdla ofanelekileyo, sibeka eli nzima kumalungelo akho nenkululeko.'
     },
     'privacy.dataSharing': {
       en: 'Data Sharing',
@@ -1096,6 +1108,42 @@ export class TranslationService {
       zu: 'Sabelana ngedatha kuphela nabahlinzeki bezinsiza abathembekile abasiza ukuletha izinsiza zethu, futhi kuphela ngezinga elidingekayo.',
       xh: 'Sabelana ngedatha kuphela nabahlinzeki bezinsiza abathembekile abasiza ukuletha izinsiza zethu, futhi kuphela ngezinga elidingekayo.'
     },
+    'privacy.internationalTransfers': {
+      en: 'International Data Transfers',
+      af: 'Internasionale Data-oordragte',
+      zu: 'Ukudluliswa Kwedatha Ezweni Laphetsheya',
+      xh: 'Ukudluliselwa Kwedatha Kwaphesheya'
+    },
+    'privacy.internationalTransfersDescription': {
+      en: 'Propza uses infrastructure providers — including Supabase and Vercel — that may store and process your data on servers located outside of South Africa, including in the United States and European Union. We take steps to ensure that appropriate safeguards are in place for such transfers, including relying on providers that maintain recognised data protection standards. By using Propza, you acknowledge that your data may be processed internationally.',
+      af: 'Propza gebruik infrastruktuurverskaffers — insluitend Supabase en Vercel — wat jou data op bedieners buite Suid-Afrika, insluitend in die Verenigde State en die Europese Unie, kan stoor en verwerk. Ons neem stappe om te verseker dat toepaslike voorsorgmaatreëls in plek is vir sulke oordragte, insluitend die vertroue op verskaffers wat erkende databeskermingstandaarde handhaaf. Deur Propza te gebruik, erken jy dat jou data internasionaal verwerk kan word.',
+      zu: 'I-Propza isebenzisa abahlinzeki bezingqalasizinda — kufaka phakathi i-Supabase ne-Vercel — abangathenga bagcine futhi bahlele idatha yakho emaservereni angaphandle kweNingizimu Afrika, kufaka phakathi e-United States ne-European Union. Sithatha izinyathelo zokuqinisekisa ukuthi iziqondiso ezifanele zikhona zokudlulisa okunjalo, kufaka phakathi ukuncika kubahlinzeki abagcina imikhakha eyaziwa yokuvikela idatha. Ngokusebenzisa i-Propza, uyaqonda ukuthi idatha yakho ingahlela emazweni aphetsheya.',
+      xh: 'I-Propza isebenzisa abaxhasi bezingqalasizinda — kubandakanya i-Supabase ne-Vercel — abanokungathenga bagcine kwaye bafake idatha yakho kwiiseva ezikude eNtshona Afrika, kubandakanya e-United States naseEuropean Union. Sithatha amanyathelo okuqinisekisa ukuba iziqinisekiso ezifanelekileyo zikhona zokudlulisa okunjalo, kubandakanya ukuxhomekeka kubaxhasi abagcina imigangatho yokukhusela idatha eyaziwayo. Ngokusebenzisa i-Propza, uyavuma ukuba idatha yakho inokucuthwa kwamanye amazwe.'
+    },
+    'privacy.cookies': {
+      en: 'Cookies & Analytics',
+      af: 'Koekies en Analise',
+      zu: 'Ama-Cookie Nokuhlaziywa',
+      xh: 'Iikhuki Nokuhlaziywa'
+    },
+    'privacy.cookiesDescription': {
+      en: 'Propza may use cookies and similar technologies for authentication and to maintain your session. We may also use anonymised analytics tools to understand how users interact with the platform and to improve our service. We do not use advertising cookies or share tracking data with third parties for marketing purposes. You can manage cookie preferences through your browser settings.',
+      af: 'Propza kan koekies en soortgelyke tegnologieë gebruik vir verifikasie en om jou sessie te handhaaf. Ons kan ook geanonimiseerde analitiese instrumente gebruik om te verstaan hoe gebruikers met die platform kommunikeer en om ons diens te verbeter. Ons gebruik nie advertensiekoekies nie en deel ook nie naspoordata met derde partye vir bemarkingsdoeleindes nie. Jy kan koekie-voorkeure deur jou blaaierinstellings bestuur.',
+      zu: 'I-Propza ingasebenzisa ama-cookie namathuluzi afanayo okuqinisekisa nokugcina useshini wakho. Singasebenzisa namathuluzi e-analytics angaziwa ukuqonda ukuthi abasebenzisi basebenzisana kanjani nesikhundla futhi ukuthuthukisa insiza yethu. Asebenzisi ama-cookie okukhangisa noma sabelane nedatha yokulandelwa nabanye abantu ngezinhloso zokukhangisa. Ungaphatha izintando zama-cookie ngezilungiselelo zebhrawuza yakho.',
+      xh: 'I-Propza inokusebenzisa iikhuki nezixhobo ezifanayo zokuqinisekiswa nokugcina iseshini yakho. Sinokusebenzisa nezixhobo ze-analytics ezihlaziyiweyo ukuqonda indlela abasebenzisi abaxabana ngayo neqonga nokuphcula inkonzo yethu. Asisetyenzisi iikhuki zokukhangisa noma sabelane nedatha yokulandela nabanye abantu ngeenjongo zokurhweba. Unaphatha izintando zekhuki ngezilungiselelo zebhrawuza yakho.'
+    },
+    'privacy.dataRetention': {
+      en: 'Data Retention',
+      af: 'Data-bewaring',
+      zu: 'Ukugcinwa Kwedatha',
+      xh: 'Ukugcinwa Kwedatha'
+    },
+    'privacy.dataRetentionDescription': {
+      en: 'We retain your personal data for as long as your account remains active and as necessary to provide our services. If you delete your account, we will delete or anonymise your personal data within a reasonable period, unless we are required to retain it to comply with a legal obligation, resolve a dispute, or enforce our agreements. Uploaded documents may be retained for a short period after deletion to allow for recovery in case of accidental loss.',
+      af: 'Ons behou jou persoonlike data solank jou rekening aktief bly en soos nodig om ons dienste te lewer. As jy jou rekening uitwis, sal ons jou persoonlike data binne \'n redelike tydperk uitwis of anonimiseer, tensy ons verplig is om dit te behou om \'n wetlike verpligting na te kom, \'n geskil op te los of ons ooreenkomste af te dwing. Opgelaaide dokumente kan vir \'n kort tydperk na uitwissing behou word om herstel in geval van toevallige verlies te moontlik te maak.',
+      zu: 'Sigcina ulwazi lwakho lomuntu siqu inzile i-akhawunti yakho isasebenza nangokudingeka ukunikeza izinsiza zethu. Uma ususa i-akhawunti yakho, sizosula noma sihlele ulwazi lwakho lomuntu siqu ngesikhathi esifanele, ngaphandle uma sidingekile ukusigcina ukuhlangabezana nesibopho sokomthetho, uxazululo lwezingxabano, noma ukuqinisekisa izivumelwano zethu. Amadokhumenti aphoswe angagcinwa isikhathi esifushane ngemuva kokusula ukuvumela ukubuyiselwa uma kukhona ukulahleka okungahlelelwanga.',
+      xh: 'Sigcina ulwazi lwakho lomuntu siqu inzile iakhawunti yakho isasebenza nangokufunekayo ukunikeza iinkonzo zethu. Ukuba uyacima iakhawunti yakho, siya cima okanye sihlaziye ulwazi lwakho lomuntu siqu ngexesha elicwangcisiweyo, ngaphandle apho sifuneka ukusigcina ukuhlangabezana nesibopho somthetho, ukuxazulula ingxabano, okanye ukuqinisekisa izivumelwano zethu. Amaxwebhu angenisiweyo angagcinwa ixesha elifutshane emva kokucinywa ukuvumela ukubuyiselwa kwangengozi yokulahleka.'
+    },
     'privacy.dataSecurity': {
       en: 'Data Security',
       af: 'Data Sekuriteit',
@@ -1103,10 +1151,10 @@ export class TranslationService {
       xh: 'Ukuvikeleka Kwedatha'
     },
     'privacy.dataSecurityDescription': {
-      en: 'We implement industry-standard security measures to protect your data, including encryption and secure data storage.',
-      af: 'Ons implementeer bedryf-standaard sekuriteit maatreëls om jou data te beskerm, insluitend enkripsie en veilige data stoor.',
-      zu: 'Sisebenzisa izinyathelo zokuvikela ezijwayelekile emkhakheni ukuvikela idatha yakho, kufaka phakathi ukubethela nokugcina idatha ngokuphephile.',
-      xh: 'Sisebenzisa izinyathelo zokuvikela ezijwayelekile emkhakheni ukuvikela idatha yakho, kufaka phakathi ukubethela nokugcina idatha ngokuphephile.'
+      en: 'We take reasonable technical and organisational measures to protect your personal data against unauthorised access, loss, or disclosure. These measures include encryption in transit and at rest, access controls, and use of reputable infrastructure providers. However, no method of transmission over the internet or electronic storage is completely secure, and we cannot guarantee absolute security.',
+      af: 'Ons neem redelike tegniese en organisatoriese maatreëls om jou persoonlike data te beskerm teen ongemagtigde toegang, verlies of openbaarmaking. Hierdie maatreëls sluit in enkripsie tydens oordrag en in rus, toegangsbeheer en gebruik van betroubare infrastruktuurverskaffers. Geen metode van oordrag oor die internet of elektroniese berging is egter heeltemal veilig nie, en ons kan nie absolute sekuriteit waarborg nie.',
+      zu: 'Sithatha izinyathelo zobuchwepheshe nezomhlangano ezifanele ukuvikela ulwazi lwakho lomuntu siqu ngokumelene nokufinyelela okungagunyaziwe, ukulahleka, noma ukwambulwa. Lezi zinyathelo zifaka phakathi ukubethela ngesikhathi sokudluliswa nasekuphumuzeni, ukuphatha ukufinyelela, nokusebenzisa abahlinzeki bezingqalasizinda abathembekile. Nokho, akukho ndlela yokudluliswa nge-inthanethi noma ukugcina ngombane ephephile ngokuphelele, futhi asikwazi ukuqinisekisa ukuphepha okuphelele.',
+      xh: 'Sithatha amanyathelo afanelekileyo obuchwepheshe namaziko okukhusela ulwazi lwakho lomuntu siqu ngokumelene nokufikelela okunga gunyaziwa, ukulahleka, okanye ukuchazwa. La manyathelo abandakanya ukubethela ngexesha lodluliso nangokulala, iilawulo zokufikelela, nokusebenzisa abaxhasi bezingqalasizinda abathembekileyo. Noko kunjalo, akukho ndlela yokudluliswa nge-intanethi okanye ukugcinwa nge-elektroniki ekhuselekileyo ngokupheleleyo, kwaye asikwazi ukuqinisekisa ukhuseleko olupheleleyo.'
     },
     'privacy.userRights': {
       en: 'Your Rights',
@@ -1115,10 +1163,10 @@ export class TranslationService {
       xh: 'Amalungelo Akho'
     },
     'privacy.userRightsDescription': {
-      en: 'You have the right to access, update, or delete your personal data at any time. Contact us to exercise these rights.',
-      af: 'Jy het die reg om jou persoonlike data op enige tyd te bekyk, op te dateer of te skrap. Kontak ons om hierdie regte uit te oefen.',
-      zu: 'Unelungelo lokufinyelela, ukubuyekeza, noma ukususa idatha yakho yomuntu siqu noma nini. Sithintane nathi ukusebenzisa le malungelo.',
-      xh: 'Unelungelo lokufinyelela, ukubuyekeza, noma ukususa idatha yakho yomuntu siqu noma nini. Sithintane nathi ukusebenzisa le malungelo.'
+      en: 'Under the Protection of Personal Information Act, 2013 ("POPIA") and applicable data protection law, you have the following rights: the right to access your personal information held by us; the right to request correction of inaccurate or incomplete information; the right to request deletion of your personal information, subject to our retention obligations; the right to object to the processing of your data in certain circumstances; and the right to lodge a complaint with the Information Regulator of South Africa. To exercise any of these rights, please contact us at support@propza.co.za.',
+      af: 'Ingevolge die Wet op Beskerming van Persoonlike Inligting (POPIA) en toepaslike databeskermingsreg, het jy die volgende regte: die reg om toegang te verkry tot jou persoonlike inligting wat deur ons gehou word; die reg om korreksie van onakkurate of onvolledige inligting te versoek; die reg om uitwissing van jou persoonlike inligting te versoek, onderhewig aan ons bewaringsverpligtinge; die reg om beswaar te maak teen die verwerking van jou data in sekere omstandighede; en die reg om \'n klagte by die Inligtingsreguleerder van Suid-Afrika in te dien. Om enige van hierdie regte uit te oefen, kontak ons asseblief by support@propza.co.za.',
+      zu: 'Ngaphansi koMthetho Wokuvikelwa Kolwazi Lomuntu Siqu (POPIA) nomthetho osebenzayo wokuvikela idatha, unamalungelo alandelayo: ilungelo lokufinyelela ulwazi lwakho lomuntu siqu olugcinwa yithi; ilungelo lokucela ukulungiswa kolwazi olungeyiqiniso noma olungaphelele; ilungelo lokucela ukususwayo kolwazi lwakho lomuntu siqu, kuphethwe yizibopho zethu zokugcina; ilungelo lokwenqabela ukuhlela idatha yakho ezimweni ezithile; nelungelo lokufaka isikhalo kuMlawuli Wezolwazi waseNingizimu Afrika. Ukusebenzisa noma yiluphi lolu lungelo, sicela usithintane ku-support@propza.co.za.',
+      xh: 'Phantsi koMthetho Wokukhusela Ulwazi Lomuntu Siqu (POPIA) nomthetho osebenzayo wokukhusela idatha, unamalungelo alandelayo: ilungelo lokufikelela ulwazi lwakho lomuntu siqu olugcinwa ngathi; ilungelo locelo lolungiso lwulwazi olungachanekanga okanye olungapheleleyo; ilungelo locelo lokucinywa kolwazi lwakho lomuntu siqu, ixhomekeke kwizibopho zethu zokugcina; ilungelo lokuphikisa ukucuthwa kwedatha yakho kwimeko ezithile; nelungelo lokufaka isikhalazo kuMlawuli Wolwazi waseNtshona Afrika. Ukusebenzisa nayiphi na yala malungelo, nceda usithinte ku-support@propza.co.za.'
     },
     'privacy.contact': {
       en: 'Contact Us',
@@ -1141,10 +1189,10 @@ export class TranslationService {
       xh: 'Kugcina Ukubuyekezwa'
     },
     'terms.lastUpdatedDate': {
-      en: 'January 1, 2024',
-      af: '1 Januarie 2024',
-      zu: '1 Januwari 2024',
-      xh: '1 Januwari 2024'
+      en: 'May 15, 2026',
+      af: '15 Mei 2026',
+      zu: '15 Meyi 2026',
+      xh: '15 Meyi 2026'
     },
     'terms.acceptance': {
       en: 'Acceptance of Terms',
@@ -1158,6 +1206,18 @@ export class TranslationService {
       zu: 'Ngokusebenzisa i-Propza, uyavuma ukubophwa yile migomo nezimo. Uma ungavumelani, sicela ungasebenzisi insiza yethu.',
       xh: 'Ngokusebenzisa i-Propza, uyavuma ukubophwa yile migomo nezimo. Uma ungavumelani, sicela ungasebenzisi insiza yethu.'
     },
+    'terms.ageRequirement': {
+      en: 'Age Requirement',
+      af: 'Ouderdomsvereiste',
+      zu: 'Imfuneko Yobudala',
+      xh: 'Imfuneko Yobudala'
+    },
+    'terms.ageRequirementDescription': {
+      en: 'You must be at least 18 years old and legally capable of entering into binding contracts to use Propza. By registering, you confirm that you meet this requirement.',
+      af: 'Jy moet ten minste 18 jaar oud wees en wetlik in staat wees om bindende kontrakte aan te gaan om Propza te gebruik. Deur te registreer, bevestig jy dat jy aan hierdie vereiste voldoen.',
+      zu: 'Kufanele ube neminyaka engu-18 noma ngaphezulu futhi ukwazi ngomthetho ukungena ezivumelwaneni ezibophayo ukuze usebenzise i-Propza. Ngokubhalisa, uqinisekisa ukuthi uhlangabezana nalesi simo.',
+      xh: 'Kufuneka ube neminyaka eyi-18 okanye ngaphezulu kwaye ukwazi ngomthetho ukungena kwizivumelwano ezibophayo ukuze usebenzise i-Propza. Ngokubhalisa, uqinisekisa ukuba uhlangabezana nale mfuneko.'
+    },
     'terms.serviceDescription': {
       en: 'Service Description',
       af: 'Diens Beskrywing',
@@ -1169,6 +1229,18 @@ export class TranslationService {
       af: 'Propza is \'n eiendom bestuur platform wat verhuurders help om hul huur eiendomme, huurders en betalings te bestuur.',
       zu: 'I-Propza iyisikhundla sokuphatha izakhiwo esisiza abanikazi bezindlu ukuthi baphathe izakhiwo zabo zokuqasha, abaqashi kanye nezinkokhelo.',
       xh: 'I-Propza iyisikhundla sokuphatha izakhiwo esisiza abanikazi bezindlu ukuthi baphathe izakhiwo zabo zokuqasha, abaqashi kanye nezinkokhelo.'
+    },
+    'terms.accountResponsibility': {
+      en: 'Account Responsibility',
+      af: 'Rekeningverantwoordelikheid',
+      zu: 'Iqhaza Le-akhawunti',
+      xh: 'Uxanduva Lweakhawunti'
+    },
+    'terms.accountResponsibilityDescription': {
+      en: 'You are responsible for maintaining the confidentiality of your password and for all activity that occurs under your account. You must notify us immediately of any unauthorised use of your account. Propza is not liable for any loss resulting from your failure to keep your credentials secure.',
+      af: 'Jy is verantwoordelik vir die handhawing van die vertroulikheid van jou wagwoord en vir alle aktiwiteite wat onder jou rekening plaasvind. Jy moet ons onmiddellik in kennis stel van enige ongemagtigde gebruik van jou rekening. Propza is nie aanspreeklik vir enige verlies wat voortspruit uit jou versuim om jou aanmeldbesonderhede veilig te hou nie.',
+      zu: 'Unomuzamo wokuqinisekisa ukuba isirri sewagwedi lakho ligcinwa futhi nakuzo zonke izinto ezenzekayo ngaphansi kwe-akhawunti yakho. Kufanele usazise ngokushesha nganoma yisiphi ukusetshenziswa okungagunyaziwe kwe-akhawunti yakho. I-Propza ayibophi nokulahleka okusuka ekuhlulekeni kwakho ukugcina ulwazi lwakho lokungena luvikelekile.',
+      xh: 'Unoxanduva lokuqinisekisa ukuba igama lakho lokugqitha ligcinwa ngobumfihlo kwaye nakuzo zonke izinto ezenzekayo phantsi kweakhawunti yakho. Kufuneka usazise ngokukhawuleza nganoma yisiphi ukusetyenziswa okunga gunyaziwa kweakhawunti yakho. I-Propza ayibophi nokulahleka okuvela ekunqeneni kwakho ukugcina ulwazi lwakho lokungena lukhuselewe.'
     },
     'terms.userObligations': {
       en: 'User Obligations',
@@ -1182,6 +1254,42 @@ export class TranslationService {
       zu: 'Abasebenzisi kufanele banikeze imininingwane eqiniso, basebenzise insiza ngokomthetho, futhi bangaphazamisi isipiliyoni sabanye abasebenzisi.',
       xh: 'Abasebenzisi kufanele banikeze imininingwane eqiniso, basebenzise insiza ngokomthetho, futhi bangaphazamisi isipiliyoni sabanye abasebenzisi.'
     },
+    'terms.documentStorage': {
+      en: 'Document Storage',
+      af: 'Dokumentberging',
+      zu: 'Ukugcinwa Kwamadokhumenti',
+      xh: 'Ukugcinwa Kwamaxwebhu'
+    },
+    'terms.documentStorageDescription': {
+      en: 'You may upload documents such as signed lease agreements to Propza. You are solely responsible for ensuring that any documents you upload comply with all applicable laws, including privacy and data protection laws. Do not upload documents containing third-party personal information without appropriate consent.',
+      af: 'Jy mag dokumente soos getekende huurkontrakte na Propza oplaai. Jy is uitsluitlik verantwoordelik om te verseker dat enige dokumente wat jy oplaai aan alle toepaslike wette voldoen, insluitend privaatheid en databeskermingswette. Moenie dokumente met derde-party persoonlike inligting oplaai sonder gepaste toestemming nie.',
+      zu: 'Ungakwazi ukuphosa amadokhumenti anjenge-inkontileka zokuqasha ezisayiniwe ku-Propza. Wena wedwa unomuzamo wokuqinisekisa ukuthi noma yimaphi amadokhumenti owaphosayo ahambisana nayo yonke imithetho esebenzayo, kufaka phakathi imithetho yokuvikela ubumfihlo nedatha. Ungaphosi amadokhumenti aqinisekisa imininingwane yomuntu ngokomthetho ngaphandle kwemvume efanele.',
+      xh: 'Ungangenisa amaxwebhu afana nezivumelwano zokuqasha ezisayiniweyo ku-Propza. Wena wedwa unoxanduva lokuqinisekisa ukuba nayiphi na amaxwebhu oyangenisayo ahambelana nayo yonke imithetho esebenzayo, kubandakanya imithetho yobumfihlo nokhuseleko lwedatha. Musa ukungenisa amaxwebhu aqukethe ulwazi lomuntu wesithathu ngaphandle kwemvume efanelekileyo.'
+    },
+    'terms.userContent': {
+      en: 'User Content Ownership',
+      af: 'Gebruiker Inhoud Eienaarskap',
+      zu: 'Ukuba Ngumnikazi Wokuqukethwe Komsebenzisi',
+      xh: 'Ubunikazi Bokuqukethwe Komsebenzisi'
+    },
+    'terms.userContentDescription': {
+      en: 'You retain full ownership of any documents or content you upload to Propza. By uploading content, you grant us a limited licence to store, process, and display that content solely for the purpose of operating the platform on your behalf. We do not claim any ownership over your uploaded content.',
+      af: 'Jy behou volle eienaarskap van enige dokumente of inhoud wat jy na Propza oplaai. Deur inhoud op te laai, gee jy ons \'n beperkte lisensie om daardie inhoud te stoor, te verwerk en te vertoon slegs vir die doel van die bedryf van die platform namens jou. Ons eis geen eienaarskap oor jou opgelaaide inhoud nie.',
+      zu: 'Ugcina ukuba ngumnikazi ophelele wamadokhumenti noma okuqukethwe okuwuphosa ku-Propza. Ngokuphosa okuqukethwe, unikezela kithi ilayisense elinganiselwe lokugcina, ukucubungula, nokubonisa leyo nokuqukethwe kuphela ngenhloso yokusebenzisa isikhundla egameni lakho. Asibizi ukuba ngabakho okuqukethwe owakuphosayo.',
+      xh: 'Ugcina ubunikazi obupheleleyo bamaxwebhu okanye okuqukethwe okungenisiweyo ku-Propza. Ngokungenisa okuqukethwe, unikezela kuthi ilayisensi elinganiselweyo yokugcina, ukucutha, nokubonisa loo nokuqukethwe kuphela ngenhloso yokusebenza njengenkundla egameni lakho. Asibizi ukuba ngabethu okuqukethwe owakugenisiyo.'
+    },
+    'terms.dataAccuracy': {
+      en: 'Data Accuracy Disclaimer',
+      af: 'Vrywaring van Data-akkuraatheid',
+      zu: 'Isixwayiso Sokuyiqinisa Kwedatha',
+      xh: 'Isixwayiso Sobuqiniso Bedatha'
+    },
+    'terms.dataAccuracyDescription': {
+      en: 'Propza is a management tool designed to assist you in organising your rental portfolio. We do not guarantee the accuracy of rent calculations, payment reminders, financial statements, or any other outputs generated by the platform. You remain responsible for verifying all figures and ensuring compliance with your legal and financial obligations.',
+      af: 'Propza is \'n bestuursinstrument wat ontwerp is om jou te help om jou huurportefeulje te organiseer. Ons waarborg nie die akkuraatheid van huurberekenings, betalingsherinneringe, finansiële state of enige ander uitsette wat deur die platform gegenereer word nie. Jy bly verantwoordelik vir die verifikasie van alle syfers en die versekering van voldoening aan jou wetlike en finansiële verpligtinge.',
+      zu: 'I-Propza iyithuluzi lokuphatha elikhiqizwe ukukusiza ekuhleleni iportfolio yakho yokuqasha. Asiqinisekisi ubuqiniso bokubalwa kwerenti, izikhumbuzo zokukhokha, izitatimende zezimali, noma noma yiziphi ezinye izimveliso ezikhiqizwa yisikhundla. Usala unomuzamo wokuqinisekisa onke amanani nokulungiseka kwezibopho zakho zokomthetho nezezimali.',
+      xh: 'I-Propza sisixhobo sokuphatha esenzelwe ukukunceda ekuhleleleni iqoqo lakho lokuqasha. Asiqinisekisi ubuqiniso bokubalwa kwerenti, izikhumbuzo zokuhlawula, izitatimente zemali, okanye naziphi na ezinye iziphumo eziveliswa yinkundla. Usala unoxanduva lokuqinisekisa zonke izibalo nokulungiseka kwezibopho zakho zemthetho nezezimali.'
+    },
     'terms.prohibitedUses': {
       en: 'Prohibited Uses',
       af: 'Verbode Gebruike',
@@ -1193,6 +1301,54 @@ export class TranslationService {
       af: 'Jy mag nie Propza gebruik vir onwettige aktiwiteite, om ander te skaad, of om enige toepaslike wette of regulasies te oortree nie.',
       zu: 'Awukwazi ukusebenzisa i-Propza ngezenzo ezingekho emthethweni, ukulimaza abanye, noma ukwephula noma yimiphi imithetho noma imikhawulo esebenzayo.',
       xh: 'Awukwazi ukusebenzisa i-Propza ngezenzo ezingekho emthethweni, ukulimaza abanye, noma ukwephula noma yimiphi imithetho noma imikhawulo esebenzayo.'
+    },
+    'terms.billing': {
+      en: 'Subscription & Billing',
+      af: 'Inskrywing en Fakturering',
+      zu: 'Ukubhalisa Nokukhokha',
+      xh: 'Ukubhalisa Nentlawulo'
+    },
+    'terms.billingDescription': {
+      en: 'Propza is currently available free of charge. We reserve the right to introduce paid plans or modify existing features at any time. Where charges apply, you will be notified in advance and given the opportunity to accept or decline before any payment is processed.',
+      af: 'Propza is tans gratis beskikbaar. Ons behou die reg voor om betaalde planne in te stel of bestaande funksies op enige tyd te wysig. Waar koste van toepassing is, sal jy vooraf in kennis gestel word en die geleentheid kry om te aanvaar of te weier voordat enige betaling verwerk word.',
+      zu: 'I-Propza iyatholakala mahala okwamanje. Siyagcina ilungelo lokuphakamisa izinhlelo ezikhokhelwayo noma ukushintsha izici ezikhona noma nini. Uma izindleko zisebenza, uzaziswa ngaphambili futhi unikezwe ithuba lokwamukela noma ukwenqaba ngaphambi kokucutshungulwa kwanoma yikuphi ukukhokha.',
+      xh: 'I-Propza iyafumaneka mahhala okwangoku. Sigcina ilungelo lokuzipha izicwangciso ezihlawulelwayo okanye ukuguqula izici ezikhona nangaliphi na ixesha. Apho iintlawulo zisebenza khona, uza kwaziswa ngaphambili kwaye unikezwe ithuba lokwamkela okanye ukwenqaba ngaphambi kokucutshungulwa nangeliphi na intlawulo.'
+    },
+    'terms.thirdPartyServices': {
+      en: 'Third-Party Services',
+      af: 'Derde-party Dienste',
+      zu: 'Izinsiza Zommeli Wesithathu',
+      xh: 'Iinkonzo Zesithathu'
+    },
+    'terms.thirdPartyServicesDescription': {
+      en: 'Propza relies on third-party providers to deliver its services, including Supabase (database and authentication), Vercel (hosting and infrastructure), and email delivery services. Your use of Propza is subject to their respective terms and privacy policies. We are not responsible for the practices of these providers beyond our obligations to select reputable partners and implement appropriate contractual safeguards.',
+      af: 'Propza maak staat op derde-party verskaffers om sy dienste te lewer, insluitend Supabase (databasis en verifikasie), Vercel (aanbieding en infrastruktuur), en e-posafleweringsdienste. Jou gebruik van Propza is onderhewig aan hul onderskeie bepalings en privaatheidsbeleid. Ons is nie verantwoordelik vir die praktyke van hierdie verskaffers buite ons verpligtinge om gerespekteerde vennote te kies en toepaslike kontraktuele voorsorgmaatreëls te implementeer nie.',
+      zu: 'I-Propza incika kubahlinzeki besithathu ukuletha izinsiza zayo, kufaka phakathi i-Supabase (idatabase nokufakazela), i-Vercel (ukusingatha nezingqalasizinda), nezinsiza zokuhlinzeka i-imeyili. Ukusebenzisa kwakho i-Propza kuphethwe yimithetho yabo kanye nenqubomgomo yobumfihlo. Asikunaki ukusebenza kwalapha bahlinzeki ngaphezu kwezibopho zethu zokukhetha izitho eziheshiwe nokusebenzisa iziqondiso zokunqanda ezifanele.',
+      xh: 'I-Propza ixhomekeka kubaxhasi besithathu ukunikeza iinkonzo zayo, kubandakanya i-Supabase (idatabase nokuqinisekiswa), i-Vercel (ukusingatha neziseko), neenkonzo zokunikezwa kwe-imeyili. Ukusetyenziswa kwakho kwe-Propza kuxhomekeka kwimigomo yabo nengqeqesho yobumfihlo. Asibophelelekanga kwimikhwa yaba baxhasi ngaphandle kwezibopho zethu zokukhetha abantu abathembekileyo nokunika iziqinisekiso zemvisiswano efanelekileyo.'
+    },
+    'terms.availability': {
+      en: 'Service Availability',
+      af: 'Beskikbaarheid van Diens',
+      zu: 'Ukutholakala Kwensiza',
+      xh: 'Ukufumaneka Kwenkonzo'
+    },
+    'terms.availabilityDescription': {
+      en: 'We aim to keep Propza available at all times, but we do not guarantee uninterrupted access. The service may occasionally be unavailable due to scheduled maintenance, technical issues, or circumstances beyond our control. We will endeavour to provide advance notice of planned downtime where possible.',
+      af: 'Ons streef daarna om Propza te alle tye beskikbaar te hou, maar ons waarborg nie ononderbroke toegang nie. Die diens kan soms nie beskikbaar wees weens geskeduleerde onderhoud, tegniese probleme of omstandighede buite ons beheer nie. Ons sal poog om vooraf kennis te gee van beplande stilstandtyd waar moontlik.',
+      zu: 'Sihlose ukugcina i-Propza itholakala ngaso sonke isikhathi, kodwa asiqinisekisi ukufinyelela okungaqhekeki. Insiza ingatholakala ngezinye izikhathi ngenxa yenhlela ehlelelwe yokulungisa, izinkinga zobuchwepheshe, noma izimo ezingaphandle kokulawulwa kwethu. Sizozama ukupha isaziso sangaphambili sasikhathi sokunqamuka obekelwe lapho kunokwenzeka.',
+      xh: 'Sihlose ukugcina i-Propza ifumaneka ngalo lonke ixesha, kodwa asiqinisekisi ukufikelela okunga phazanyiswayo. Inkonzo ingangatholakali ngezinye izikhathi ngenxa yolondolozo oluhlelweyo, iingxaki zobuchwepheshe, okanye iimeko ezingaphandle kolawulo lwethu. Siya zama ukunika isaziso sangaphambili sexesha ekuhlangabezaneni noko apho kunokwenzeka khona.'
+    },
+    'terms.betaAccess': {
+      en: 'Beta & Early Access',
+      af: 'Beta en Vroeë Toegang',
+      zu: 'I-Beta Nokufinyelela Kokuqala',
+      xh: 'I-Beta Nokufikelela Kwamandulo'
+    },
+    'terms.betaAccessDescription': {
+      en: 'Propza may be released as a beta or early-access product. Features may change, be modified, or be removed without notice. While we strive to maintain a stable experience, beta software is provided without guarantees of completeness or reliability. Your continued use of the platform indicates your acceptance of this condition.',
+      af: 'Propza kan as \'n beta- of vroeë-toegangsproduk vrygestel word. Funksies kan verander, gewysig of verwyder word sonder kennisgewing. Terwyl ons streef na \'n stabiele ervaring, word beta-sagteware verskaf sonder waarborge van volledigheid of betroubaarheid. Jou voortgesette gebruik van die platform dui op jou aanvaarding van hierdie toestand.',
+      zu: 'I-Propza ingakhululwa njengomkhiqizo we-beta noma owokufinyelela kokuqala. Izici zingatshintsha, zishintshwe, noma zisuswe ngaphandle kwesaziso. Nakuba sizama ukugcina isipiliyoni esizinzile, i-softhiwe ye-beta inikezwa ngaphandle kweziqinisekiso zokuphela noma ukwethembeka. Ukusebenzisa kwakho okuqhubekayo kusikhundla kubonisa ukwamukela kwakho kulesi simo.',
+      xh: 'I-Propza inganikwa njengemveliso ye-beta okanye yokufikelela kwamandulo. Izici zingatshintsha, ziguqulwe, okanye zisuswe ngaphandle kwesaziso. Ngelixa sizama ukugcina ulwandlalo oluzinzileyo, isoftware ye-beta inikezwa ngaphandle kweziqinisekiso zokuphelela okanye ukuthembeka. Ukusetyenziswa kwakho okuqhubekayo kwenkundla kubonakalisa ukwamkela kwakho le meko.'
     },
     'terms.intellectualProperty': {
       en: 'Intellectual Property',
@@ -1206,6 +1362,18 @@ export class TranslationService {
       zu: 'Konke okuqukethwe, izici kanye nokusebenza kwe-Propza kungokwethu futhi kuvikelwe ngumthetho we-copyright kanye neminye imithetho yempahla yobuhlakani.',
       xh: 'Konke okuqukethwe, izici kanye nokusebenza kwe-Propza kungokwethu futhi kuvikelwe ngumthetho we-copyright kanye neminye imithetho yempahla yobuhlakani.'
     },
+    'terms.noAdvice': {
+      en: 'No Professional Advice',
+      af: 'Geen Professionele Advies',
+      zu: 'Akukho Iseluleko Sezobuchwepheshe',
+      xh: 'Akukho Icebiso Lobuchwepheshe'
+    },
+    'terms.noAdviceDescription': {
+      en: 'Propza does not provide legal, accounting, tax, financial, or property management advice. Any information or reports generated by the platform are provided for general administrative purposes only and should not be relied upon as professional advice. You should consult qualified professionals for legal, financial, tax, or property-related matters.',
+      af: 'Propza verskaf nie regs-, rekenkundige, belasting-, finansiële of eiendomsbestuuradvies nie. Enige inligting of verslae wat deur die platform gegenereer word, word slegs vir algemene administratiewe doeleindes verskaf en moet nie as professionele advies beskou word nie. Jy moet gekwalifiseerde professionele persone raadpleeg vir regs-, finansiële, belasting- of eiendomsverwante sake.',
+      zu: 'I-Propza ayinikezi iseluleko sokomthetho, lwe-akhawunti, lwerhafu, lezezimali, noma lokuphatha izakhiwo. Noma yimiphi imininingwane noma imibiko enikezwa yisikhundla inikezwa kuphela ngezinhloso zokuphatha jikelele futhi akufanele kusengelwe phezu kwayo njengecebo lobuchwepheshe. Kufanele ubonisane nabochwepheshe abagogodlha ngezindaba zokomthetho, zezimali, zerhafu, noma ezindlini.',
+      xh: 'I-Propza ayiniki icebiso lomthetho, lobugcisa bezimali, irhafu, nezezimali, okanye lokuphatha iipropati. Nayiphi na imininingwane okanye imibiko ekhiqizwe yinkundla inikezwa kuphela ngeenjongo zolawulo jikelele kwaye kufuneka ingaxhomekeki kuyona njengecebiso lobuchwepheshe. Kufuneka ubonisane noochwepheshe abanegunya kwimicimbi yomthetho, yezezimali, irhafu, okanye eyepropati.'
+    },
     'terms.liability': {
       en: 'Limitation of Liability',
       af: 'Beperking van Aanspreeklikheid',
@@ -1213,10 +1381,10 @@ export class TranslationService {
       xh: 'Ukulinganiselwa Kwesibopho'
     },
     'terms.liabilityDescription': {
-      en: 'Propza is provided "as is" without warranties. We are not liable for any damages arising from your use of the service.',
-      af: 'Propza word "soos dit is" verskaf sonder waarborge. Ons is nie aanspreeklik vir enige skade wat voortspruit uit jou gebruik van die diens nie.',
-      zu: 'I-Propza inikezwa "njengoba injalo" ngaphandle kweziqinisekiso. Asibophi muntu noma yiziphi izonakaliso ezivela ekusebenziseni kwakho insiza.',
-      xh: 'I-Propza inikezwa "njengoba injalo" ngaphandle kweziqinisekiso. Asibophi muntu noma yiziphi izonakaliso ezivela ekusebenziseni kwakho insiza.'
+      en: 'Propza is provided "as is" without warranties of any kind, express or implied. To the maximum extent permitted by law, Propza shall not be liable for any indirect, incidental, consequential, or special damages arising from your use of the platform, including loss of profits, data, tenants, rental income, or business opportunities. Our total liability for any claim shall not exceed the amount paid by you, if any, for access to the platform in the twelve months preceding the claim.',
+      af: 'Propza word "soos dit is" verskaf sonder enige waarborge, uitdruklik of geïmpliseer. Tot die maksimum mate wat deur die wet toegelaat word, sal Propza nie aanspreeklik wees vir enige indirekte, toevallige, gevolglike of spesiale skade wat voortspruit uit jou gebruik van die platform nie, insluitend verlies aan winste, data, huurders, huurinkomste of besigheidsgeleenthede nie. Ons totale aanspreeklikheid vir enige eis sal nie die bedrag oorskry wat deur jou betaal is nie, indien enige, vir toegang tot die platform in die twaalf maande voor die eis.',
+      zu: 'I-Propza inikezwa "njengoba injalo" ngaphandle kweziqinisekiso zazo zonke izinhlobo, ezicacile noma ezishiwoyo. Ngokwesikele esikhulu esiheheliwe ngumthetho, i-Propza ngeke ibophe noma yiziphi izonakaliso ezingaqondile, ezenzekile, ezilandela, noma ezikhethekile ezivela ekusebenziseni kwakho isikhundla, kufaka phakathi ukulahleka kwenzuzo, idatha, abaqashi, imali yokuqasha, noma amathuba ebhizinisi. Isibopho sethu esiphelele nganoma yisiphi isicelo ngeke sadlule imali ekhokhelwe nguwe, uma ikhona, ngokufinyelela isikhundla ezinyangeni eziyishumi nambili ezandulela isicelo.',
+      xh: 'I-Propza inikezwa "njengoba injalo" ngaphandle kweziqinisekiso zazo zonke iintlobo, ezibonakalayo okanye eziambekiweyo. Ukuze kube nzima ngokomthetho, i-Propza ayisoze ibopheleke nganayiphi na izonakaliso ezingaqondanga, ezenzekileyo, ezilandela, okanye ezikhethekileyo ezivela ekusetyenziseni kwakho inkundla, kubandakanya ukulahleka kwenzuzo, idatha, abaqeshi, imali yerenti, okanye amathuba ebhizinisi. Uxanduva lwethu olupheleleyo ngalo naliphi na icala aluyikudlula imali ehlawuliweyo nguwe, ukuba ikhona, ngokufikelela inkundla kwiinyanga ezili-12 ezandulela icala.'
     },
     'terms.termination': {
       en: 'Termination',

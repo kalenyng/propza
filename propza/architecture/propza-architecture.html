@@ -1,0 +1,2075 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Propza — Architecture Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+          display: ['"Inter Tight"', 'Inter', 'ui-sans-serif'],
+          mono: ['"JetBrains Mono"', 'ui-monospace']
+        },
+        colors: {
+          propza: {
+            50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7',
+            400: '#34d399', 500: '#0ea472', 600: '#0a8c61', 700: '#0a6e4c',
+            ink: '#0b1320'
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  html, body { background: #070b16; color: #e8edf3; font-family: 'Inter', sans-serif; }
+  :root { --bg-grid: rgba(255,255,255,0.035); }
+
+  /* Subtle blueprint grid */
+  .grid-bg {
+    background-image:
+      linear-gradient(var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px),
+      radial-gradient(900px 600px at 20% 0%, rgba(14,164,114,0.08), transparent 60%),
+      radial-gradient(900px 600px at 80% 100%, rgba(99,102,241,0.06), transparent 60%);
+    background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%;
+  }
+
+  .glass {
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .layer-card {
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));
+    border: 1px solid rgba(255,255,255,0.07);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 24px 60px rgba(0,0,0,0.35);
+  }
+
+  .node {
+    transition: transform 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms, border-color 220ms;
+    cursor: pointer;
+  }
+  .node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 56px rgba(14,164,114,0.22);
+    border-color: rgba(110,231,183,0.45);
+  }
+
+  /* Pills */
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 1px 8px; border-radius: 999px;
+    font-size: 11px; line-height: 18px; font-weight: 500;
+    white-space: nowrap;
+  }
+  .pill-green   { background: rgba(16,185,129,0.16);  color: #6ee7b7; }
+  .pill-blue    { background: rgba(59,130,246,0.16);  color: #93c5fd; }
+  .pill-purple  { background: rgba(139,92,246,0.18);  color: #c4b5fd; }
+  .pill-amber   { background: rgba(245,158,11,0.16);  color: #fcd34d; }
+  .pill-rose    { background: rgba(244,63,94,0.16);   color: #fda4af; }
+  .pill-slate   { background: rgba(148,163,184,0.16); color: #cbd5e1; }
+  .pill-teal    { background: rgba(20,184,166,0.18);  color: #5eead4; }
+  .pill-sky     { background: rgba(14,165,233,0.18);  color: #7dd3fc; }
+
+  /* Section bands (vertical hierarchy markers inside the canvas) */
+  .section-band {
+    position: absolute;
+    left: 60px; right: 60px;
+    display: flex; align-items: center; gap: 14px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .section-num {
+    display: inline-grid; place-items: center;
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(110,231,183,0.18), rgba(110,231,183,0.06));
+    border: 1px solid rgba(110,231,183,0.28);
+    color: #a7f3d0;
+    font-family: 'JetBrains Mono', ui-monospace;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: 0 6px 18px rgba(14,164,114,0.18);
+  }
+  .section-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: rgba(255,255,255,0.90);
+    letter-spacing: -0.01em;
+  }
+  .section-rule {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 70%, transparent 100%);
+  }
+  .section-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    font-family: 'JetBrains Mono', ui-monospace;
+    letter-spacing: 0.02em;
+  }
+
+  /* Connectors */
+  .flow-line {
+    stroke: rgba(110,231,183,0.32);
+    stroke-width: 1.6;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 5 5;
+    animation: dash 36s linear infinite;
+  }
+  .flow-line-solid {
+    stroke: rgba(110,231,183,0.55);
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .flow-line-thick {
+    stroke: rgba(110,231,183,0.72);
+    stroke-width: 3;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .flow-line-aux {
+    stroke: rgba(255,255,255,0.18);
+    stroke-width: 1.4;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 3 5;
+  }
+  @keyframes dash { to { stroke-dashoffset: -1000; } }
+
+  .arrow-head { fill: rgba(110,231,183,0.65); }
+  .arrow-head-strong { fill: #6ee7b7; }
+  .arrow-head-aux { fill: rgba(255,255,255,0.35); }
+
+  /* Issues severity */
+  .severity-high   { color: #fecaca; background: rgba(244,63,94,0.16); border-color: rgba(244,63,94,0.4); }
+  .severity-medium { color: #fed7aa; background: rgba(249,115,22,0.16); border-color: rgba(249,115,22,0.4); }
+  .severity-low    { color: #fde68a; background: rgba(245,158,11,0.16); border-color: rgba(245,158,11,0.35); }
+  .severity-info   { color: #bae6fd; background: rgba(14,165,233,0.16); border-color: rgba(14,165,233,0.35); }
+
+  /* Drawer */
+  .drawer-mask { background: rgba(2,6,16,0.6); backdrop-filter: blur(6px); }
+  .drawer { transition: transform 360ms cubic-bezier(.2,.8,.2,1); }
+  .drawer.closed { transform: translateX(110%); }
+
+  /* Tabs */
+  .tab-btn[data-active="true"] {
+    background: rgba(110,231,183,0.16);
+    color: #d1fae5;
+    border-color: rgba(110,231,183,0.4);
+  }
+
+  /* Pan/zoom canvas */
+  #mapCanvas { transform-origin: 0 0; will-change: transform; }
+  #mapHost { cursor: grab; touch-action: none; }
+  #mapHost.dragging { cursor: grabbing; user-select: none; }
+
+  /* Fullscreen mode (native :fullscreen + manual fallback) */
+  #mapHost:fullscreen,
+  #mapHost:-webkit-full-screen,
+  #mapHost.is-fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh;
+    border-radius: 0 !important;
+    border: 0 !important;
+    background: #050913;
+  }
+  #mapHost.is-fullscreen {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 100;
+  }
+  body.has-fullscreen-map { overflow: hidden; }
+
+  /* In-canvas floating control overlay (visible always; styled to live in the map) */
+  .map-overlay {
+    position: absolute;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: auto;
+  }
+  .map-overlay .ctrl-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 11px;
+    border-radius: 10px;
+    background: rgba(8,13,24,0.78);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.85);
+    font-size: 12px;
+    line-height: 1;
+    backdrop-filter: blur(10px);
+    transition: background 160ms, border-color 160ms, color 160ms;
+    cursor: pointer;
+  }
+  .map-overlay .ctrl-btn:hover {
+    background: rgba(110,231,183,0.14);
+    border-color: rgba(110,231,183,0.35);
+    color: #d1fae5;
+  }
+  .map-overlay .ctrl-btn.danger:hover {
+    background: rgba(244,63,94,0.18);
+    border-color: rgba(244,63,94,0.45);
+    color: #fda4af;
+  }
+  .map-overlay .ctrl-zoom-label {
+    min-width: 44px; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: rgba(255,255,255,0.65);
+  }
+  .map-hint {
+    position: absolute;
+    z-index: 30;
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(8,13,24,0.72);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.60);
+    font-size: 11px;
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+  }
+  .kbd {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.2;
+  }
+  /* Show the "exit" pill only in fullscreen */
+  .fs-only { display: none !important; }
+  #mapHost:fullscreen .fs-only,
+  #mapHost.is-fullscreen .fs-only { display: inline-flex !important; }
+
+  details[open] > summary svg.chev { transform: rotate(90deg); }
+  summary { list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  .row-link { transition: background 160ms, color 160ms; }
+  .row-link:hover { background: rgba(110,231,183,0.08); color: #d1fae5; }
+
+  .pulse-dot {
+    width: 8px; height: 8px; border-radius: 999px; background: #34d399;
+    box-shadow: 0 0 0 0 rgba(52,211,153,0.6);
+    animation: pulse 1.8s infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(52,211,153,0.5); }
+    70%  { box-shadow: 0 0 0 10px rgba(52,211,153,0); }
+    100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+  }
+
+  /* Layer color accents (subtle left-border treatment for grouped containers) */
+  .accent-l-client    { box-shadow: inset 3px 0 0 rgba(125,211,252,0.6); }
+  .accent-l-app       { box-shadow: inset 3px 0 0 rgba(110,231,183,0.6); }
+  .accent-l-router    { box-shadow: inset 3px 0 0 rgba(196,181,253,0.6); }
+  .accent-l-layout    { box-shadow: inset 3px 0 0 rgba(110,231,183,0.6); }
+  .accent-l-feature   { box-shadow: inset 3px 0 0 rgba(252,211,77,0.6); }
+  .accent-l-shared    { box-shadow: inset 3px 0 0 rgba(203,213,225,0.6); }
+  .accent-l-service   { box-shadow: inset 3px 0 0 rgba(110,231,183,0.6); }
+  .accent-l-db        { box-shadow: inset 3px 0 0 rgba(94,234,212,0.6); }
+  .accent-l-ext       { box-shadow: inset 3px 0 0 rgba(186,230,253,0.6); }
+  .accent-l-legacy    { box-shadow: inset 3px 0 0 rgba(244,114,182,0.55); }
+
+  .group-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 4px 8px 4px;
+    border-bottom: 1px dashed rgba(255,255,255,0.08);
+    margin-bottom: 10px;
+  }
+  .group-kicker {
+    font-family: 'JetBrains Mono', ui-monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #a7f3d0;
+  }
+
+  .chip {
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 8px 10px;
+    transition: background 180ms, border-color 180ms, transform 180ms;
+  }
+  .chip:hover {
+    background: rgba(110,231,183,0.10);
+    border-color: rgba(110,231,183,0.32);
+    transform: translateY(-1px);
+  }
+  .chip-name { font-weight: 600; font-size: 12px; color: #e8edf3; }
+  .chip-meta { font-size: 10.5px; color: rgba(255,255,255,0.5); margin-top: 2px; line-height: 1.35; }
+
+  .legend {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: rgba(255,255,255,0.65);
+  }
+  .legend-swatch {
+    display: inline-block; width: 16px; height: 4px; border-radius: 2px;
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============ HEADER ============ -->
+<header class="sticky top-0 z-30 border-b border-white/5 bg-[#070b16]/85 backdrop-blur">
+  <div class="max-w-[1480px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="h-10 w-10 rounded-2xl grid place-items-center bg-gradient-to-br from-propza-400 to-propza-700 shadow-lg shadow-propza-700/30">
+        <span class="font-display font-extrabold text-white text-lg">P</span>
+      </div>
+      <div>
+        <div class="font-display font-extrabold text-xl tracking-tight">Propza · Architecture</div>
+        <div class="text-xs text-white/50 flex items-center gap-2">
+          <span class="pulse-dot"></span>
+          Angular 18 · Supabase · Vercel · PWA · ZAR
+        </div>
+      </div>
+    </div>
+    <div class="flex-1 max-w-md hidden md:block">
+      <div class="relative">
+        <input id="searchInput" placeholder="Search components, services, files, flows…"
+          class="w-full bg-white/5 border border-white/10 focus:border-propza-400 focus:bg-white/10 text-sm px-4 py-2 rounded-xl outline-none placeholder-white/40" />
+        <kbd class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-white/40 border border-white/10 px-1.5 py-0.5 rounded">⌘K</kbd>
+      </div>
+    </div>
+    <nav class="flex items-center gap-1 text-sm">
+      <button class="tab-btn px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5" data-tab="map" data-active="true">Map</button>
+      <button class="tab-btn px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5" data-tab="flows">Data Flows</button>
+      <button class="tab-btn px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5" data-tab="schema">Schema</button>
+      <button class="tab-btn px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5" data-tab="issues">
+        Issues <span class="ml-1 pill pill-rose">17</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-[1480px] mx-auto px-6 py-8 space-y-10">
+
+  <!-- ===== HERO / OVERVIEW ===== -->
+  <section class="grid grid-cols-12 gap-6">
+    <div class="col-span-12 lg:col-span-8 layer-card p-7">
+      <div class="flex items-start justify-between gap-6">
+        <div>
+          <div class="text-xs uppercase tracking-widest text-propza-300 mb-2">South African landlord SaaS</div>
+          <h1 class="font-display text-4xl font-extrabold leading-tight">Property management, made simple.</h1>
+          <p class="mt-3 text-white/70 leading-relaxed max-w-2xl">
+            A standalone Angular 18 SPA that talks directly to Supabase from the browser — no API server.
+            Tracks properties, tenants, rent, and payments in ZAR with timezone-safe (UTC+2) status math
+            and an offline-capable PWA shell. Hosted as a static build on Vercel.
+          </p>
+        </div>
+        <div class="hidden md:flex flex-col items-end gap-2">
+          <span class="pill pill-green">SPA</span>
+          <span class="pill pill-blue">PWA</span>
+          <span class="pill pill-purple">BaaS</span>
+          <span class="pill pill-teal">i18n × 4</span>
+        </div>
+      </div>
+      <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+          <div class="text-xs text-white/50">Pages / routes</div>
+          <div class="text-2xl font-display font-bold">12</div>
+        </div>
+        <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+          <div class="text-xs text-white/50">Core services</div>
+          <div class="text-2xl font-display font-bold">14</div>
+        </div>
+        <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+          <div class="text-xs text-white/50">DB tables</div>
+          <div class="text-2xl font-display font-bold">5</div>
+        </div>
+        <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+          <div class="text-xs text-white/50">Archit. issues</div>
+          <div class="text-2xl font-display font-bold text-rose-300">17</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-span-12 lg:col-span-4 layer-card p-7">
+      <div class="text-xs uppercase tracking-widest text-propza-300 mb-3">Stack</div>
+      <ul class="space-y-2.5 text-sm">
+        <li class="flex items-center justify-between"><span class="text-white/70">Frontend</span><span class="font-medium">Angular 18 · TypeScript 5.5</span></li>
+        <li class="flex items-center justify-between"><span class="text-white/70">State</span><span class="font-medium">Signals + RxJS 7.8</span></li>
+        <li class="flex items-center justify-between"><span class="text-white/70">UI</span><span class="font-medium">Tailwind · Bootstrap · ng-bootstrap</span></li>
+        <li class="flex items-center justify-between"><span class="text-white/70">Backend</span><span class="font-medium">Supabase v2.75</span></li>
+        <li class="flex items-center justify-between"><span class="text-white/70">PWA</span><span class="font-medium">@angular/service-worker</span></li>
+        <li class="flex items-center justify-between"><span class="text-white/70">Host</span><span class="font-medium">Vercel (static)</span></li>
+        <li class="flex items-center justify-between"><span class="text-white/70">Tests</span><span class="font-medium">Karma · Jasmine</span></li>
+        <li class="flex items-center justify-between"><span class="text-white/70">i18n</span><span class="font-medium">EN · AF · ZU · XH</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- ============ MAP ============= -->
+  <!-- ============================== -->
+  <section data-panel="map" class="space-y-4">
+    <div class="flex items-end justify-between flex-wrap gap-4">
+      <div>
+        <h2 class="font-display text-2xl font-bold">Interactive architecture map</h2>
+        <p class="text-sm text-white/60 mt-1 max-w-3xl">
+          Reads top → bottom: <span class="text-propza-200">external infrastructure → client entry → app bootstrap → router → shell → features → services → database</span>.
+          Drag to pan, scroll to zoom, click any node for details.
+        </p>
+        <div class="mt-2 flex flex-wrap items-center gap-4">
+          <span class="legend"><span class="legend-swatch" style="background:#6ee7b7"></span>main flow</span>
+          <span class="legend"><span class="legend-swatch" style="background:rgba(110,231,183,0.35); border-top:1px dashed rgba(110,231,183,0.7)"></span>fan-out / spawn</span>
+          <span class="legend"><span class="legend-swatch" style="background:rgba(255,255,255,0.25); border-top:1px dashed rgba(255,255,255,0.5)"></span>uses / consumes</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-xs">
+        <button data-zoom="fit"    class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10">Fit</button>
+        <button data-zoom="out"    class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10">−</button>
+        <span   data-zoom-label    class="text-white/50 w-12 text-center font-mono">50%</span>
+        <button data-zoom="in"     class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10">+</button>
+        <button data-zoom="reset"  class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10">100%</button>
+        <span class="w-px h-5 bg-white/10 mx-1"></span>
+        <button data-zoom="fullscreen" class="px-3 py-1.5 rounded-lg bg-propza-500/15 border border-propza-400/30 text-propza-200 hover:bg-propza-500/25 flex items-center gap-1.5">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"/></svg>
+          Fullscreen
+        </button>
+      </div>
+    </div>
+
+    <div id="mapHost" class="relative grid-bg layer-card overflow-hidden" style="height: 1180px;">
+
+      <!-- In-canvas floating control overlay (always visible inside the map) -->
+      <div class="map-overlay" style="top: 14px; right: 14px;">
+        <button class="ctrl-btn" data-zoom="fit" title="Fit to view">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        </button>
+        <button class="ctrl-btn" data-zoom="out" title="Zoom out">−</button>
+        <span class="ctrl-zoom-label" data-zoom-label>50%</span>
+        <button class="ctrl-btn" data-zoom="in" title="Zoom in">+</button>
+        <button class="ctrl-btn" data-zoom="fullscreen" title="Toggle fullscreen (F)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"/></svg>
+        </button>
+        <button class="ctrl-btn danger fs-only" data-zoom="exit-fullscreen" title="Exit fullscreen (Esc)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6"/></svg>
+          Exit
+        </button>
+      </div>
+
+      <!-- Controls hint pill (bottom-left) -->
+      <div class="map-hint" style="bottom: 14px; left: 14px;">
+        <span><kbd class="kbd">scroll</kbd> pan</span>
+        <span class="text-white/20">·</span>
+        <span><kbd class="kbd">⌘/ctrl</kbd>+<kbd class="kbd">scroll</kbd> or <kbd class="kbd">pinch</kbd> zoom</span>
+        <span class="text-white/20">·</span>
+        <span><kbd class="kbd">drag</kbd> pan</span>
+        <span class="text-white/20 fs-only">·</span>
+        <span class="fs-only"><kbd class="kbd">esc</kbd> exit</span>
+      </div>
+
+      <div id="mapCanvas" class="relative" style="width: 2400px; height: 2460px;">
+
+        <!-- ============== SVG CONNECTORS ============== -->
+        <svg class="absolute inset-0 pointer-events-none" width="2400" height="2460" viewBox="0 0 2400 2460">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 Z" class="arrow-head"/>
+            </marker>
+            <marker id="arrow-strong" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 Z" class="arrow-head-strong"/>
+            </marker>
+            <marker id="arrow-aux" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 Z" class="arrow-head-aux"/>
+            </marker>
+          </defs>
+
+          <!-- Auxiliary lines from external infra into client (dashed grey) -->
+          <!-- Vercel (560, 200) -> Browser (900, 320) via right-angle -->
+          <path class="flow-line-aux" marker-end="url(#arrow-aux)" d="M 560 200 V 240 H 900 V 305"/>
+          <!-- Google Fonts (1840, 200) -> Browser (1500, 320) -->
+          <path class="flow-line-aux" marker-end="url(#arrow-aux)" d="M 1840 200 V 240 H 1500 V 305"/>
+          <!-- Google OAuth (1200, 200) -> AuthService (later in services row, no direct arrow; we annotate text only) -->
+          <!-- Skip explicit line to avoid clutter; OAuth relationship is shown in detail drawer + label -->
+
+          <!-- Main spine arrows (solid green, orthogonal) -->
+          <!-- Browser bottom (1200, 400) → App top (1200, 460) -->
+          <path class="flow-line-solid" marker-end="url(#arrow-strong)" d="M 1200 400 V 452"/>
+          <!-- App bottom (1200, 600) → Router top (1200, 660) -->
+          <path class="flow-line-solid" marker-end="url(#arrow-strong)" d="M 1200 600 V 652"/>
+          <!-- Router bottom (1200, 900) → Layout top (1200, 960) -->
+          <path class="flow-line-solid" marker-end="url(#arrow-strong)" d="M 1200 900 V 952"/>
+
+          <!-- Layout bottom (1200, 1080) fan-out into 6 features at top y=1140 -->
+          <!-- Branch trunk -->
+          <path class="flow-line-solid" d="M 1200 1080 V 1108"/>
+          <!-- Horizontal trunk spanning feature centers -->
+          <path class="flow-line-solid" d="M 420 1108 H 1980"/>
+          <!-- Six vertical drops from trunk to each feature card top (y=1140) -->
+          <path class="flow-line-solid" marker-end="url(#arrow)" d="M 420 1108 V 1132"/>
+          <path class="flow-line-solid" marker-end="url(#arrow)" d="M 732 1108 V 1132"/>
+          <path class="flow-line-solid" marker-end="url(#arrow)" d="M 1044 1108 V 1132"/>
+          <path class="flow-line-solid" marker-end="url(#arrow)" d="M 1356 1108 V 1132"/>
+          <path class="flow-line-solid" marker-end="url(#arrow)" d="M 1668 1108 V 1132"/>
+          <path class="flow-line-solid" marker-end="url(#arrow)" d="M 1980 1108 V 1132"/>
+
+          <!-- Features → Services: route AROUND the shared-library band using both side rails -->
+          <!-- Left rail (from feature center 420) -->
+          <path class="flow-line" d="M 420 1380 V 1410 H 110 V 1660 H 252"/>
+          <!-- Right rail (from feature center 1980) -->
+          <path class="flow-line" d="M 1980 1380 V 1410 H 2290 V 1660 H 2148"/>
+          <!-- Center spine (collapses other 4 features into one funnel) -->
+          <path class="flow-line-solid" marker-end="url(#arrow)" d="M 732 1380 V 1410 H 1200 V 1612"/>
+          <path class="flow-line" d="M 1044 1380 V 1408 H 1200"/>
+          <path class="flow-line" d="M 1356 1380 V 1408 H 1200"/>
+          <path class="flow-line" d="M 1668 1380 V 1408 H 1200"/>
+
+          <!-- Services → Supabase: single thick spine arrow -->
+          <path class="flow-line-thick" marker-end="url(#arrow-strong)" d="M 1200 1940 V 1992"/>
+
+          <!-- Inline label on the Services→Supabase arrow -->
+          <g transform="translate(1218, 1968)">
+            <rect x="0" y="-11" rx="6" ry="6" width="186" height="22" fill="#070b16" stroke="rgba(110,231,183,0.35)" stroke-width="1"/>
+            <text x="93" y="4" text-anchor="middle" fill="#a7f3d0" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">@supabase/supabase-js</text>
+          </g>
+
+          <!-- Inline label on the Features→Services funnel -->
+          <g transform="translate(1110, 1392)">
+            <rect x="0" y="-11" rx="6" ry="6" width="180" height="22" fill="#070b16" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+            <text x="90" y="4" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="JetBrains Mono, monospace" font-size="10.5">DI · constructor(svc)</text>
+          </g>
+        </svg>
+
+        <!-- ============ SECTION 01 · EXTERNAL INFRASTRUCTURE ============ -->
+        <div class="section-band" style="top: 30px;">
+          <span class="section-num">01</span>
+          <span class="section-title">External Infrastructure</span>
+          <span class="section-rule"></span>
+          <span class="section-meta">cdn · hosting · identity</span>
+        </div>
+
+        <!-- Vercel -->
+        <div class="absolute" style="left: 260px; top: 80px; width: 600px; height: 120px;">
+          <div class="node layer-card accent-l-ext p-4 h-full" data-detail="ext-vercel">
+            <div class="flex items-start gap-3 h-full">
+              <div class="h-10 w-10 rounded-xl bg-black/60 border border-white/10 grid place-items-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 2L2 22h20z"/></svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <div class="font-display font-bold text-base">Vercel</div>
+                  <span class="pill pill-slate">hosting · CD</span>
+                </div>
+                <div class="text-xs text-white/55 mt-1 leading-relaxed">Static SPA host. SPA rewrites <span class="font-mono">/(.*) → /index.html</span>. Build via <span class="font-mono">npm run build:vercel</span>; output <span class="font-mono">dist/propza/browser</span>.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Google OAuth (via Supabase) -->
+        <div class="absolute" style="left: 900px; top: 80px; width: 600px; height: 120px;">
+          <div class="node layer-card accent-l-ext p-4 h-full" data-detail="ext-google">
+            <div class="flex items-start gap-3 h-full">
+              <div class="h-10 w-10 rounded-xl bg-amber-500/15 border border-amber-400/30 grid place-items-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fde68a" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/></svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <div class="font-display font-bold text-base">Google OAuth</div>
+                  <span class="pill pill-amber">via Supabase Auth</span>
+                </div>
+                <div class="text-xs text-white/55 mt-1 leading-relaxed">Social login. <span class="font-mono">signInWithOAuth({ provider:'google' })</span>, redirectTo <span class="font-mono">/dashboard?beta=granted</span>.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Google Fonts -->
+        <div class="absolute" style="left: 1540px; top: 80px; width: 600px; height: 120px;">
+          <div class="node layer-card accent-l-ext p-4 h-full" data-detail="ext-fonts">
+            <div class="flex items-start gap-3 h-full">
+              <div class="h-10 w-10 rounded-xl bg-propza-500/15 border border-propza-400/30 grid place-items-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a7f3d0" stroke-width="2"><path d="M5 4h14M10 4v16M14 4v16"/></svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <div class="font-display font-bold text-base">Google Fonts</div>
+                  <span class="pill pill-green">font-display: swap</span>
+                </div>
+                <div class="text-xs text-white/55 mt-1 leading-relaxed">Inter 400/600/700 · Inter Tight 600/700/800 · preconnect declared in index.html.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION 02 · CLIENT ENTRY ============ -->
+        <div class="section-band" style="top: 250px;">
+          <span class="section-num">02</span>
+          <span class="section-title">Client Entry</span>
+          <span class="section-rule"></span>
+          <span class="section-meta">index.html · main.ts · ngsw-config.json</span>
+        </div>
+
+        <div class="absolute" style="left: 900px; top: 300px; width: 600px; height: 100px;">
+          <div class="node layer-card accent-l-client p-4 h-full" data-detail="browser">
+            <div class="flex items-center gap-3 h-full">
+              <div class="h-10 w-10 rounded-xl bg-sky-500/20 grid place-items-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7dd3fc" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="font-display font-bold text-base">Browser · PWA Shell</div>
+                <div class="text-xs text-white/55 mt-0.5 font-mono">index.html → main.ts → bootstrapApplication()</div>
+              </div>
+              <div class="flex flex-col gap-1 items-end">
+                <span class="pill pill-blue">ServiceWorker (prod)</span>
+                <span class="pill pill-slate">View Transitions</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION 03 · APP BOOTSTRAP ============ -->
+        <div class="section-band" style="top: 420px;">
+          <span class="section-num">03</span>
+          <span class="section-title">App Bootstrap</span>
+          <span class="section-rule"></span>
+          <span class="section-meta">root component · global overlays</span>
+        </div>
+
+        <div class="absolute" style="left: 800px; top: 460px; width: 800px; height: 140px;">
+          <div class="node layer-card accent-l-app p-4 h-full" data-detail="appshell">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-propza-500/20 grid place-items-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18"/></svg>
+              </div>
+              <div>
+                <div class="font-display font-bold text-base">AppComponent</div>
+                <div class="text-xs text-white/55 mt-0.5 font-mono">src/app/app.component.ts</div>
+              </div>
+              <span class="pill pill-green ml-auto">standalone</span>
+            </div>
+            <div class="mt-3 grid grid-cols-3 gap-2 text-[11px]">
+              <div class="rounded-lg bg-white/5 border border-white/10 px-2 py-1.5 text-center">
+                <div class="font-semibold">Preloader</div>
+                <div class="text-white/45">Lottie · 4s hold</div>
+              </div>
+              <div class="rounded-lg bg-white/5 border border-white/10 px-2 py-1.5 text-center">
+                <div class="font-semibold">Confirmation</div>
+                <div class="text-white/45">global modal</div>
+              </div>
+              <div class="rounded-lg bg-white/5 border border-white/10 px-2 py-1.5 text-center">
+                <div class="font-semibold">Toast Layer</div>
+                <div class="text-white/45">toasts$ stream</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION 04 · ROUTER & GUARDS ============ -->
+        <div class="section-band" style="top: 620px;">
+          <span class="section-num">04</span>
+          <span class="section-title">Router &amp; Guards</span>
+          <span class="section-rule"></span>
+          <span class="section-meta">app.routes.ts · CanActivateFn × 3</span>
+        </div>
+
+        <div class="absolute" style="left: 400px; top: 660px; width: 1600px; height: 240px;">
+          <div class="layer-card accent-l-router p-5 h-full">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="h-10 w-10 rounded-xl bg-purple-500/20 grid place-items-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" stroke-width="1.8"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg>
+              </div>
+              <div>
+                <div class="font-display font-bold text-base">Router &amp; Guards</div>
+                <div class="text-xs text-white/55 mt-0.5 font-mono">src/app/app.routes.ts · src/app/core/guards/</div>
+              </div>
+              <span class="pill pill-amber ml-auto">all routes eagerly loaded</span>
+            </div>
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-5 grid grid-cols-3 gap-2 text-xs content-start">
+                <div class="node chip" data-detail="guard-auth">
+                  <div class="chip-name text-propza-200">authGuard</div>
+                  <div class="chip-meta">requires session → /login</div>
+                </div>
+                <div class="node chip" data-detail="guard-guest">
+                  <div class="chip-name text-propza-200">guestGuard</div>
+                  <div class="chip-meta">if session → /dashboard</div>
+                </div>
+                <div class="node chip" data-detail="guard-beta">
+                  <div class="chip-name text-propza-200">betaAccessGuard</div>
+                  <div class="chip-meta">localStorage gate</div>
+                </div>
+                <div class="col-span-3 rounded-xl bg-rose-500/8 border border-rose-400/25 px-3 py-2 text-[11px] text-rose-200 mt-1">
+                  ⚠ <span class="font-semibold">betaAccessGuard</span> is client-side only; not a security boundary.
+                </div>
+              </div>
+              <div class="col-span-7 rounded-xl bg-black/30 border border-white/5 p-3 text-[12.5px] font-mono leading-relaxed text-white/70">
+                <span class="text-white/40">/</span> · <span class="text-white/40">/beta-access</span> · <span class="text-white/40">/login</span> · <span class="text-white/40">/register</span> · <span class="text-white/40">/reset-password</span><br/>
+                <span class="text-propza-300">┌─ AuthenticatedShellComponent</span> <span class="text-white/40">[betaAccessGuard, authGuard]</span><br/>
+                <span class="text-propza-300">│</span>  ├ <span class="text-white/85">/dashboard</span>  ├ <span class="text-white/85">/properties</span>  ├ <span class="text-white/85">/property/:id</span><br/>
+                <span class="text-propza-300">│</span>  ├ <span class="text-white/85">/tenants</span>    ├ <span class="text-white/85">/tenant/:id</span>  ├ <span class="text-white/85">/payments</span>  ├ <span class="text-white/85">/settings</span><br/>
+                <span class="text-white/40">└─ ** → NotFoundComponent</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION 05 · AUTHENTICATED SHELL ============ -->
+        <div class="section-band" style="top: 920px;">
+          <span class="section-num">05</span>
+          <span class="section-title">Authenticated Shell</span>
+          <span class="section-rule"></span>
+          <span class="section-meta">layout/ · mounts protected feature outlet</span>
+        </div>
+
+        <div class="absolute" style="left: 750px; top: 960px; width: 900px; height: 120px;">
+          <div class="node layer-card accent-l-layout p-4 h-full" data-detail="layer-layout">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-propza-500/20 grid place-items-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="font-display font-bold text-base">AuthenticatedShellComponent</div>
+                <div class="text-xs text-white/55 mt-0.5">Mobile green hero · Desktop sidebar · <span class="font-mono">&lt;router-outlet&gt;</span> mount</div>
+              </div>
+              <div class="flex gap-1 items-center">
+                <span class="pill pill-green">ScrollRestore host</span>
+                <span class="pill pill-green">MobileShellTitle</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION 06 · FEATURE MODULES ============ -->
+        <div class="section-band" style="top: 1100px;">
+          <span class="section-num">06</span>
+          <span class="section-title">Feature Modules</span>
+          <span class="section-rule"></span>
+          <span class="section-meta">features/* · standalone components</span>
+        </div>
+
+        <!-- 6 feature cards: x centers at 420, 732, 1044, 1356, 1668, 1980 (each 280 wide, 32 gap, starting x=280) -->
+
+        <!-- auth (x=280) -->
+        <div class="absolute" style="left: 280px; top: 1140px; width: 280px; height: 240px;">
+          <div class="node layer-card accent-l-feature p-4 h-full" data-detail="feature-auth">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="h-8 w-8 rounded-lg bg-rose-500/20 grid place-items-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fda4af" stroke-width="2"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+              </div>
+              <div class="font-display font-bold text-sm">auth</div>
+              <span class="pill pill-rose ml-auto">5 files</span>
+            </div>
+            <ul class="text-[11.5px] space-y-1 text-white/70">
+              <li>· LoginComponent</li>
+              <li>· RegisterComponent</li>
+              <li>· ResetPasswordComponent</li>
+              <li>· BetaAccessComponent</li>
+            </ul>
+            <div class="mt-3 flex gap-1 flex-wrap">
+              <span class="pill pill-amber">Google OAuth</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- dashboard (x=592) -->
+        <div class="absolute" style="left: 592px; top: 1140px; width: 280px; height: 240px;">
+          <div class="node layer-card accent-l-feature p-4 h-full" data-detail="feature-dashboard">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="h-8 w-8 rounded-lg bg-amber-500/20 grid place-items-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              </div>
+              <div class="font-display font-bold text-sm">dashboard</div>
+            </div>
+            <ul class="text-[11.5px] space-y-1 text-white/70">
+              <li>· Metrics + 6-month chart</li>
+              <li>· Upcoming rents (4)</li>
+              <li>· Activity stream (6)</li>
+              <li>· Inline search (debounced)</li>
+            </ul>
+            <div class="mt-3 flex gap-1 flex-wrap">
+              <span class="pill pill-purple">combineLatest</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- properties (x=904) -->
+        <div class="absolute" style="left: 904px; top: 1140px; width: 280px; height: 240px;">
+          <div class="node layer-card accent-l-feature p-4 h-full" data-detail="feature-properties">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="h-8 w-8 rounded-lg bg-propza-500/20 grid place-items-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+              </div>
+              <div class="font-display font-bold text-sm">properties</div>
+            </div>
+            <ul class="text-[11.5px] space-y-1 text-white/70">
+              <li>· PropertyList · PropertyDetail</li>
+              <li>· PropertyCard component</li>
+              <li>· AddPropertyModal</li>
+              <li>· property-status.config</li>
+            </ul>
+            <div class="mt-3 flex gap-1 flex-wrap">
+              <span class="pill pill-green">CRUD</span>
+              <span class="pill pill-purple">Storage upload</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- tenants (x=1216) -->
+        <div class="absolute" style="left: 1216px; top: 1140px; width: 280px; height: 240px;">
+          <div class="node layer-card accent-l-feature p-4 h-full" data-detail="feature-tenants">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="h-8 w-8 rounded-lg bg-blue-500/20 grid place-items-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/><circle cx="17" cy="6" r="2.5"/></svg>
+              </div>
+              <div class="font-display font-bold text-sm">tenants</div>
+            </div>
+            <ul class="text-[11.5px] space-y-1 text-white/70">
+              <li>· TenantList · TenantDetail</li>
+              <li>· TenantCard component</li>
+              <li>· AddTenantModal (vacant only)</li>
+              <li>· tenant-status.config</li>
+            </ul>
+            <div class="mt-3 flex gap-1 flex-wrap">
+              <span class="pill pill-blue">filter chips</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- payments (x=1528) -->
+        <div class="absolute" style="left: 1528px; top: 1140px; width: 280px; height: 240px;">
+          <div class="node layer-card accent-l-feature p-4 h-full" data-detail="feature-payments">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="h-8 w-8 rounded-lg bg-teal-500/20 grid place-items-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5eead4" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>
+              </div>
+              <div class="font-display font-bold text-sm">payments</div>
+            </div>
+            <ul class="text-[11.5px] space-y-1 text-white/70">
+              <li>· Filterable ledger</li>
+              <li>· Property + free-text search</li>
+              <li>· Totals · average · count</li>
+              <li>· Mobile launcher pattern</li>
+            </ul>
+            <div class="mt-3 flex gap-1 flex-wrap">
+              <span class="pill pill-teal">read-only</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- settings (x=1840) -->
+        <div class="absolute" style="left: 1840px; top: 1140px; width: 280px; height: 240px;">
+          <div class="node layer-card accent-l-feature p-4 h-full" data-detail="feature-settings">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="h-8 w-8 rounded-lg bg-slate-500/20 grid place-items-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3h0a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8h0a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+              </div>
+              <div class="font-display font-bold text-sm">settings</div>
+              <span class="pill pill-amber ml-auto">mobile+desktop split</span>
+            </div>
+            <ul class="text-[11.5px] space-y-1 text-white/70">
+              <li>· SettingsDesktop (385 LOC)</li>
+              <li>· SettingsMobile (1145 LOC)</li>
+              <li>· 10 modal components</li>
+            </ul>
+            <div class="mt-3 flex gap-1 flex-wrap">
+              <span class="pill pill-slate">profile · theme · export</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION 07 · SHARED UI LIBRARY ============ -->
+        <div class="section-band" style="top: 1420px;">
+          <span class="section-num">07</span>
+          <span class="section-title">Shared UI Library</span>
+          <span class="section-rule"></span>
+          <span class="section-meta">cross-feature components &amp; pipes</span>
+        </div>
+
+        <div class="absolute" style="left: 280px; top: 1460px; width: 1840px; height: 140px;">
+          <div class="node layer-card accent-l-shared p-4 h-full" data-detail="layer-shared">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="h-9 w-9 rounded-lg bg-white/10 grid place-items-center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+              </div>
+              <div class="font-display font-bold text-sm">shared/</div>
+              <div class="text-[11px] text-white/45 ml-2">imported directly by features &amp; layout (no flow line; cross-cutting)</div>
+              <span class="pill pill-slate ml-auto">8 components · 1 pipe</span>
+            </div>
+            <div class="grid grid-cols-9 gap-2 text-[11px]">
+              <div class="chip"><div class="chip-name">Preloader</div><div class="chip-meta">Lottie</div></div>
+              <div class="chip"><div class="chip-name">Confirmation</div><div class="chip-meta">global</div></div>
+              <div class="chip"><div class="chip-name">Toast</div><div class="chip-meta">stream</div></div>
+              <div class="chip"><div class="chip-name">BottomNav</div><div class="chip-meta">mobile</div></div>
+              <div class="chip"><div class="chip-name">HeaderBanner</div><div class="chip-meta">greeting</div></div>
+              <div class="chip"><div class="chip-name">IOSInstall</div><div class="chip-meta">A2HS modal</div></div>
+              <div class="chip"><div class="chip-name">PwaPrompt</div><div class="chip-meta">beforeinstall</div></div>
+              <div class="chip"><div class="chip-name">SummaryCard</div><div class="chip-meta">stat tile</div></div>
+              <div class="chip" style="background: rgba(110,231,183,0.10); border-color: rgba(110,231,183,0.3);">
+                <div class="chip-name font-mono">ShortNumberPipe</div><div class="chip-meta">R 1.2M · R 1K</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION 08 · CORE SERVICES ============ -->
+        <div class="section-band" style="top: 1620px;">
+          <span class="section-num">08</span>
+          <span class="section-title">Core Services</span>
+          <span class="section-rule"></span>
+          <span class="section-meta">providedIn: 'root' · grouped by responsibility</span>
+        </div>
+
+        <!-- 5 grouped service cards: 360 wide × 280 tall, gap 24, starting x=252 -->
+
+        <!-- Group 1: Data (x=252) -->
+        <div class="absolute" style="left: 252px; top: 1660px; width: 360px; height: 280px;">
+          <div class="layer-card accent-l-service p-3 h-full">
+            <div class="group-header"><span class="group-kicker">Data</span><span class="text-[10px] text-white/35 ml-auto font-mono">3 svc</span></div>
+            <div class="space-y-2">
+              <div class="node chip" style="background: rgba(110,231,183,0.10); border-color: rgba(110,231,183,0.3);" data-detail="svc-supabase">
+                <div class="chip-name text-propza-200">SupabaseService</div>
+                <div class="chip-meta">client singleton · refreshAll$ bus</div>
+              </div>
+              <div class="node chip" data-detail="svc-property">
+                <div class="chip-name">PropertyService</div>
+                <div class="chip-meta">properties$ · payments$ · loading$</div>
+              </div>
+              <div class="node chip" data-detail="svc-tenant">
+                <div class="chip-name">TenantService</div>
+                <div class="chip-meta">tenants$ · loading$</div>
+              </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-white/5 text-[10.5px] text-white/45">
+              Both subscribe to <span class="font-mono text-propza-300">SupabaseService.refreshAll$</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group 2: Identity (x=636) -->
+        <div class="absolute" style="left: 636px; top: 1660px; width: 360px; height: 280px;">
+          <div class="layer-card accent-l-service p-3 h-full">
+            <div class="group-header"><span class="group-kicker">Identity</span><span class="text-[10px] text-white/35 ml-auto font-mono">3 svc</span></div>
+            <div class="space-y-2">
+              <div class="node chip" data-detail="svc-auth">
+                <div class="chip-name">AuthService</div>
+                <div class="chip-meta">signals: session · user · userName</div>
+              </div>
+              <div class="node chip" data-detail="svc-beta">
+                <div class="chip-name">BetaAccessService</div>
+                <div class="chip-meta">localStorage · base64 compare</div>
+              </div>
+              <div class="node chip" data-detail="svc-theme">
+                <div class="chip-name">ThemeService</div>
+                <div class="chip-meta">signal · localStorage · profiles.theme</div>
+              </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-white/5 text-[10.5px] text-white/45">
+              Auth events drive theme effect &amp; user-scoped queries
+            </div>
+          </div>
+        </div>
+
+        <!-- Group 3: Rent Engine (x=1020) -->
+        <div class="absolute" style="left: 1020px; top: 1660px; width: 360px; height: 280px;">
+          <div class="layer-card accent-l-service p-3 h-full">
+            <div class="group-header"><span class="group-kicker">Rent Engine</span><span class="text-[10px] text-white/35 ml-auto font-mono">2 svc</span></div>
+            <div class="space-y-2">
+              <div class="node chip" style="background: rgba(110,231,183,0.10); border-color: rgba(110,231,183,0.3);" data-detail="svc-rentdue">
+                <div class="chip-name text-propza-200">RentDueService</div>
+                <div class="chip-meta">authoritative · monthly · ZA TZ (UTC+2)</div>
+              </div>
+              <div class="node chip" style="background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.3);" data-detail="svc-renthelper">
+                <div class="chip-name text-amber-200">RentHelperService</div>
+                <div class="chip-meta">monthly + weekly · ⚠ legacy</div>
+              </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-white/5 text-[10.5px] text-amber-200/80">
+              ⚠ overlap — consolidation recommended
+            </div>
+          </div>
+        </div>
+
+        <!-- Group 4: UX & Modals (x=1404) -->
+        <div class="absolute" style="left: 1404px; top: 1660px; width: 360px; height: 280px;">
+          <div class="layer-card accent-l-service p-3 h-full">
+            <div class="group-header"><span class="group-kicker">UX &amp; Modals</span><span class="text-[10px] text-white/35 ml-auto font-mono">6 svc</span></div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="node chip" data-detail="svc-confirm"><div class="chip-name">Confirmation</div><div class="chip-meta">promise modal</div></div>
+              <div class="node chip" data-detail="svc-modal"><div class="chip-name">ModalOptions</div><div class="chip-meta">responsive NgbModal</div></div>
+              <div class="node chip" data-detail="svc-shell"><div class="chip-name">MobileShellTitle</div><div class="chip-meta">title override</div></div>
+              <div class="node chip" data-detail="svc-scroll"><div class="chip-name">ScrollRestore</div><div class="chip-meta">per-path Y cache</div></div>
+              <div class="node chip" data-detail="svc-pwa"><div class="chip-name">PwaInstall</div><div class="chip-meta">A2HS · iOS detect</div></div>
+              <div class="node chip" id="svc-toast-chip"><div class="chip-name">ToastService</div><div class="chip-meta">shared/component pair</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group 5: Utilities (x=1788) -->
+        <div class="absolute" style="left: 1788px; top: 1660px; width: 360px; height: 280px;">
+          <div class="layer-card accent-l-service p-3 h-full">
+            <div class="group-header"><span class="group-kicker">Utilities</span><span class="text-[10px] text-white/35 ml-auto font-mono">4 svc</span></div>
+            <div class="space-y-2">
+              <div class="node chip" data-detail="svc-translation">
+                <div class="chip-name">TranslationService</div>
+                <div class="chip-meta">EN · AF · ZU · XH · 1828 LOC</div>
+              </div>
+              <div class="node chip" data-detail="svc-sanitize">
+                <div class="chip-name">SanitizationService</div>
+                <div class="chip-meta">XSS · DB write guard</div>
+              </div>
+              <div class="node chip" data-detail="svc-error">
+                <div class="chip-name">ErrorService</div>
+                <div class="chip-meta">normalize → AppError</div>
+              </div>
+              <div class="node chip" data-detail="svc-logger">
+                <div class="chip-name">LoggerService</div>
+                <div class="chip-meta">env-gated console</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION 09 · SUPABASE BACKEND ============ -->
+        <div class="section-band" style="top: 1980px;">
+          <span class="section-num">09</span>
+          <span class="section-title">Supabase Backend</span>
+          <span class="section-rule"></span>
+          <span class="section-meta">Auth · Postgres + RLS · Storage · RPC</span>
+        </div>
+
+        <div class="absolute" style="left: 200px; top: 2020px; width: 2000px; height: 400px;">
+          <div class="layer-card accent-l-db p-5 h-full" style="background: linear-gradient(160deg, rgba(14,164,114,0.10), rgba(2,6,16,0.45));">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-propza-500/30 grid place-items-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><path d="M12 2L2 7v10l10 5 10-5V7z"/><path d="M2 7l10 5 10-5"/><path d="M12 22V12"/></svg>
+                </div>
+                <div>
+                  <div class="font-display font-bold text-base">Supabase</div>
+                  <div class="text-xs text-white/55">Browser ↔ DB direct (no API server)</div>
+                </div>
+              </div>
+              <div class="flex gap-1 text-xs">
+                <span class="pill pill-green">Auth (JWT)</span>
+                <span class="pill pill-green">RLS owner-scoped</span>
+                <span class="pill pill-blue">PostgreSQL</span>
+                <span class="pill pill-purple">JWT in localStorage</span>
+              </div>
+            </div>
+
+            <!-- Sub-band 1: Active tables -->
+            <div class="mb-3">
+              <div class="text-[10px] uppercase tracking-widest text-propza-300 font-mono mb-2 px-1">Active tables</div>
+              <div class="grid grid-cols-3 gap-3">
+                <div class="node rounded-xl bg-white/5 border border-white/10 p-3" data-detail="db-properties">
+                  <div class="flex items-center justify-between">
+                    <div class="font-semibold text-propza-200 text-sm">properties</div>
+                    <span class="pill pill-green">RLS</span>
+                  </div>
+                  <div class="text-[11px] text-white/55 mt-1 leading-snug">owner_id · status (vacant/occupied) · rent_amount · currency · lease_url · notes</div>
+                </div>
+                <div class="node rounded-xl bg-white/5 border border-white/10 p-3" data-detail="db-tenants">
+                  <div class="flex items-center justify-between">
+                    <div class="font-semibold text-propza-200 text-sm">tenants</div>
+                    <span class="pill pill-green">RLS (via props)</span>
+                  </div>
+                  <div class="text-[11px] text-white/55 mt-1 leading-snug">property_id (CASCADE) · rent_due_date · rent_status · deposit_amount</div>
+                </div>
+                <div class="node rounded-xl bg-white/5 border border-white/10 p-3" data-detail="db-payments">
+                  <div class="flex items-center justify-between">
+                    <div class="font-semibold text-propza-200 text-sm">payments</div>
+                    <span class="pill pill-green">RLS (via props)</span>
+                  </div>
+                  <div class="text-[11px] text-white/55 mt-1 leading-snug">property_id (CASCADE) · period (YYYY-MM) · amount · multi-row partial</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sub-band 2: Storage + RPC -->
+            <div class="grid grid-cols-2 gap-3 mt-3">
+              <div class="node rounded-xl bg-white/5 border border-white/10 p-3">
+                <div class="flex items-center justify-between mb-1">
+                  <div class="font-semibold text-sm text-propza-200">Storage</div>
+                  <span class="pill pill-purple">bucket</span>
+                </div>
+                <div class="text-[12px] text-white/70 leading-snug"><span class="font-mono text-white/90">leases</span> · path <span class="font-mono">{userId}/{ts}_{file}</span></div>
+                <div class="text-[10.5px] text-amber-200/70 mt-1">⚠ bucket policies not version-controlled</div>
+              </div>
+              <div class="node rounded-xl bg-white/5 border border-white/10 p-3">
+                <div class="flex items-center justify-between mb-1">
+                  <div class="font-semibold text-sm text-propza-200">RPC</div>
+                  <span class="pill pill-slate">SECURITY DEFINER</span>
+                </div>
+                <div class="text-[12px] text-white/70 leading-snug"><span class="font-mono text-white/90">delete_current_user()</span> · called by AuthService.deleteAccount()</div>
+                <div class="text-[10.5px] text-amber-200/70 mt-1">⚠ function definition not in repo</div>
+              </div>
+            </div>
+
+            <!-- Sub-band 3: Legacy / implicit -->
+            <div class="mt-3">
+              <div class="text-[10px] uppercase tracking-widest text-rose-200 font-mono mb-2 px-1 flex items-center gap-2">
+                Legacy &amp; implicit
+                <span class="flex-1 h-px bg-rose-400/20"></span>
+                <span class="text-rose-200/70 normal-case tracking-normal text-[10.5px] font-sans">not provisioned by repo migrations</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="node rounded-xl bg-rose-500/8 border border-rose-400/25 accent-l-legacy p-3" data-detail="db-tenancies">
+                  <div class="flex items-center justify-between">
+                    <div class="font-semibold text-rose-200 text-sm">tenancies <span class="text-rose-200/60 text-[10px]">(legacy)</span></div>
+                    <span class="pill pill-rose">deprecate</span>
+                  </div>
+                  <div class="text-[11px] text-white/55 mt-1 leading-snug">start_date · end_date · rent_due_day · still written by AddPropertyModal, read by PropertyDetail</div>
+                </div>
+                <div class="node rounded-xl bg-amber-500/8 border border-amber-400/25 accent-l-legacy p-3" data-detail="db-profiles">
+                  <div class="flex items-center justify-between">
+                    <div class="font-semibold text-amber-200 text-sm">profiles <span class="text-amber-200/60 text-[10px]">(implicit)</span></div>
+                    <span class="pill pill-amber">missing migration</span>
+                  </div>
+                  <div class="text-[11px] text-white/55 mt-1 leading-snug">id = auth.users.id · full_name · theme · notifications_enabled · RLS only IF EXISTS</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- ========= DATA FLOWS ========= -->
+  <!-- ============================== -->
+  <section data-panel="flows" class="space-y-4 hidden">
+    <div>
+      <h2 class="font-display text-2xl font-bold">Key data flows</h2>
+      <p class="text-sm text-white/60 mt-1">The eight most important runtime sequences inside Propza.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4">
+
+      <article class="layer-card p-5">
+        <header class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-lg">Email/password login</h3>
+          <span class="pill pill-green">happy path</span>
+        </header>
+        <ol class="mt-3 text-sm space-y-2 text-white/80 list-decimal list-inside">
+          <li><span class="font-mono text-propza-200">LoginComponent.submit()</span> calls <span class="font-mono">AuthService.signInWithPassword</span></li>
+          <li>Supabase Auth REST request; <span class="font-mono">onAuthStateChange</span> fires</li>
+          <li>Signals <span class="font-mono">session</span> + <span class="font-mono">user</span> updated</li>
+          <li><span class="font-mono">Router.navigateByUrl('/dashboard')</span></li>
+          <li><span class="font-mono">authGuard</span> + <span class="font-mono">betaAccessGuard</span> re-evaluate → allow</li>
+        </ol>
+      </article>
+
+      <article class="layer-card p-5">
+        <header class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-lg">Google OAuth</h3>
+          <span class="pill pill-blue">redirect</span>
+        </header>
+        <ol class="mt-3 text-sm space-y-2 text-white/80 list-decimal list-inside">
+          <li>Click "Continue with Google" → <span class="font-mono">signInWithOAuth({ provider:'google', redirectTo:'/dashboard?beta=granted' })</span></li>
+          <li>Browser ↔ Google consent</li>
+          <li>Return to <span class="font-mono">/dashboard?beta=granted</span> with hash; Supabase parses (<span class="font-mono">detectSessionInUrl: true</span>)</li>
+          <li>App reads <span class="font-mono">?beta=granted</span> hint, but localStorage flag still drives <span class="font-mono">betaAccessGuard</span> — minor inconsistency.</li>
+        </ol>
+      </article>
+
+      <article class="layer-card p-5">
+        <header class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-lg">Property list load</h3>
+          <span class="pill pill-purple">combineLatest</span>
+        </header>
+        <ol class="mt-3 text-sm space-y-2 text-white/80 list-decimal list-inside">
+          <li><span class="font-mono">combineLatest([properties$, payments$, loading$])</span></li>
+          <li><span class="font-mono">PropertyService.refreshAll()</span> → loads properties (with nested tenants join) + payments</li>
+          <li>Per-row status via <span class="font-mono">RentDueService.getStatusForTenant(...)</span></li>
+          <li>Client-side filter, search, sort → <span class="font-mono">PropertyCard</span> grid</li>
+        </ol>
+      </article>
+
+      <article class="layer-card p-5">
+        <header class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-lg">Save payment + reconcile</h3>
+          <span class="pill pill-amber">retry on 23505</span>
+        </header>
+        <ol class="mt-3 text-sm space-y-2 text-white/80 list-decimal list-inside">
+          <li>Period = <span class="font-mono">RentDueService.getCurrentPeriod()</span> (YYYY-MM)</li>
+          <li>INSERT payments; on duplicate-period (legacy unique constraint), advance month + retry × up to 12</li>
+          <li><span class="font-mono">recalculateTenantStatusFromPayments()</span> walks forward up to 12 months to find first unpaid period</li>
+          <li>UPDATE tenants.<span class="font-mono">rent_due_date</span> + <span class="font-mono">rent_status</span> if changed</li>
+          <li>PropertyService.loadProperties() refreshes; UI re-renders</li>
+        </ol>
+      </article>
+
+      <article class="layer-card p-5">
+        <header class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-lg">Tenant delete cascade</h3>
+          <span class="pill pill-rose">multi-table mutation</span>
+        </header>
+        <ol class="mt-3 text-sm space-y-2 text-white/80 list-decimal list-inside">
+          <li>DELETE from <span class="font-mono">tenants</span></li>
+          <li>UPDATE <span class="font-mono">properties</span> SET status='vacant', tenant=null WHERE id=…</li>
+          <li><span class="font-mono">SupabaseService.triggerRefreshAll()</span> fan-outs to property + tenant services</li>
+          <li>BehaviorSubjects emit; all subscribed views re-render</li>
+        </ol>
+      </article>
+
+      <article class="layer-card p-5">
+        <header class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-lg">Theme sync</h3>
+          <span class="pill pill-teal">signal-driven effect</span>
+        </header>
+        <ol class="mt-3 text-sm space-y-2 text-white/80 list-decimal list-inside">
+          <li>Effect watches <span class="font-mono">AuthService.user()</span> signal</li>
+          <li>On login: SELECT <span class="font-mono">profiles.theme</span>; if diff → apply + persist <span class="font-mono">localStorage['propza_theme']</span></li>
+          <li>User toggle: <span class="font-mono">setTheme(t)</span> → DOM class + UPDATE <span class="font-mono">profiles.theme</span></li>
+          <li>Logout clears the synced user id</li>
+        </ol>
+      </article>
+
+      <article class="layer-card p-5">
+        <header class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-lg">Beta access gate</h3>
+          <span class="pill pill-rose">security: friction-only</span>
+        </header>
+        <ol class="mt-3 text-sm space-y-2 text-white/80 list-decimal list-inside">
+          <li>Guard reads <span class="font-mono">environment.requiresBetaAccess</span>; if false → allow</li>
+          <li>Else checks <span class="font-mono">localStorage['propza_beta_access']==='granted'</span></li>
+          <li>BetaAccessComponent: 6 digits → <span class="font-mono">btoa(code) === environment.betaAccessCodeHash</span> → set flag</li>
+          <li><strong class="text-rose-300">Note:</strong> base64 is not a hash; trivially bypassed by anyone in DevTools.</li>
+        </ol>
+      </article>
+
+      <article class="layer-card p-5">
+        <header class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-lg">Data export</h3>
+          <span class="pill pill-amber">latent bug</span>
+        </header>
+        <ol class="mt-3 text-sm space-y-2 text-white/80 list-decimal list-inside">
+          <li>Parallel SELECT * for properties · payments · tenancies</li>
+          <li><strong class="text-rose-300">Bug:</strong> queries <span class="font-mono">payments.eq('owner_id', uid)</span> but <span class="font-mono">payments</span> has NO <span class="font-mono">owner_id</span> column → returns empty</li>
+          <li>JSON.stringify + Blob → <span class="font-mono">propza-export.json</span> download</li>
+        </ol>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- ========== SCHEMA ============ -->
+  <!-- ============================== -->
+  <section data-panel="schema" class="space-y-4 hidden">
+    <div>
+      <h2 class="font-display text-2xl font-bold">Database schema</h2>
+      <p class="text-sm text-white/60 mt-1">Five tables (3 migrated, 2 inferred). RLS owner-scoped via <span class="font-mono">auth.uid()</span>.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+
+      <article class="layer-card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-bold text-lg">properties</h3>
+          <span class="pill pill-green">RLS enabled</span>
+        </div>
+        <ul class="text-xs font-mono space-y-1.5">
+          <li><span class="text-propza-300">id</span>           uuid PK</li>
+          <li><span class="text-propza-300">owner_id</span>     uuid → auth.users</li>
+          <li>name           text</li>
+          <li>address        text</li>
+          <li>rent_amount    numeric/integer</li>
+          <li>currency       text  <span class="text-white/40">// always 'ZAR'</span></li>
+          <li>status         text  <span class="text-white/40">// vacant | occupied</span></li>
+          <li>lease_url      text?</li>
+          <li>tenant         text? <span class="text-amber-300">// denorm, double-bookkeeping</span></li>
+          <li>notes          text?</li>
+          <li>created_at     timestamptz</li>
+          <li>updated_at     timestamptz</li>
+        </ul>
+        <div class="mt-3 text-xs text-amber-200 bg-amber-500/10 border border-amber-400/30 rounded-lg p-2">
+          ⚠ Migration 001 declared different columns (status='available'/'maintenance', rent_frequency, bedrooms, etc.). Runtime schema diverged.
+        </div>
+      </article>
+
+      <article class="layer-card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-bold text-lg">tenants</h3>
+          <span class="pill pill-green">RLS via properties</span>
+        </div>
+        <ul class="text-xs font-mono space-y-1.5">
+          <li><span class="text-propza-300">id</span>                  uuid PK</li>
+          <li><span class="text-propza-300">property_id</span>         uuid → properties (CASCADE)</li>
+          <li>name                text</li>
+          <li>email               text?</li>
+          <li>phone               text?</li>
+          <li>rent_amount         integer</li>
+          <li>rent_status         text  <span class="text-white/40">// paid|overdue|upcoming|vacant</span></li>
+          <li>rent_due_date       date</li>
+          <li>lease_start_date    date?</li>
+          <li>lease_end_date      date?</li>
+          <li>deposit_amount      integer <span class="text-amber-300">// not in mig 003</span></li>
+          <li>notes               text?</li>
+          <li>created_at / updated_at</li>
+        </ul>
+      </article>
+
+      <article class="layer-card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-bold text-lg">payments</h3>
+          <span class="pill pill-green">RLS via properties</span>
+        </div>
+        <ul class="text-xs font-mono space-y-1.5">
+          <li><span class="text-propza-300">id</span>             uuid PK</li>
+          <li><span class="text-propza-300">property_id</span>    uuid → properties (CASCADE)</li>
+          <li>period         text  <span class="text-white/40">// YYYY-MM</span></li>
+          <li>amount         numeric</li>
+          <li>payment_date   date</li>
+          <li>payment_method text?</li>
+          <li>notes          text?</li>
+          <li>paid_at        timestamptz</li>
+          <li>created_at     timestamptz</li>
+        </ul>
+        <div class="mt-3 text-xs text-white/70 bg-white/5 rounded-lg p-2">
+          History: <code>unique(property_id, period)</code> added in 002+005, DROPPED in 006 to allow partial payments.
+        </div>
+      </article>
+
+      <article class="layer-card p-5 border-rose-400/30">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-bold text-lg text-rose-200">tenancies (legacy)</h3>
+          <span class="pill pill-rose">undocumented</span>
+        </div>
+        <ul class="text-xs font-mono space-y-1.5">
+          <li><span class="text-propza-300">id</span> uuid PK</li>
+          <li><span class="text-propza-300">property_id</span> uuid → properties</li>
+          <li>start_date    date</li>
+          <li>end_date      date?</li>
+          <li>rent_due_day  smallint <span class="text-white/40">// 1-31</span></li>
+        </ul>
+        <div class="mt-3 text-xs text-rose-200 bg-rose-500/10 border border-rose-400/30 rounded-lg p-2">
+          No migration in repo. Still written by AddPropertyModalComponent &amp; read by PropertyDetailComponent. Recommend deprecate → drop.
+        </div>
+      </article>
+
+      <article class="layer-card p-5 border-amber-400/30">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-bold text-lg text-amber-200">profiles</h3>
+          <span class="pill pill-amber">not in repo</span>
+        </div>
+        <ul class="text-xs font-mono space-y-1.5">
+          <li><span class="text-propza-300">id</span>                    uuid PK = auth.users.id</li>
+          <li>full_name             text</li>
+          <li>theme                 text   <span class="text-white/40">// light|dark</span></li>
+          <li>notifications_enabled boolean</li>
+        </ul>
+        <div class="mt-3 text-xs text-amber-200 bg-amber-500/10 border border-amber-400/30 rounded-lg p-2">
+          No CREATE TABLE migration. 004 RLS policies are wrapped in <code>IF EXISTS</code>. Fresh project will fail silently.
+        </div>
+      </article>
+
+      <article class="layer-card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-bold text-lg">Storage · leases</h3>
+          <span class="pill pill-purple">bucket</span>
+        </div>
+        <div class="text-sm text-white/75">
+          PDF / document uploads for tenant leases.
+        </div>
+        <ul class="mt-3 text-xs font-mono space-y-1.5">
+          <li>path: <span class="text-propza-300">{userId}/{timestamp}_{filename}</span></li>
+          <li>access: <span class="text-amber-200">getPublicUrl()</span> used by app</li>
+          <li>policies: <span class="text-rose-300">not version-controlled</span></li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="layer-card p-5">
+      <h3 class="font-display font-bold text-lg mb-2">RLS · migration timeline</h3>
+      <div class="grid md:grid-cols-7 gap-3 text-xs">
+        <div class="rounded-lg bg-white/5 p-3 border border-white/10">
+          <div class="font-semibold text-propza-200">001</div>
+          <div class="text-white/60 mt-1">properties + permissive RLS (any authed user)</div>
+        </div>
+        <div class="rounded-lg bg-white/5 p-3 border border-white/10">
+          <div class="font-semibold text-propza-200">002</div>
+          <div class="text-white/60 mt-1">payments + unique(property,period)</div>
+        </div>
+        <div class="rounded-lg bg-white/5 p-3 border border-white/10">
+          <div class="font-semibold text-propza-200">003</div>
+          <div class="text-white/60 mt-1">tenants + permissive RLS + updated_at trigger</div>
+        </div>
+        <div class="rounded-lg bg-propza-500/10 p-3 border border-propza-400/30">
+          <div class="font-semibold text-propza-200">004</div>
+          <div class="text-white/70 mt-1">Owner-scoped RLS (auth.uid()=owner_id, EXISTS for child tables, profiles policies IF EXISTS)</div>
+        </div>
+        <div class="rounded-lg bg-white/5 p-3 border border-white/10">
+          <div class="font-semibold text-propza-200">005</div>
+          <div class="text-white/60 mt-1">payments.period (backfill via payment_date) + reaffirm unique</div>
+        </div>
+        <div class="rounded-lg bg-white/5 p-3 border border-white/10">
+          <div class="font-semibold text-propza-200">006</div>
+          <div class="text-white/60 mt-1">DROP unique constraint → allow partial payments</div>
+        </div>
+        <div class="rounded-lg bg-white/5 p-3 border border-white/10">
+          <div class="font-semibold text-propza-200">007</div>
+          <div class="text-white/60 mt-1">properties.notes column</div>
+        </div>
+      </div>
+      <div class="mt-3 text-xs text-rose-200 bg-rose-500/10 border border-rose-400/30 rounded-lg p-3">
+        ⚠ Migrations 001 + 003 created permissive RLS policies. Migration 004 added the correct owner-scoped ones but never DROPPed the legacy ones. If both are active in production, RLS may be effectively bypassed for SELECT. <strong>Verify with <code>SELECT * FROM pg_policies WHERE schemaname='public'</code>.</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- ========== ISSUES ============ -->
+  <!-- ============================== -->
+  <section data-panel="issues" class="space-y-4 hidden">
+    <div class="flex items-end justify-between flex-wrap gap-3">
+      <div>
+        <h2 class="font-display text-2xl font-bold">Architectural issues</h2>
+        <p class="text-sm text-white/60 mt-1">Ranked by severity. Each item is reproducible from the current code and includes a remediation path.</p>
+      </div>
+      <div class="flex items-center gap-2 text-xs">
+        <span class="pill severity-high border">3 high</span>
+        <span class="pill severity-medium border">6 medium</span>
+        <span class="pill severity-low border">7 low</span>
+        <span class="pill severity-info border">1 info</span>
+      </div>
+    </div>
+
+    <div id="issuesList" class="space-y-3"></div>
+  </section>
+
+  <footer class="pt-6 border-t border-white/5 text-xs text-white/40 flex items-center justify-between">
+    <div>Generated <span class="font-mono">{{date}}</span> · Propza Architecture Map (self-contained).</div>
+    <div class="flex items-center gap-3">
+      <span>Companion JSON: <span class="font-mono text-white/60">architecture/propza-architecture.json</span></span>
+    </div>
+  </footer>
+</main>
+
+<!-- ============ DETAIL DRAWER ============ -->
+<div id="drawerMask" class="fixed inset-0 z-40 drawer-mask hidden"></div>
+<aside id="drawer" class="drawer closed fixed top-0 right-0 z-50 h-full w-full max-w-xl bg-[#070b16] border-l border-white/10 shadow-2xl overflow-y-auto">
+  <header class="sticky top-0 bg-[#070b16]/95 border-b border-white/10 px-6 py-4 flex items-center justify-between z-10">
+    <div>
+      <div id="drawerKicker" class="text-xs uppercase tracking-widest text-propza-300">Component</div>
+      <h3 id="drawerTitle" class="font-display text-xl font-bold mt-1">—</h3>
+    </div>
+    <button id="drawerClose" class="rounded-lg border border-white/10 hover:bg-white/5 px-3 py-1.5 text-sm">Close ✕</button>
+  </header>
+  <div id="drawerBody" class="px-6 py-5"></div>
+</aside>
+
+<!-- ============ DATA ============ -->
+<script id="details" type="application/json">
+{
+  "browser": {
+    "kicker": "Entry layer",
+    "title": "Browser · index.html · main.ts",
+    "path": "src/index.html · src/main.ts · src/app/app.config.ts",
+    "body": "Bootstraps the Angular app and registers the service worker (production only). Key router providers: <code>withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })</code> + <code>withViewTransitions()</code>. <code>main.ts</code> silences Navigator LockManager and apple-mobile-web-app-capable warnings — see ISSUE-013."
+  },
+  "appshell": {
+    "kicker": "Root component",
+    "title": "AppComponent",
+    "path": "src/app/app.component.ts",
+    "body": "Always-rendered shell containing Preloader (4s), the <code>&lt;router-outlet&gt;</code>, the global ConfirmationModalComponent, and the Toast layer. Forces a 4-second preloader regardless of session resolution time (ISSUE-012).",
+    "depends_on": ["ThemeService", "AuthService", "BetaAccessService", "Router", "LoggerService"]
+  },
+  "guard-auth": {
+    "kicker": "Route guard",
+    "title": "authGuard",
+    "path": "src/app/core/guards/auth.guard.ts",
+    "body": "Awaits <code>auth.waitForSession()</code>, then checks the user signal. Redirects to <code>/login</code> if absent."
+  },
+  "guard-guest": {
+    "kicker": "Route guard",
+    "title": "guestGuard",
+    "path": "src/app/core/guards/guest.guard.ts",
+    "body": "Inverse of authGuard. Prevents already-signed-in users from seeing /login or /register."
+  },
+  "guard-beta": {
+    "kicker": "Route guard",
+    "title": "betaAccessGuard",
+    "path": "src/app/core/guards/beta-access.guard.ts",
+    "body": "Client-side only. Returns true if <code>environment.requiresBetaAccess === false</code> or localStorage flag is set. <strong>Not a security boundary.</strong>"
+  },
+  "feature-auth": {
+    "kicker": "Feature module",
+    "title": "features/auth",
+    "path": "src/app/features/auth/",
+    "body": "Email/password + Google OAuth login, registration, beta gate, and password reset. ResetPasswordComponent listens for Supabase <code>PASSWORD_RECOVERY</code> event."
+  },
+  "feature-dashboard": {
+    "kicker": "Feature module",
+    "title": "features/dashboard",
+    "path": "src/app/features/dashboard/",
+    "body": "Aggregates metrics from PropertyService + TenantService + RentDueService. Renders a 6-month collection chart, top 4 upcoming rents, recent activity, and inline search across properties and tenants (debounced 200ms)."
+  },
+  "feature-properties": {
+    "kicker": "Feature module",
+    "title": "features/properties",
+    "path": "src/app/features/properties/",
+    "body": "PropertyList: filter/sort grid of PropertyCard. PropertyDetail: edit property + tenant inline, log/edit/delete payments, lease + tenancy tracking. AddPropertyModal handles file upload to Supabase Storage."
+  },
+  "feature-tenants": {
+    "kicker": "Feature module",
+    "title": "features/tenants",
+    "path": "src/app/features/tenants/",
+    "body": "TenantList with filter chips (all / overdue). TenantDetail with inline edit and delete. AddTenantModal binds to vacant properties only."
+  },
+  "feature-payments": {
+    "kicker": "Feature module",
+    "title": "features/payments",
+    "path": "src/app/features/payments/",
+    "body": "Read-only ledger view. Filters by property + free-text. Computes totals, average payment, count. Mobile collapses filters behind a launcher."
+  },
+  "feature-settings": {
+    "kicker": "Feature module",
+    "title": "features/settings",
+    "path": "src/app/features/settings/",
+    "body": "Responsive split: SettingsComponent mounts SettingsDesktopComponent above 1024px, else SettingsMobileComponent (1145 LOC, with custom scroll restoration). 10 modal components for profile edit, password, quick start, bug report, feature request, feedback, contact, terms, privacy, delete account."
+  },
+  "layer-layout": {
+    "kicker": "Layout",
+    "title": "AuthenticatedShellComponent",
+    "path": "src/app/layout/authenticated-shell/authenticated-shell.component.ts",
+    "body": "Hosts the green mobile hero + desktop sidebar; tracks scroll positions via ScrollRestoreService; exposes a signal-derived mobile shell title that can be overridden by detail pages. Mounts the protected <code>&lt;router-outlet&gt;</code>."
+  },
+  "layer-shared": {
+    "kicker": "Shared library",
+    "title": "shared/",
+    "path": "src/app/shared/",
+    "body": "Pure UI building blocks reused across features. The pipe <code>ShortNumberPipe</code> renders R-prefixed shorthand (R 1.2M / R 1K). Toast and Confirmation modals are driven by their respective core services."
+  },
+  "svc-supabase": {
+    "kicker": "Core service · Data",
+    "title": "SupabaseService",
+    "path": "src/app/core/services/supabase.service.ts",
+    "body": "Owns the singleton SupabaseClient and a <code>refreshAll$</code> Subject. <code>triggerRefreshAll()</code> tells PropertyService and TenantService to reload — used after cross-table mutations (e.g. tenant delete)."
+  },
+  "svc-auth": {
+    "kicker": "Core service · Identity",
+    "title": "AuthService",
+    "path": "src/app/core/services/auth.service.ts",
+    "body": "Signals: <code>session</code>, <code>user</code>, <code>userName</code>. Methods: signInWithPassword, signInWithGoogle (redirect /dashboard?beta=granted), signUp, signOut, updateProfile, sendPasswordReset (redirect /reset-password), updatePassword, deleteAccount (RPC <code>delete_current_user</code>)."
+  },
+  "svc-property": {
+    "kicker": "Core service · Data",
+    "title": "PropertyService",
+    "path": "src/app/core/services/property.service.ts",
+    "body": "Streams: <code>properties$</code>, <code>payments$</code>, <code>loading$</code>. Constructor subscribes to <code>SupabaseService.refreshAll$</code>. Adds/updates/deletes properties + payments; refreshes after each mutation. Initial silent-refresh pattern avoids skeleton flicker."
+  },
+  "svc-tenant": {
+    "kicker": "Core service · Data",
+    "title": "TenantService",
+    "path": "src/app/core/services/tenant.service.ts",
+    "body": "Streams: <code>tenants$</code>, <code>loading$</code>. Selects tenants joined to owned properties (RLS-friendly). On delete, updates property to vacant + clears tenant column, then triggerRefreshAll()."
+  },
+  "svc-theme": {
+    "kicker": "Core service · Identity",
+    "title": "ThemeService",
+    "path": "src/app/core/services/theme.service.ts",
+    "body": "Signal-based light/dark. Persists to localStorage + <code>profiles.theme</code>. Uses an Angular <code>effect</code> to react to AuthService.user() and lazy-sync on login."
+  },
+  "svc-beta": {
+    "kicker": "Core service · Identity",
+    "title": "BetaAccessService",
+    "path": "src/app/core/services/beta-access.service.ts",
+    "body": "Stores granted state in <code>localStorage['propza_beta_access']</code>. Validates code with <code>btoa(code) === environment.betaAccessCodeHash</code>. Friction-only — see ISSUE-003."
+  },
+  "svc-rentdue": {
+    "kicker": "Core service · Rent Engine",
+    "title": "RentDueService",
+    "path": "src/app/core/services/rent-due.service.ts",
+    "body": "Authoritative, pure-function rent status engine. Monthly-only. ZA timezone (UTC+2, no DST). Status thresholds: paid (&gt;7d), upcoming (4-7d), due_soon (1-3d), due_today (0d), overdue (&lt;0d), partially_paid (0&lt;collected&lt;rent), vacant (lease bounds)."
+  },
+  "svc-renthelper": {
+    "kicker": "Legacy service · Rent Engine",
+    "title": "RentHelperService",
+    "path": "src/app/core/services/rent-helper.service.ts",
+    "body": "Older parallel implementation. Supports BOTH monthly and weekly billing. Provides status colors/labels and period helpers. Overlaps with RentDueService — see ISSUE-005."
+  },
+  "svc-translation": {
+    "kicker": "Core service · Utilities",
+    "title": "TranslationService",
+    "path": "src/app/core/services/translation.service.ts",
+    "body": "Signal-driven runtime translations across en/af/zu/xh. 1828 LOC single object literal. Suggest moving to per-language JSON for tree-shakable bundles."
+  },
+  "svc-logger": {
+    "kicker": "Core service · Utilities",
+    "title": "LoggerService",
+    "path": "src/app/core/services/logger.service.ts",
+    "body": "Thin console wrapper gated by <code>environment.production</code>."
+  },
+  "svc-error": {
+    "kicker": "Core service · Utilities",
+    "title": "ErrorService",
+    "path": "src/app/core/services/error.service.ts",
+    "body": "Normalizes unknown errors into <code>{ message, code, details }</code>. Comment placeholder for Sentry integration (not wired)."
+  },
+  "svc-sanitize": {
+    "kicker": "Core service · Utilities",
+    "title": "SanitizationService",
+    "path": "src/app/core/services/sanitization.service.ts",
+    "body": "Defensive cleanup helpers: sanitizeHtml/Url/ResourceUrl/Text/Email/Phone/Address/Notes/FileName/Number. All write-paths to Supabase should pipe through this."
+  },
+  "svc-pwa": {
+    "kicker": "Core service · UX",
+    "title": "PwaInstallService",
+    "path": "src/app/core/services/pwa-install.service.ts",
+    "body": "Captures <code>beforeinstallprompt</code> and detects iOS (which has no native prompt). Stores dismissal in sessionStorage so prompts don't keep returning in the same tab."
+  },
+  "svc-confirm": {
+    "kicker": "Core service · UX",
+    "title": "ConfirmationModalService",
+    "path": "src/app/core/services/confirmation-modal.service.ts",
+    "body": "Promise-based: <code>const ok = await confirmationService.confirm({ title, message, type: 'danger' })</code>. Drives the global modal mounted from app.component.html."
+  },
+  "svc-shell": {
+    "kicker": "Core service · UX",
+    "title": "MobileShellTitleService",
+    "path": "src/app/core/services/mobile-shell-title.service.ts",
+    "body": "Signal that lets deep-linked pages override the green mobile header title (e.g. tenant name on /tenant/:id)."
+  },
+  "svc-scroll": {
+    "kicker": "Core service · UX",
+    "title": "ScrollRestoreService",
+    "path": "src/app/core/services/scroll-restore.service.ts",
+    "body": "Custom scroll position cache keyed by route path. Handles both <code>window</code> (mobile) and a registered scroll host element (desktop) — bridging the two scroll models."
+  },
+  "svc-modal": {
+    "kicker": "Core service · UX",
+    "title": "PropzaModalOptionsService",
+    "path": "src/app/core/services/propza-modal-options.service.ts",
+    "body": "Returns NgbModalOptions presets. Mobile (&lt;1024px): fullscreen sheet. Desktop: centered dialog with backdrop. Used by every NgbModal opening in the app."
+  },
+  "db-properties": {
+    "kicker": "Postgres",
+    "title": "properties",
+    "path": "supabase-migrations/001_properties_table.sql · 007_add_notes_column.sql",
+    "body": "Owner-scoped property rows. <strong>Runtime schema differs from migration 001</strong> — see ISSUE-001. RLS in migration 004 binds <code>auth.uid()=owner_id</code>."
+  },
+  "db-tenants": {
+    "kicker": "Postgres",
+    "title": "tenants",
+    "path": "supabase-migrations/003_tenants_table.sql",
+    "body": "1:1 with properties in practice. <code>deposit_amount</code> column used by app but not in migration 003. RLS via EXISTS join through properties."
+  },
+  "db-payments": {
+    "kicker": "Postgres",
+    "title": "payments",
+    "path": "supabase-migrations/002_payments_table.sql · 005 · 006",
+    "body": "Append-only ledger. The unique(property_id, period) constraint was added in 002+005 then dropped in 006 to allow partial payments per period. PropertyDetailComponent.savePayment() still defensively retries on <code>23505</code> for legacy DBs."
+  },
+  "db-tenancies": {
+    "kicker": "Postgres · legacy",
+    "title": "tenancies",
+    "path": "(not in repo migrations)",
+    "body": "Older model with start_date, end_date, rent_due_day. Still written by AddPropertyModalComponent and read by PropertyDetailComponent. Recommend deprecating — see ISSUE-009."
+  },
+  "db-profiles": {
+    "kicker": "Postgres",
+    "title": "profiles",
+    "path": "(not in repo migrations — RLS only in 004 IF EXISTS)",
+    "body": "User-scoped row keyed by <code>auth.uid()</code>. Stores full_name, theme, notifications_enabled. <strong>Missing CREATE TABLE migration</strong> — see ISSUE-010."
+  },
+  "ext-vercel": {
+    "kicker": "External",
+    "title": "Vercel",
+    "path": "vercel.json",
+    "body": "<code>buildCommand: npm run build:vercel</code>. <code>outputDirectory: dist/propza/browser</code>. SPA rewrites all paths to /index.html. CI/CD is Vercel-Git only — no GitHub Actions in repo."
+  },
+  "ext-google": {
+    "kicker": "External",
+    "title": "Google OAuth (via Supabase)",
+    "path": "src/app/core/services/auth.service.ts",
+    "body": "<code>signInWithOAuth({ provider: 'google', options: { redirectTo: '${origin}/dashboard?beta=granted', queryParams: { access_type: 'offline', prompt: 'consent' } } })</code>."
+  },
+  "ext-fonts": {
+    "kicker": "External",
+    "title": "Google Fonts (Inter + Inter Tight)",
+    "path": "src/index.html",
+    "body": "Preconnect + linked stylesheet for Inter 400/600/700 and Inter Tight 600/700/800."
+  }
+}
+</script>
+
+<script id="issues" type="application/json">
+[
+  {"id":"ISSUE-001","sev":"high","title":"Schema drift between migrations and runtime","desc":"Migration 001 declares properties.status IN ('available','occupied','maintenance') with rent_frequency, bedrooms, etc., and rent_amount INTEGER — but the runtime uses status IN ('vacant','occupied') and references owner_id, name, currency, lease_url, tenant, notes that aren't in the migration. tenants.deposit_amount is similarly absent from 003. The tenancies and profiles tables have NO migrations at all.","fix":"Add migrations 008+ that reconcile: drop legacy property columns, add the missing ones, alter status check, create profiles + tenancies (or deprecate). Verify with a fresh Supabase project that the seeded SQL produces a working app."},
+  {"id":"ISSUE-002","sev":"high","title":"Stale permissive RLS policies likely still active","desc":"001 and 003 created policies that only check <code>auth.uid() IS NOT NULL</code> — meaning every authenticated user could read every row. 004 added proper owner-scoped policies but never DROPPED the legacy ones. Postgres OR-combines policies, so if both exist the permissive ones win for SELECT.","fix":"Run DROP POLICY for every legacy policy on properties + tenants + payments. Verify with <code>SELECT * FROM pg_policies WHERE schemaname='public'</code>."},
+  {"id":"ISSUE-003","sev":"high","title":"Beta access gate is trivially bypassable","desc":"BetaAccessService uses <code>btoa(code)</code> (base64, not a hash) and stores the granted state in localStorage. Anyone can run <code>localStorage.setItem('propza_beta_access','granted')</code> in DevTools.","fix":"If beta gate is meant as access control: validate server-side via Supabase RPC or auth allow-lists. Otherwise rename the config from \"hash\" to \"code\" and document it as friction."},
+  {"id":"ISSUE-004","sev":"high","title":"Dev credentials hard-coded in committed script","desc":"scripts/replace-env-vars.js inlines a Supabase URL and anon JWT as a dev fallback. The repo ships this. Anon keys are RLS-limited so impact is bounded, but it's poor hygiene and leaks the project URL.","fix":"Remove the hard-coded fallback. Fail fast when NG_APP_* envs are missing. Document local setup in README env section."},
+  {"id":"ISSUE-005","sev":"medium","title":"Two overlapping rent-status services","desc":"RentDueService (monthly, ZA TZ-safe) and RentHelperService (monthly + weekly, older) both exist. Components mix them — PropertyList uses both, PropertyDetail uses both, TenantDetail uses both. Per-component map functions convert between the two enums.","fix":"Consolidate into one RentService. Move status enums, label/color maps, period helpers, and date math into a single module. Delete the weekly branch if monthly is the contract."},
+  {"id":"ISSUE-006","sev":"medium","title":"Direct Supabase calls from components","desc":"PropertyDetailComponent, TenantDetailComponent, AddPropertyModalComponent, AddTenantModalComponent and both Settings components reach <code>this.supabase.supabase.from(...)</code> directly instead of routing through PropertyService / TenantService.","fix":"Add ProfileService (and merge tenancies CRUD into TenantService). Forbid direct supabase access outside core/services with a lint rule."},
+  {"id":"ISSUE-007","sev":"medium","title":"All routes eagerly loaded","desc":"app.routes.ts statically imports every page + every settings modal. Already hitting the 2MB initial-bundle warning budget configured in angular.json.","fix":"Switch each top-level route to <code>loadComponent: () => import('...').then(m => m.X)</code>. Especially Settings (split into two heavy components), property/tenant detail, and the modal components opened via NgbModal (which can be lazy imported on first open)."},
+  {"id":"ISSUE-008","sev":"medium","title":"Latent bug: payments.owner_id does not exist","desc":"Settings ⇒ Export My Data queries payments with <code>.eq('owner_id', user.id)</code>, but the payments table has no <code>owner_id</code> column — RLS scopes via property_id → owner_id join. The export silently returns zero payments.","fix":"Change the query to <code>.in('property_id', userPropertyIds)</code> (the same pattern PropertyService.loadPayments uses)."},
+  {"id":"ISSUE-009","sev":"medium","title":"Legacy 'tenancies' table coexists with 'tenants'","desc":"Both tables are written by AddPropertyModalComponent. PropertyDetailComponent.loadPropertyDetails reads tenancies; the rest of the app uses tenants. Risk of inconsistency on every property mutation.","fix":"Migrate any remaining reads to tenants, stop writing tenancies, then drop the table."},
+  {"id":"ISSUE-010","sev":"medium","title":"profiles table not provisioned by repo","desc":"AuthService/ThemeService/AuthenticatedShell/Settings all SELECT/UPDATE profiles. No migration creates it. 004 RLS policies are wrapped in IF EXISTS, so a fresh Supabase project silently fails on profile reads.","fix":"Add a migration that creates profiles (id uuid PK REFERENCES auth.users, full_name text, theme text DEFAULT 'light', notifications_enabled boolean DEFAULT false) plus a trigger on auth.users insert to bootstrap a profile row."},
+  {"id":"ISSUE-011","sev":"low","title":"Translation file is monolithic (1828 LOC)","desc":"Single object literal carrying all four languages and every UI string ships in the initial JS bundle.","fix":"Split into per-language JSON loaded via fetch, or migrate to @angular/localize XLIFF for compile-time tree-shaken bundles."},
+  {"id":"ISSUE-012","sev":"low","title":"Hard-coded 4-second preloader","desc":"AppComponent uses <code>setTimeout(4000)</code> to dismiss the preloader regardless of how fast the app actually boots.","fix":"Dismiss as soon as <code>auth.waitForSession()</code> resolves OR after a min-display of ~800ms — whichever comes later."},
+  {"id":"ISSUE-013","sev":"low","title":"Global console.error suppression","desc":"main.ts wraps console.error to filter Navigator LockManager and apple-mobile-web-app-capable warnings. This can mask other errors.","fix":"Remove the wrapper. Fix the apple-mobile-web-app-capable deprecation in index.html (keep the standard mobile-web-app-capable meta only)."},
+  {"id":"ISSUE-014","sev":"low","title":"Storage bucket policies not version-controlled","desc":"The 'leases' bucket is required by AddPropertyModalComponent + AddTenantModalComponent but no SQL/policy file exists for bucket creation or access policies.","fix":"Add a migration that creates the bucket and policies via Supabase Storage SQL."},
+  {"id":"ISSUE-015","sev":"low","title":"No CI / error monitoring","desc":"No GitHub Actions, no Sentry, specs are scaffold-only.","fix":"Add minimal CI (lint + build + ng test --no-watch). Wire Sentry into ErrorService.handleError()."},
+  {"id":"ISSUE-016","sev":"low","title":"ng-bootstrap + Bootstrap CSS + Tailwind","desc":"Three CSS systems load together. Bootstrap alone is ~150 KB minified. Tailwind covers most of what ng-bootstrap styles need.","fix":"If Tailwind is the design system going forward, replace ng-bootstrap modal/popover with Angular CDK Overlay equivalents and drop Bootstrap CSS."},
+  {"id":"ISSUE-017","sev":"info","title":"Two parallel Settings components (385 + 1145 LOC)","desc":"SettingsDesktopComponent and SettingsMobileComponent implement the same features twice. SettingsMobileComponent carries heavy custom scroll-restoration debug scaffolding.","fix":"Extract shared logic (loadProfile, modal openers, exportMyData) into a SettingsCoreService and progressively converge on a single responsive component."}
+]
+</script>
+
+<script>
+  // ------------------------ Tabs ------------------------
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('[data-panel]');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.dataset.active = 'false');
+      btn.dataset.active = 'true';
+      const which = btn.dataset.tab;
+      panels.forEach(p => {
+        p.classList.toggle('hidden', p.dataset.panel !== which);
+      });
+    });
+  });
+
+  // ------------------------ Pan/Zoom ------------------------
+  const host = document.getElementById('mapHost');
+  const canvas = document.getElementById('mapCanvas');
+  const zoomLabels = document.querySelectorAll('[data-zoom-label]');
+
+  const CANVAS_W = 2400, CANVAS_H = 2460;
+  const MIN_SCALE = 0.18, MAX_SCALE = 2.2;
+  let scale = 0.5, tx = 0, ty = 0;
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function apply() {
+    canvas.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    const pct = Math.round(scale * 100) + '%';
+    zoomLabels.forEach(el => el.textContent = pct);
+  }
+
+  function zoomAt(newScale, anchorX, anchorY) {
+    newScale = clamp(newScale, MIN_SCALE, MAX_SCALE);
+    if (newScale === scale) return;
+    tx = anchorX - (anchorX - tx) * (newScale / scale);
+    ty = anchorY - (anchorY - ty) * (newScale / scale);
+    scale = newScale;
+    apply();
+  }
+
+  function fitToHost() {
+    const rect = host.getBoundingClientRect();
+    const sX = (rect.width  - 24) / CANVAS_W;
+    const sY = (rect.height - 24) / CANVAS_H;
+    scale = Math.min(sX, sY);
+    tx = (rect.width  - CANVAS_W * scale) / 2;
+    ty = 12;
+    apply();
+  }
+
+  // Initial fit after layout
+  requestAnimationFrame(() => fitToHost());
+
+  window.addEventListener('resize', () => {
+    const rect = host.getBoundingClientRect();
+    const fit = Math.min((rect.width-24)/CANVAS_W, (rect.height-24)/CANVAS_H);
+    if (Math.abs(scale - fit) < 0.02) fitToHost();
+  });
+
+  // -------- Wheel handler --------
+  //   Trackpad pinch on macOS / ctrl+wheel → zoom around pointer
+  //   Plain wheel (mouse / two-finger scroll) → pan (deltaX horizontal, deltaY vertical)
+  host.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = host.getBoundingClientRect();
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
+
+    if (e.ctrlKey || e.metaKey) {
+      // Pinch on trackpad fires wheel events with ctrlKey=true (browser convention)
+      const factor = Math.exp(-e.deltaY * 0.012);
+      zoomAt(scale * factor, px, py);
+    } else {
+      tx -= e.deltaX;
+      ty -= e.deltaY;
+      apply();
+    }
+  }, { passive: false });
+
+  // -------- Pointer / touch (pan + two-finger pinch) --------
+  const activePointers = new Map();
+  let dragging = false;
+  let dragStart = null;
+  let pinchInitialDistance = 0;
+  let pinchInitialScale = 1;
+  let pinchAnchor = { x: 0, y: 0 };
+
+  function pinchDistance() {
+    const pts = Array.from(activePointers.values());
+    return Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+  }
+  function pinchMidpoint() {
+    const pts = Array.from(activePointers.values());
+    const rect = host.getBoundingClientRect();
+    return {
+      x: (pts[0].x + pts[1].x) / 2 - rect.left,
+      y: (pts[0].y + pts[1].y) / 2 - rect.top
+    };
+  }
+
+  host.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('[data-detail]') || e.target.closest('.map-overlay')) return;
+    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    host.setPointerCapture(e.pointerId);
+
+    if (activePointers.size === 2) {
+      dragging = false;
+      host.classList.remove('dragging');
+      pinchInitialDistance = pinchDistance();
+      pinchInitialScale = scale;
+      pinchAnchor = pinchMidpoint();
+    } else if (activePointers.size === 1) {
+      dragging = true;
+      host.classList.add('dragging');
+      dragStart = { x: e.clientX - tx, y: e.clientY - ty };
+    }
+  });
+
+  host.addEventListener('pointermove', (e) => {
+    if (!activePointers.has(e.pointerId)) return;
+    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (activePointers.size === 2 && pinchInitialDistance > 0) {
+      const distance = pinchDistance();
+      const ratio = distance / pinchInitialDistance;
+      zoomAt(pinchInitialScale * ratio, pinchAnchor.x, pinchAnchor.y);
+    } else if (dragging && activePointers.size === 1) {
+      tx = e.clientX - dragStart.x;
+      ty = e.clientY - dragStart.y;
+      apply();
+    }
+  });
+
+  function endPointer(e) {
+    activePointers.delete(e.pointerId);
+    if (activePointers.size < 2) pinchInitialDistance = 0;
+    if (activePointers.size === 0) {
+      dragging = false;
+      host.classList.remove('dragging');
+    } else if (activePointers.size === 1) {
+      const remaining = Array.from(activePointers.values())[0];
+      dragging = true;
+      host.classList.add('dragging');
+      dragStart = { x: remaining.x - tx, y: remaining.y - ty };
+    }
+  }
+  host.addEventListener('pointerup', endPointer);
+  host.addEventListener('pointercancel', endPointer);
+  host.addEventListener('pointerleave', endPointer);
+
+  // -------- Zoom button delegation (handles both external bar + in-canvas overlay) --------
+  document.querySelectorAll('[data-zoom]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const action = btn.dataset.zoom;
+      const rect = host.getBoundingClientRect();
+      const cx = rect.width / 2, cy = rect.height / 2;
+      switch (action) {
+        case 'in':    zoomAt(scale + 0.15, cx, cy); break;
+        case 'out':   zoomAt(scale - 0.15, cx, cy); break;
+        case 'reset': scale = 1.0; tx = (rect.width - CANVAS_W) / 2; ty = 20; apply(); break;
+        case 'fit':   fitToHost(); break;
+        case 'fullscreen':      toggleFullscreen(); break;
+        case 'exit-fullscreen': exitFullscreen(); break;
+      }
+    });
+  });
+
+  // -------- Fullscreen --------
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement) ||
+           host.classList.contains('is-fullscreen');
+  }
+  function requestFs() {
+    const req = host.requestFullscreen?.bind(host) || host.webkitRequestFullscreen?.bind(host);
+    if (req) {
+      try {
+        const p = req();
+        if (p && typeof p.then === 'function') {
+          p.catch(() => fallbackFs());
+        }
+      } catch { fallbackFs(); }
+    } else {
+      fallbackFs();
+    }
+  }
+  function fallbackFs() {
+    host.classList.add('is-fullscreen');
+    document.body.classList.add('has-fullscreen-map');
+    requestAnimationFrame(() => fitToHost());
+  }
+  function exitFullscreen() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    }
+    if (host.classList.contains('is-fullscreen')) {
+      host.classList.remove('is-fullscreen');
+      document.body.classList.remove('has-fullscreen-map');
+      requestAnimationFrame(() => fitToHost());
+    }
+  }
+  function toggleFullscreen() {
+    if (isFullscreen()) exitFullscreen();
+    else requestFs();
+  }
+  function onFsChange() {
+    // Browser cleared native fullscreen — ensure CSS state aligns + refit
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      host.classList.remove('is-fullscreen');
+      document.body.classList.remove('has-fullscreen-map');
+    }
+    requestAnimationFrame(() => fitToHost());
+  }
+  document.addEventListener('fullscreenchange', onFsChange);
+  document.addEventListener('webkitfullscreenchange', onFsChange);
+
+  // Escape key exits CSS-fallback fullscreen (native handles its own Esc)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && host.classList.contains('is-fullscreen')) {
+      exitFullscreen();
+    }
+    // Shortcut: F to toggle fullscreen when map area is in view and no input is focused
+    if ((e.key === 'f' || e.key === 'F') && !/^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName || '')) {
+      const rect = host.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    }
+  });
+
+  // ------------------------ Drawer ------------------------
+  const drawer = document.getElementById('drawer');
+  const drawerMask = document.getElementById('drawerMask');
+  const drawerTitle = document.getElementById('drawerTitle');
+  const drawerKicker = document.getElementById('drawerKicker');
+  const drawerBody = document.getElementById('drawerBody');
+  const details = JSON.parse(document.getElementById('details').textContent);
+
+  function openDrawer(key) {
+    const d = details[key];
+    if (!d) return;
+    drawerTitle.textContent = d.title;
+    drawerKicker.textContent = d.kicker;
+    let html = '';
+    if (d.path) {
+      html += `<div class="text-xs font-mono text-white/55 mb-3">${d.path}</div>`;
+    }
+    html += `<p class="text-sm text-white/80 leading-relaxed">${d.body}</p>`;
+    if (d.depends_on?.length) {
+      html += `<div class="mt-5"><div class="text-xs uppercase tracking-widest text-propza-300 mb-2">Depends on</div><div class="flex flex-wrap gap-1.5">${d.depends_on.map(x => `<span class="pill pill-green">${x}</span>`).join('')}</div></div>`;
+    }
+    drawerBody.innerHTML = html;
+    drawer.classList.remove('closed');
+    drawerMask.classList.remove('hidden');
+  }
+  function closeDrawer() {
+    drawer.classList.add('closed');
+    drawerMask.classList.add('hidden');
+  }
+  document.querySelectorAll('[data-detail]').forEach(el => {
+    el.addEventListener('click', () => openDrawer(el.dataset.detail));
+  });
+  document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+  drawerMask.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+
+  // ------------------------ Issues ------------------------
+  const issues = JSON.parse(document.getElementById('issues').textContent);
+  const sevOrder = { high: 0, medium: 1, low: 2, info: 3 };
+  const issuesList = document.getElementById('issuesList');
+  issues.sort((a, b) => sevOrder[a.sev] - sevOrder[b.sev]).forEach((it) => {
+    const wrap = document.createElement('details');
+    wrap.className = 'layer-card p-4';
+    wrap.innerHTML = `
+      <summary class="cursor-pointer flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <span class="pill severity-${it.sev} border font-mono">${it.id}</span>
+          <span class="pill severity-${it.sev} border uppercase tracking-wider">${it.sev}</span>
+          <span class="font-display font-bold text-base">${it.title}</span>
+        </div>
+        <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" style="transition: transform 200ms ease"><path d="M9 6l6 6-6 6"/></svg>
+      </summary>
+      <div class="mt-3 grid md:grid-cols-2 gap-4 text-sm">
+        <div>
+          <div class="text-xs uppercase tracking-widest text-white/40 mb-1">Description</div>
+          <div class="text-white/80 leading-relaxed">${it.desc}</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-widest text-propza-300 mb-1">Remediation</div>
+          <div class="text-white/80 leading-relaxed">${it.fix}</div>
+        </div>
+      </div>`;
+    issuesList.appendChild(wrap);
+  });
+
+  // ------------------------ Search ------------------------
+  const search = document.getElementById('searchInput');
+  if (search) {
+    let lastMatch = null;
+    search.addEventListener('input', () => {
+      const q = search.value.trim().toLowerCase();
+      if (q.length < 2) {
+        if (lastMatch) lastMatch.style.boxShadow = '';
+        return;
+      }
+      const candidates = [...document.querySelectorAll('[data-detail]')];
+      for (const c of candidates) {
+        const text = c.innerText.toLowerCase();
+        if (text.includes(q)) {
+          if (lastMatch && lastMatch !== c) lastMatch.style.boxShadow = '';
+          lastMatch = c;
+          c.style.boxShadow = '0 0 0 2px #34d399, 0 30px 60px rgba(52,211,153,0.18)';
+          c.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+          return;
+        }
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        search.focus();
+        search.select();
+      }
+    });
+  }
+
+  // Date stamp in footer
+  const footerText = document.querySelector('footer span.font-mono');
+  if (footerText) {
+    const now = new Date();
+    const opts = { year:'numeric', month:'short', day:'numeric' };
+    footerText.textContent = now.toLocaleDateString('en-ZA', opts);
+  }
+</script>
+
+</body>
+</html>

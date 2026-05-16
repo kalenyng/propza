@@ -1,0 +1,1073 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "manifest_version": "1.0.0",
+  "manifest_generated_at": "2026-05-16",
+  "generator": "Propza Architecture Mapper",
+  "purpose": "Machine-readable architectural map of the Propza codebase, intended for AI coding agents and automation tools. Every component, dependency, data flow, constraint, and known issue is represented explicitly.",
+  "meta": {
+    "project": "Propza",
+    "version": "0.0.0",
+    "tagline": "South African ZAR-focused property management for landlords",
+    "domain": "real_estate_property_management",
+    "primary_market": "ZA",
+    "currency": "ZAR",
+    "timezone": "Africa/Johannesburg (UTC+2, no DST)",
+    "languages_supported": ["en", "af", "zu", "xh"],
+    "repository_root": "/Users/kalenyoung/propza/propza",
+    "repository_is_git": true,
+    "license": "private",
+    "is_pwa": true,
+    "is_spa": true,
+    "deployment_target": "vercel_static",
+    "ssr": false,
+    "monorepo": false
+  },
+
+  "tech_stack": {
+    "frontend_framework": {
+      "name": "Angular",
+      "version": "^18.2.0",
+      "mode": "standalone_components",
+      "uses_ngmodules": false,
+      "change_detection": "zone_with_event_coalescing",
+      "uses_signals": true,
+      "uses_rxjs": true,
+      "rxjs_version": "~7.8.0",
+      "router_features": [
+        "withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })",
+        "withViewTransitions()"
+      ]
+    },
+    "language": {
+      "name": "TypeScript",
+      "version": "~5.5.2",
+      "strict": true,
+      "no_implicit_override": true,
+      "no_property_access_from_index_signature": true,
+      "strict_templates": true
+    },
+    "ui": {
+      "primary_styles": ["scss_per_component", "Tailwind CSS 3.x", "Bootstrap 5", "@ng-bootstrap/ng-bootstrap ^17.0.1"],
+      "fonts": ["Inter (variable, weights 400-700)", "Inter Tight (600-800)"],
+      "lottie": "lottie-web ^5.13.0 (preloader animation)",
+      "tailwind_strategy": "CSS variables wired into theme.extend.colors for dark/light theming"
+    },
+    "baas": {
+      "name": "Supabase",
+      "version": "@supabase/supabase-js ^2.75.0",
+      "modules_used": ["auth", "postgres", "storage", "rpc"],
+      "client_init_options": {
+        "autoRefreshToken": true,
+        "persistSession": true,
+        "detectSessionInUrl": true,
+        "storage": "window.localStorage",
+        "debug": false
+      },
+      "session_storage_warning": "JWT stored in localStorage — vulnerable to XSS. Supabase JS SDK constraint; mitigate via strong CSP and input sanitization (already implemented in SanitizationService).",
+      "client_singleton_path": "src/app/core/services/supabase.service.ts"
+    },
+    "pwa": {
+      "engine": "@angular/service-worker ^18.2.0",
+      "config": "ngsw-config.json",
+      "enabled_in": "production_only (isDevMode gated)",
+      "registration_strategy": "registerWhenStable:30000",
+      "asset_groups": [
+        { "name": "app", "installMode": "prefetch", "files": ["/propza-main.png", "/Propza.json", "/index.csr.html", "/index.html", "/manifest.webmanifest", "/*.css", "/*.js"] },
+        { "name": "assets", "installMode": "lazy", "updateMode": "prefetch", "files": ["/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"] }
+      ],
+      "manifest": "public/manifest.webmanifest",
+      "manifest_start_url": "/dashboard",
+      "manifest_theme_color": "#0ea472"
+    },
+    "i18n": {
+      "library": "@angular/localize ^18.2.0 (polyfill only)",
+      "runtime_translations": "custom in-memory key/value table",
+      "service": "src/app/core/services/translation.service.ts",
+      "service_size_lines": 1828,
+      "translation_strategy": "single TS object literal with per-language strings"
+    },
+    "testing": {
+      "framework": "Karma + Jasmine",
+      "specs_present": [
+        "src/app/app.component.spec.ts",
+        "src/app/features/auth/pages/register/register.component.spec.ts",
+        "src/app/features/properties/components/add-property-modal/add-property-modal.component.spec.ts",
+        "src/app/features/properties/pages/property-detail/property-detail.component.spec.ts"
+      ],
+      "spec_coverage_estimate": "<5% (mostly skeleton specs from Angular CLI scaffolding)"
+    },
+    "hosting": {
+      "platform": "Vercel",
+      "build_command": "npm run build:vercel",
+      "output_directory": "dist/propza/browser",
+      "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+      "edge_or_serverless_functions": "none",
+      "ci_cd": "Vercel Git integration only (no GitHub Actions in repo)"
+    }
+  },
+
+  "entry_points": {
+    "html": "src/index.html",
+    "bootstrap": "src/main.ts",
+    "app_config": "src/app/app.config.ts",
+    "root_component": "src/app/app.component.ts",
+    "root_template": "src/app/app.component.html",
+    "routes": "src/app/app.routes.ts",
+    "global_styles": "src/styles.scss",
+    "tailwind_config": "tailwind.config.js",
+    "postcss_config": "postcss.config.js",
+    "angular_config": "angular.json",
+    "typescript_config": "tsconfig.json",
+    "service_worker_config": "ngsw-config.json",
+    "vercel_config": "vercel.json",
+    "package_manifest": "package.json"
+  },
+
+  "environment": {
+    "generation_strategy": "scripts/generate-env.ts writes src/environments/environment.ts and environment.prod.ts at build time",
+    "secondary_replacement_script": {
+      "path": "scripts/replace-env-vars.js",
+      "purpose": "Post-build rewrite of process.env.* placeholders inside dist/ (legacy/parallel path; risky because it inlines literal strings and ships hard-coded dev anon key as fallback in source)",
+      "issue": "Hard-codes dev Supabase URL and anon key inside the script — committed to git. Anon key is low risk by design but still leaks the project URL."
+    },
+    "required_env_vars": [
+      { "name": "NG_APP_SUPABASE_URL", "required": true, "type": "string", "purpose": "Supabase project REST endpoint" },
+      { "name": "NG_APP_SUPABASE_ANON_KEY", "required": true, "type": "string", "purpose": "Supabase anon JWT for browser client" },
+      { "name": "NG_APP_REQUIRES_BETA_ACCESS", "required": false, "type": "boolean", "default": true, "purpose": "Toggles whether /beta-access gate is enforced" },
+      { "name": "NG_APP_BETA_ACCESS_CODE_HASH", "required": false, "type": "string", "purpose": "Base64-encoded 6-digit access code. NOTE: literally btoa(code), NOT a cryptographic hash." }
+    ],
+    "files_gitignored": [".env", ".env.local", ".env.production", "src/environments/environment.ts", "src/environments/environment.prod.ts"],
+    "templates": ["src/environments/environment.template.ts", "src/environments/environment.prod.template.ts"]
+  },
+
+  "scripts": {
+    "npm": {
+      "ng": "ng",
+      "start": "npm run build:dev && npm run serve:dev",
+      "serve": "npm run build:dev && npm run serve:dev",
+      "build": "ts-node scripts/generate-env.ts && ng build",
+      "build:dev": "ts-node scripts/generate-env.ts && ng build --configuration development",
+      "build:vercel": "ts-node scripts/generate-env.ts && ng build --configuration production",
+      "serve:dev": "node scripts/dev-server.js",
+      "test": "ng test",
+      "kill": "lsof -ti:4201 | xargs kill -9"
+    },
+    "dev_server": {
+      "path": "scripts/dev-server.js",
+      "port": 4201,
+      "serves_from": "dist/propza/browser",
+      "type": "node http server with SPA fallback to index.html",
+      "note": "Custom server because there are no API routes — Angular CLI dev server is not used in the start/serve pipeline; production-style static build is served."
+    }
+  },
+
+  "routing": {
+    "strategy": "single flat Routes array, all components eagerly imported (NO lazy loading)",
+    "lazy_loading": false,
+    "bundle_impact": "All 30+ feature components contribute to initial bundle. angular.json sets initial budget warning at 2MB / error at 3MB.",
+    "guards_global_chain": ["betaAccessGuard", "authGuard"],
+    "routes": [
+      { "path": "", "component": "LandingComponent", "pathMatch": "full", "guards": [], "purpose": "Public marketing landing page" },
+      { "path": "beta-access", "component": "BetaAccessComponent", "guards": [], "purpose": "6-digit code gate (base64-validated)" },
+      {
+        "path": "",
+        "component": "AuthenticatedShellComponent",
+        "guards": ["betaAccessGuard", "authGuard"],
+        "children": [
+          { "path": "dashboard", "component": "DashboardComponent", "data": { "mobileShellTitle": "Dashboard" } },
+          { "path": "properties", "component": "PropertyListComponent", "data": { "mobileShellTitle": "Properties" } },
+          { "path": "home", "redirectTo": "properties", "pathMatch": "full" },
+          { "path": "property/:id", "component": "PropertyDetailComponent", "data": { "mobileShellTitle": "Property" } },
+          { "path": "tenants", "component": "TenantListComponent", "data": { "mobileShellTitle": "Tenants" } },
+          { "path": "tenant/:id", "component": "TenantDetailComponent", "data": { "mobileShellTitle": "Tenant" } },
+          { "path": "payments", "component": "PaymentsComponent", "data": { "mobileShellTitle": "Payments" } },
+          { "path": "settings", "component": "SettingsComponent", "data": { "mobileShellTitle": "Settings", "hideMobileHero": true } }
+        ]
+      },
+      { "path": "login", "component": "LoginComponent", "guards": ["betaAccessGuard", "guestGuard"] },
+      { "path": "register", "component": "RegisterComponent", "guards": ["betaAccessGuard", "guestGuard"] },
+      { "path": "reset-password", "component": "ResetPasswordComponent", "guards": [], "purpose": "Listens for Supabase PASSWORD_RECOVERY event" },
+      { "path": "**", "component": "NotFoundComponent" }
+    ]
+  },
+
+  "guards": [
+    {
+      "name": "authGuard",
+      "path": "src/app/core/guards/auth.guard.ts",
+      "type": "CanActivateFn",
+      "depends_on": ["AuthService", "Router"],
+      "logic": "await auth.waitForSession(); if no user → redirect to /login",
+      "async": true
+    },
+    {
+      "name": "guestGuard",
+      "path": "src/app/core/guards/guest.guard.ts",
+      "type": "CanActivateFn",
+      "depends_on": ["AuthService", "Router"],
+      "logic": "await auth.waitForSession(); if user present → redirect to /dashboard",
+      "async": true
+    },
+    {
+      "name": "betaAccessGuard",
+      "path": "src/app/core/guards/beta-access.guard.ts",
+      "type": "CanActivateFn",
+      "depends_on": ["BetaAccessService", "Router"],
+      "logic": "if !environment.requiresBetaAccess → allow; else if !betaAccess.hasAccess() → redirect to /beta-access",
+      "security_note": "Code check is client-side only. localStorage flag can be set manually by anyone via DevTools. Not a security boundary — only a friction filter."
+    }
+  ],
+
+  "core_services": [
+    {
+      "name": "SupabaseService",
+      "path": "src/app/core/services/supabase.service.ts",
+      "providedIn": "root",
+      "role": "Singleton wrapper around @supabase/supabase-js client + global refresh bus",
+      "exposes": {
+        "supabase": "SupabaseClient (getter)",
+        "refreshAll$": "Observable<void> — emits when any service needs to broadcast refresh",
+        "triggerRefreshAll()": "Pushes a refresh signal that PropertyService and TenantService subscribe to"
+      },
+      "consumers": ["AuthService", "PropertyService", "TenantService", "ThemeService", "AuthenticatedShellComponent", "AddPropertyModalComponent", "AddTenantModalComponent", "PropertyDetailComponent", "TenantDetailComponent", "ResetPasswordComponent", "SettingsDesktopComponent", "SettingsMobileComponent"]
+    },
+    {
+      "name": "AuthService",
+      "path": "src/app/core/services/auth.service.ts",
+      "providedIn": "root",
+      "state": {
+        "session": "signal<Session | null>",
+        "user": "signal<User | null>",
+        "userName": "signal<string>"
+      },
+      "methods": [
+        "waitForSession()",
+        "waitForUserName()",
+        "signInWithPassword(email, password)",
+        "signInWithGoogle()  — redirectTo: `${origin}/dashboard?beta=granted`",
+        "signUp(email, password, firstName?, fullName?)",
+        "signOut()",
+        "updateProfile({ firstName, fullName, email })",
+        "sendPasswordReset(email)  — redirectTo: `${origin}/reset-password`",
+        "updatePassword(newPassword)",
+        "deleteAccount()  — calls Postgres RPC `delete_current_user`"
+      ],
+      "depends_on": ["SupabaseService"],
+      "side_effects": "Subscribes to onAuthStateChange and writes to signals; lazily fetches `profiles.full_name` to derive userName"
+    },
+    {
+      "name": "PropertyService",
+      "path": "src/app/core/services/property.service.ts",
+      "providedIn": "root",
+      "state": {
+        "properties$": "BehaviorSubject<Property[]>",
+        "payments$": "BehaviorSubject<Payment[]>",
+        "loading$": "BehaviorSubject<boolean>"
+      },
+      "methods": [
+        "loadProperties()  — selects with nested tenants(name, rent_status, rent_due_date, rent_amount, lease_start_date, lease_end_date)",
+        "loadPayments()  — payments WHERE property_id IN owned property IDs",
+        "getProperties()", "getPayments()", "getPropertyById(id)", "getVacantProperties()",
+        "addProperty(partial)", "updateProperty(id, partial)", "deleteProperty(id)",
+        "addPayment(payment)", "updatePayment(id, partial)", "deletePayment(id)",
+        "refreshProperties()", "refreshPayments()", "refreshAll()"
+      ],
+      "depends_on": ["SupabaseService"],
+      "subscribes_to": "SupabaseService.refreshAll$ → refreshAll()",
+      "initial_load_pattern": "Constructor calls loadProperties().then(loadPayments) — silent refresh after first authenticated fetch"
+    },
+    {
+      "name": "TenantService",
+      "path": "src/app/core/services/tenant.service.ts",
+      "providedIn": "root",
+      "state": {
+        "tenants$": "BehaviorSubject<Tenant[]>",
+        "loading$": "BehaviorSubject<boolean>"
+      },
+      "methods": [
+        "loadTenants()  — tenants INNER JOIN properties on properties.owner_id = auth user",
+        "getTenants()", "getTenantById(id)",
+        "addTenant(tenant)", "updateTenant(id, partial)",
+        "deleteTenant(id)  — also nulls properties.tenant and sets status='vacant', then triggerRefreshAll()",
+        "getTenantStats()",
+        "refreshTenants()"
+      ],
+      "depends_on": ["SupabaseService"],
+      "subscribes_to": "SupabaseService.refreshAll$ → refreshTenants()"
+    },
+    {
+      "name": "ThemeService",
+      "path": "src/app/core/services/theme.service.ts",
+      "providedIn": "root",
+      "state": { "theme": "signal<'light' | 'dark'>" },
+      "methods": ["loadTheme()", "setTheme(theme)"],
+      "depends_on": ["SupabaseService", "AuthService"],
+      "persistence": ["localStorage propza_theme", "profiles.theme column"],
+      "uses_angular_effect": true
+    },
+    {
+      "name": "BetaAccessService",
+      "path": "src/app/core/services/beta-access.service.ts",
+      "providedIn": "root",
+      "state": { "hasAccessSignal": "signal<boolean>" },
+      "methods": [
+        "isBetaAccessRequired()",
+        "validateCode(code)  — base64(code) compared against environment.betaAccessCodeHash",
+        "hasAccess()", "grantAccess()", "revokeAccess()"
+      ],
+      "security_caveat": "Stored under localStorage['propza_beta_access']='granted'. Comparator is base64, NOT a hash. Bypassable via DevTools."
+    },
+    {
+      "name": "RentDueService",
+      "path": "src/app/core/services/rent-due.service.ts",
+      "providedIn": "root",
+      "purpose": "Centralized, timezone-safe (ZA UTC+2) rent status calculation. Pure functions on tenants + payments.",
+      "billing": "monthly_only",
+      "status_rules": {
+        "vacant": "lease hasn't started OR has ended",
+        "paid": "daysUntil > 7 OR collected >= rent_amount",
+        "upcoming": "4 <= daysUntil <= 7",
+        "due_soon": "1 <= daysUntil <= 3",
+        "due_today": "daysUntil === 0",
+        "overdue": "daysUntil < 0",
+        "partially_paid": "0 < collected < rent_amount AND status != overdue"
+      },
+      "key_methods": [
+        "toDateOnlyZA(date)", "getTodayZA()", "diffInCalendarDays(a,b)", "safeAddMonths(date, months)",
+        "getTenantStatus(tenant, today?)",
+        "getStatusForTenant(tenant, payments, property?, today?)",
+        "getNextDueDate(currentDueDate)",
+        "getCurrentPeriod(today?)  — YYYY-MM",
+        "mapToDatabaseStatus(status)  — collapses to DB-allowed values: paid|overdue|upcoming|vacant",
+        "getCollectedAmount(payments, propertyId, period)"
+      ]
+    },
+    {
+      "name": "RentHelperService",
+      "path": "src/app/core/services/rent-helper.service.ts",
+      "providedIn": "root",
+      "purpose": "Legacy/parallel rent calculations. Supports BOTH monthly and weekly billing.",
+      "overlap_with": "RentDueService",
+      "architectural_concern": "Two rent calculation services with overlapping responsibilities. Components inconsistently use one or the other (sometimes both). Consolidation needed.",
+      "key_methods": [
+        "nextDueDate(dueDay, tenancyStart?)",
+        "periodKey(date)",
+        "nextDueDateWeekly(dueWeekday, tenancyStart?)",
+        "periodKeyWeekly(date)",
+        "getCurrentRentPeriod(dueDay)",
+        "getCurrentRentPeriodWeekly(dueWeekday)",
+        "isActive(tenancyStart, tenancyEnd?)",
+        "daysUntilDue(dueDate)",
+        "statusFor(isActive, nextDue, collected, rentAmount)",
+        "getRemaining()", "getOverpayment()",
+        "getStatusLabel(status)", "getStatusColor(status)",
+        "isDueThisMonth(dueDate)",
+        "getDueDateText(status, dueDate)"
+      ]
+    },
+    {
+      "name": "TranslationService",
+      "path": "src/app/core/services/translation.service.ts",
+      "providedIn": "root",
+      "state": { "currentLanguage": "signal<'en'|'af'|'zu'|'xh'>" },
+      "size_lines": 1828,
+      "structure": "Single object literal mapping key → { en, af, zu, xh }",
+      "improvement_opportunity": "Externalize to per-language JSON files loaded lazily; or migrate to @angular/localize runtime XLIFF.",
+      "depends_on": ["LoggerService"]
+    },
+    {
+      "name": "LoggerService",
+      "path": "src/app/core/services/logger.service.ts",
+      "purpose": "console.* gated by environment.production",
+      "methods": ["log", "error", "warn", "info", "debug"]
+    },
+    {
+      "name": "ErrorService",
+      "path": "src/app/core/services/error.service.ts",
+      "purpose": "Centralized error normalization (returns AppError { message, code, details })",
+      "monitoring_integration": "TODO — Sentry placeholder comment, not wired."
+    },
+    {
+      "name": "SanitizationService",
+      "path": "src/app/core/services/sanitization.service.ts",
+      "purpose": "Sanitizes HTML, URLs, text, email, phone, address, notes, numbers, file names — defensive input cleanup before DB writes."
+    },
+    {
+      "name": "PwaInstallService",
+      "path": "src/app/core/services/pwa-install.service.ts",
+      "state": { "canInstall": "signal<boolean>", "isIOS": "signal<boolean>" },
+      "methods": ["promptInstall()", "dismissPrompt()"],
+      "depends_on": ["ErrorService"],
+      "persists_dismissal": "sessionStorage['pwa-install-dismissed']"
+    },
+    {
+      "name": "ConfirmationModalService",
+      "path": "src/app/core/services/confirmation-modal.service.ts",
+      "purpose": "Promise-based confirm() that drives the global ConfirmationModalComponent rendered in app.component.html"
+    },
+    {
+      "name": "MobileShellTitleService",
+      "path": "src/app/core/services/mobile-shell-title.service.ts",
+      "state": { "mobileTitleOverride": "signal<string | null>" },
+      "purpose": "Allow detail pages (e.g. /property/:id) to override the mobile shell's green header title"
+    },
+    {
+      "name": "ScrollRestoreService",
+      "path": "src/app/core/services/scroll-restore.service.ts",
+      "purpose": "Custom per-path scroll position cache for cross-route navigation, working both on window and on registered scroll host element (mobile vs desktop scroll model)"
+    },
+    {
+      "name": "PropzaModalOptionsService",
+      "path": "src/app/core/services/propza-modal-options.service.ts",
+      "purpose": "Returns NgbModalOptions presets — fullscreen sheet on mobile (<1024px), centered dialog on desktop"
+    }
+  ],
+
+  "models": {
+    "barrel": "src/app/core/models/index.ts",
+    "interfaces": [
+      {
+        "name": "Property",
+        "path": "src/app/core/models/property.model.ts",
+        "fields": {
+          "id": "string (uuid)",
+          "address": "string",
+          "rent_amount": "number",
+          "currency": "string (always 'ZAR' in practice)",
+          "status": "'vacant' | 'occupied'",
+          "owner_id": "string (uuid, auth.users.id)",
+          "name": "string",
+          "created_at": "string (timestamptz)",
+          "tenants?": "Array<{ name, rent_status, rent_due_date, rent_amount, lease_start_date, lease_end_date }> — denormalized join shape from Supabase select"
+        },
+        "schema_drift_warning": "TS type uses status='vacant'|'occupied' but migration 001 declared status='available'|'occupied'|'maintenance' with rent_frequency, rent_amount INTEGER, etc. The current runtime schema must have been altered outside the committed migrations."
+      },
+      {
+        "name": "Payment",
+        "path": "src/app/core/models/property.model.ts",
+        "fields": {
+          "id": "string (uuid)",
+          "property_id": "string (uuid)",
+          "amount": "number",
+          "period": "string (YYYY-MM)",
+          "payment_date": "string (date)",
+          "payment_method?": "string",
+          "notes?": "string",
+          "paid_at": "string (timestamptz)",
+          "created_at": "string (timestamptz)"
+        }
+      },
+      {
+        "name": "Tenant",
+        "path": "src/app/core/models/tenant.model.ts",
+        "fields": {
+          "id": "string (uuid)",
+          "name": "string",
+          "email": "string | null",
+          "phone": "string | null",
+          "property_id": "string (uuid)",
+          "rent_amount": "number",
+          "rent_status": "'paid'|'overdue'|'upcoming'|'vacant'",
+          "rent_due_date": "string (date)",
+          "lease_start_date": "string | null",
+          "lease_end_date": "string | null",
+          "deposit_amount": "number",
+          "notes": "string | null",
+          "created_at": "string (timestamptz)",
+          "properties?": "{ address, owner_id? } — denormalized join shape"
+        },
+        "schema_drift_warning": "deposit_amount column is referenced in TS and code but NOT present in migration 003_tenants_table.sql. Must have been added out-of-band."
+      }
+    ]
+  },
+
+  "feature_modules": [
+    {
+      "name": "auth",
+      "path": "src/app/features/auth",
+      "pages": [
+        { "name": "LoginComponent", "path": "pages/login/login.component.ts", "uses": ["AuthService", "NgbModal", "PasswordResetModalComponent", "PropzaModalOptionsService"] },
+        { "name": "RegisterComponent", "path": "pages/register/register.component.ts", "uses": ["AuthService", "ReactiveFormsModule"] },
+        { "name": "ResetPasswordComponent", "path": "pages/reset-password/reset-password.component.ts", "uses": ["AuthService", "SupabaseService"] },
+        { "name": "BetaAccessComponent", "path": "pages/beta-access/beta-access.component.ts", "uses": ["BetaAccessService"] }
+      ]
+    },
+    {
+      "name": "dashboard",
+      "path": "src/app/features/dashboard",
+      "pages": [
+        {
+          "name": "DashboardComponent",
+          "path": "pages/dashboard/dashboard.component.ts",
+          "uses": ["PropertyService", "TenantService", "RentDueService", "ShortNumberPipe"],
+          "produces": ["metrics summary", "upcoming rents (4)", "activity (6)", "last 6 months collection chart", "instant search across properties+tenants"]
+        }
+      ]
+    },
+    {
+      "name": "properties",
+      "path": "src/app/features/properties",
+      "pages": [
+        { "name": "PropertyListComponent", "path": "pages/property-list/home.component.ts", "uses": ["PropertyService", "RentHelperService", "RentDueService", "TranslationService", "PropzaModalOptionsService", "AddPropertyModalComponent", "PropertyCardComponent", "ShortNumberPipe"] },
+        { "name": "PropertyDetailComponent", "path": "pages/property-detail/property-detail.component.ts", "uses": ["PropertyService", "TenantService", "SupabaseService (direct)", "RentHelperService", "RentDueService", "ConfirmationModalService", "ToastService", "MobileShellTitleService", "ScrollRestoreService", "AddTenantModalComponent"] }
+      ],
+      "components": [
+        { "name": "PropertyCardComponent", "path": "components/property-card/property-card.component.ts" },
+        { "name": "AddPropertyModalComponent", "path": "components/add-property-modal/add-property-modal.component.ts", "uses": ["SupabaseService (direct DB + storage)", "RentHelperService", "RentDueService", "SanitizationService", "ToastService"] }
+      ],
+      "config": [
+        { "name": "property-status.config.ts", "path": "components/property-card/property-status.config.ts", "purpose": "PROPERTY_CARD_STATUS_PRESENTATION map" }
+      ]
+    },
+    {
+      "name": "tenants",
+      "path": "src/app/features/tenants",
+      "pages": [
+        { "name": "TenantListComponent", "path": "pages/tenant-list/tenants.component.ts", "uses": ["TenantService", "TenantCardComponent", "PropzaModalOptionsService", "AddTenantModalComponent"] },
+        { "name": "TenantDetailComponent", "path": "pages/tenant-detail/tenant-detail.component.ts", "uses": ["TenantService", "PropertyService", "SupabaseService (direct)", "RentHelperService", "RentDueService", "ConfirmationModalService", "MobileShellTitleService", "ScrollRestoreService"] }
+      ],
+      "components": [
+        { "name": "TenantCardComponent", "path": "components/tenant-card/tenant-card.component.ts" },
+        { "name": "AddTenantModalComponent", "path": "components/add-tenant-modal/add-tenant-modal.component.ts", "uses": ["SupabaseService (direct)", "PropertyService", "RentHelperService", "RentDueService", "SanitizationService", "ToastService"] }
+      ],
+      "config": [
+        { "name": "tenant-status.config.ts", "path": "components/tenant-card/tenant-status.config.ts" }
+      ]
+    },
+    {
+      "name": "payments",
+      "path": "src/app/features/payments",
+      "pages": [
+        { "name": "PaymentsComponent", "path": "pages/payments/payments.component.ts", "uses": ["PropertyService", "ShortNumberPipe"], "purpose": "Filterable ledger: by property, search, mobile-collapsible controls" }
+      ]
+    },
+    {
+      "name": "settings",
+      "path": "src/app/features/settings",
+      "pages": [
+        { "name": "SettingsComponent", "path": "pages/settings/settings.component.ts", "purpose": "Responsive shell — chooses SettingsDesktopComponent or SettingsMobileComponent based on (min-width: 1024px) media query" },
+        { "name": "SettingsDesktopComponent", "path": "pages/settings-desktop/settings-desktop.component.ts", "sections": ["account", "property", "appearance", "notifications", "data", "support"] },
+        { "name": "SettingsMobileComponent", "path": "pages/settings-mobile/settings-mobile-main.component.ts", "sub_pages": ["main", "account", "password", "preferences", "data"], "size_lines": 1145, "complexity_note": "Heavy custom scroll-restoration + sheet-style detail panel logic. Large debug logging scaffolding gated by localStorage flag." }
+      ],
+      "components": [
+        { "name": "EditNameModalComponent", "path": "components/edit-name-modal/edit-name-modal.component.ts" },
+        { "name": "QuickStartModalComponent", "path": "components/quick-start-modal/quick-start-modal.component.ts" },
+        { "name": "BugReportModalComponent", "path": "components/bug-report-modal/bug-report-modal.component.ts" },
+        { "name": "FeatureRequestModalComponent", "path": "components/feature-request-modal/feature-request-modal.component.ts" },
+        { "name": "FeedbackModalComponent", "path": "components/feedback-modal/feedback-modal.component.ts" },
+        { "name": "ContactSupportModalComponent", "path": "components/contact-support-modal/contact-support-modal.component.ts" },
+        { "name": "PrivacyPolicyModalComponent", "path": "components/privacy-policy-modal/privacy-policy-modal.component.ts" },
+        { "name": "TermsModalComponent", "path": "components/terms-modal/terms-modal.component.ts" },
+        { "name": "PasswordResetModalComponent", "path": "components/password-reset-modal/password-reset-modal.component.ts" },
+        { "name": "DeleteAccountModalComponent", "path": "components/delete-account-modal/delete-account-modal.component.ts" }
+      ],
+      "constants": [
+        { "name": "PROPZA_SUPPORT_EMAIL", "path": "support-email.ts", "value": "kalenyoung03@gmail.com" }
+      ]
+    },
+    {
+      "name": "landing",
+      "path": "src/app/features/landing",
+      "pages": [{ "name": "LandingComponent", "path": "landing.component.ts", "uses": ["BetaAccessService", "AuthService", "PwaInstallService", "IosInstallModalComponent"] }]
+    }
+  ],
+
+  "layout": {
+    "AuthenticatedShellComponent": {
+      "path": "src/app/layout/authenticated-shell/authenticated-shell.component.ts",
+      "role": "Top-level wrapper for all authenticated routes",
+      "renders": ["mobile green hero", "desktop sidebar", "<router-outlet>"],
+      "uses": ["AuthService", "SupabaseService", "ScrollRestoreService", "MobileShellTitleService"],
+      "preferences": [
+        { "key": "propza.sidebarCollapsed", "store": "localStorage" }
+      ],
+      "responsive_breakpoint": "1024px"
+    }
+  },
+
+  "shared_components": [
+    { "name": "PreloaderComponent", "path": "src/app/shared/components/preloader/preloader.component.ts", "renders": "Lottie /Propza.json animation, 4s hold via AppComponent", "uses": "lottie-web" },
+    { "name": "ConfirmationModalComponent", "path": "src/app/shared/components/confirmation-modal/confirmation-modal.component.ts", "subscribes_to": "ConfirmationModalService.state$" },
+    { "name": "ToastComponent", "path": "src/app/shared/components/toast/toast.component.ts", "subscribes_to": "ToastService.toasts$" },
+    { "name": "BottomNavComponent", "path": "src/app/shared/components/bottom-nav/bottom-nav.component.ts", "purpose": "Mobile bottom nav (5 items)" },
+    { "name": "HeaderBannerComponent", "path": "src/app/shared/components/header-banner/header-banner.component.ts", "uses": ["AuthService.userName signal", "TranslationService"], "purpose": "Time-of-day greeting in user's language" },
+    { "name": "IosInstallModalComponent", "path": "src/app/shared/components/ios-install-modal/ios-install-modal.component.ts" },
+    { "name": "PwaInstallPromptComponent", "path": "src/app/shared/components/pwa-install-prompt/pwa-install-prompt.component.ts", "delay_after_login": "4000ms" },
+    { "name": "SummaryCardComponent", "path": "src/app/shared/components/summary-card/summary-card.component.ts" }
+  ],
+
+  "shared_pipes": [
+    { "name": "ShortNumberPipe", "path": "src/app/shared/pipes/short-number.pipe.ts", "purpose": "Formats numbers as R 1.2M / R 1K / R 500 (ZAR shorthand)" }
+  ],
+
+  "supabase": {
+    "tables": [
+      {
+        "name": "properties",
+        "purpose": "Owner-scoped property records",
+        "schema_source_runtime": "Inferred from app code + seed",
+        "schema_source_migrations": "supabase-migrations/001_properties_table.sql + 007_add_notes_column.sql",
+        "columns_runtime_authoritative": [
+          { "name": "id", "type": "uuid", "default": "gen_random_uuid()", "pk": true },
+          { "name": "owner_id", "type": "uuid", "fk": "auth.users(id)", "rls_subject": true },
+          { "name": "name", "type": "text" },
+          { "name": "address", "type": "text" },
+          { "name": "rent_amount", "type": "numeric (or integer per migration)" },
+          { "name": "currency", "type": "text", "default": "'ZAR'" },
+          { "name": "status", "type": "text", "allowed_runtime": ["vacant", "occupied"], "allowed_migration": ["available", "occupied", "maintenance"] },
+          { "name": "lease_url", "type": "text (nullable)" },
+          { "name": "tenant", "type": "text (nullable)", "note": "Set/cleared by TenantService.deleteTenant() to keep status pill in sync — redundant with tenants table" },
+          { "name": "notes", "type": "text (nullable)", "added_by": "007_add_notes_column.sql" },
+          { "name": "created_at", "type": "timestamptz" },
+          { "name": "updated_at", "type": "timestamptz", "trigger": "handle_updated_at()" }
+        ],
+        "indexes": ["idx_properties_status", "idx_properties_address"],
+        "rls_enabled": true
+      },
+      {
+        "name": "tenants",
+        "purpose": "Tenants linked 1:1 (effectively) to properties",
+        "schema_source_migrations": "supabase-migrations/003_tenants_table.sql",
+        "columns_runtime_authoritative": [
+          { "name": "id", "type": "uuid", "pk": true },
+          { "name": "name", "type": "text" },
+          { "name": "email", "type": "text (nullable)" },
+          { "name": "phone", "type": "text (nullable)" },
+          { "name": "property_id", "type": "uuid", "fk": "properties(id) ON DELETE CASCADE" },
+          { "name": "rent_amount", "type": "integer" },
+          { "name": "rent_status", "type": "text", "allowed": ["paid", "overdue", "upcoming", "vacant"] },
+          { "name": "rent_due_date", "type": "date" },
+          { "name": "lease_start_date", "type": "date (nullable)" },
+          { "name": "lease_end_date", "type": "date (nullable)" },
+          { "name": "deposit_amount", "type": "integer", "note": "NOT in migration 003 — added out-of-band" },
+          { "name": "notes", "type": "text (nullable)" },
+          { "name": "created_at", "type": "timestamptz" },
+          { "name": "updated_at", "type": "timestamptz" }
+        ],
+        "indexes": ["idx_tenants_property_id", "idx_tenants_rent_status", "idx_tenants_rent_due_date"],
+        "rls_enabled": true
+      },
+      {
+        "name": "payments",
+        "purpose": "Rent payment ledger (one row per partial-or-full payment)",
+        "schema_source_migrations": "002_payments_table.sql + 005_alter_payments_table.sql + 006_allow_partial_payments.sql",
+        "columns": [
+          { "name": "id", "type": "uuid", "pk": true },
+          { "name": "property_id", "type": "uuid", "fk": "properties(id) ON DELETE CASCADE" },
+          { "name": "period", "type": "text", "format": "YYYY-MM", "added_by": "005" },
+          { "name": "amount", "type": "numeric" },
+          { "name": "payment_date", "type": "date", "default": "CURRENT_DATE" },
+          { "name": "payment_method", "type": "text (nullable)" },
+          { "name": "notes", "type": "text (nullable)" },
+          { "name": "paid_at", "type": "timestamptz", "default": "NOW()" },
+          { "name": "created_at", "type": "timestamptz", "default": "NOW()" }
+        ],
+        "constraint_history": [
+          { "name": "unique_property_period", "added_in": "002 + reaffirmed in 005", "dropped_in": "006_allow_partial_payments.sql (to allow multiple partial payments per period)" }
+        ],
+        "indexes": ["idx_payments_property_id", "idx_payments_period", "idx_payments_property_period", "idx_payments_paid_at", "idx_payments_property_period_agg"],
+        "rls_enabled": true,
+        "note_owner_id": "Settings export code queries payments WHERE owner_id = ... — but the schema has NO owner_id on payments. This will return zero rows and is a latent bug."
+      },
+      {
+        "name": "tenancies",
+        "purpose": "Legacy tenancy model (start_date, end_date, rent_due_day). Still written/read by AddPropertyModalComponent and PropertyDetailComponent. Coexists with tenants table.",
+        "schema_source_migrations": "NONE — table inferred from seed_demo_user.sql usage",
+        "architectural_debt": "Should be deprecated or unified with tenants table. Currently double-bookkeeping is required (e.g. on tenant delete, both tenants and tenancies are wiped)."
+      },
+      {
+        "name": "profiles",
+        "purpose": "User profile data (full_name, theme, notifications_enabled)",
+        "schema_source_migrations": "NONE — table assumed to exist (likely via Supabase Auth trigger). RLS policies are created in 004 if it exists.",
+        "columns_inferred_from_code": ["id (uuid, pk = auth.uid())", "full_name (text)", "theme ('light'|'dark')", "notifications_enabled (boolean)"]
+      }
+    ],
+    "rls_policies": {
+      "migration_004_authoritative": "RLS policies tied to auth.uid() = owner_id (or via EXISTS on properties for tenants/payments/profiles).",
+      "earlier_001_003_policies_concern": "Migrations 001 and 003 created permissive policies using only `auth.uid() IS NOT NULL` (any authenticated user could read all rows). 004 added correct owner-scoped policies but did NOT drop the older permissive ones. If both are active in production, RLS is effectively bypassable for SELECT.",
+      "remediation": "Verify in production Supabase dashboard that only the migration-004 policies are enabled; drop any leftover legacy policies created by 001 or 003."
+    },
+    "rpc_functions": [
+      {
+        "name": "delete_current_user",
+        "called_from": "AuthService.deleteAccount()",
+        "expected_behavior": "SECURITY DEFINER function that deletes the calling user from auth.users using auth.uid()",
+        "defined_in_repo": false,
+        "note": "Must be defined directly in Supabase dashboard. If missing, returns generic error caught and surfaced as toast."
+      }
+    ],
+    "storage_buckets": [
+      {
+        "name": "leases",
+        "purpose": "Tenant lease PDF / document uploads",
+        "used_by": ["AddPropertyModalComponent", "AddTenantModalComponent"],
+        "upload_path_pattern": "{userId}/{timestamp}_{originalFileName}",
+        "policies_defined_in_repo": false,
+        "note": "Bucket creation and access policies are configured in Supabase dashboard, not version-controlled."
+      }
+    ],
+    "external_services": [
+      {
+        "name": "Google OAuth",
+        "purpose": "Social login (sign-in/sign-up)",
+        "configured_via": "Supabase Auth provider — code calls signInWithOAuth({ provider: 'google', options: { redirectTo: '/dashboard?beta=granted' } })"
+      }
+    ]
+  },
+
+  "data_flows": [
+    {
+      "name": "Authentication (email/password)",
+      "steps": [
+        "LoginComponent.submit() → AuthService.signInWithPassword(email, password)",
+        "Supabase Auth REST call",
+        "onAuthStateChange fires → session+user signals updated",
+        "Router.navigateByUrl('/dashboard')",
+        "authGuard re-runs on next navigation → user present → allow"
+      ]
+    },
+    {
+      "name": "Authentication (Google OAuth)",
+      "steps": [
+        "Login/Register .signInWithGoogle() → Supabase Auth signInWithOAuth (provider: google, redirectTo: /dashboard?beta=granted)",
+        "User redirected to Google → consent → back to /dashboard?beta=granted",
+        "Supabase auth callback parses URL hash (detectSessionInUrl: true)",
+        "?beta=granted query param hints app may also flip beta access (currently still requires localStorage flag set separately)"
+      ]
+    },
+    {
+      "name": "Initial app boot",
+      "steps": [
+        "main.ts → bootstrapApplication(AppComponent, appConfig)",
+        "AppComponent constructor → ThemeService.loadTheme() (waits for session, applies cached theme, syncs profiles.theme)",
+        "AppComponent.ngOnInit → AuthService.waitForSession() + (if user) navigate to /dashboard",
+        "Preloader shown for fixed 4000ms regardless of session resolution time"
+      ]
+    },
+    {
+      "name": "Property list load",
+      "steps": [
+        "PropertyListComponent.ngOnInit → combineLatest([properties$, payments$, loading$])",
+        "PropertyService.refreshAll() → loadProperties() + loadPayments()",
+        "Supabase: properties SELECT with nested tenants join, filtered by owner_id (RLS-enforced)",
+        "Supabase: payments SELECT WHERE property_id IN owned property IDs",
+        "Component computes per-property status via RentDueService.getStatusForTenant(...)",
+        "Filters/sort applied client-side, results rendered as PropertyCardComponent grid"
+      ]
+    },
+    {
+      "name": "Payment write + status reconciliation",
+      "steps": [
+        "PropertyDetailComponent.savePayment() collects current rent period via RentDueService.getCurrentPeriod()",
+        "INSERT into payments. On duplicate-period error code 23505 (legacy unique constraint), automatically advance to next period and retry, up to 12 attempts",
+        "PropertyService refresh triggered → payments$ emits",
+        "recalculateTenantStatusFromPayments() walks up to 12 months forward to find first unpaid period and updates tenants.rent_due_date + rent_status accordingly",
+        "TenantService.updateTenant() persists; PropertyService.loadProperties() refreshes"
+      ]
+    },
+    {
+      "name": "Tenant deletion cascade",
+      "steps": [
+        "TenantService.deleteTenant(id) → DELETE FROM tenants",
+        "Sets properties.status='vacant' and properties.tenant=null on the linked property",
+        "SupabaseService.triggerRefreshAll() → emits on refreshAll$",
+        "Both PropertyService.refreshAll() and TenantService.refreshTenants() fire automatically (they subscribe to refreshAll$)"
+      ]
+    },
+    {
+      "name": "Theme sync",
+      "steps": [
+        "ThemeService effect watches AuthService.user() signal",
+        "On login: read profiles.theme; if present and differs from current, apply + persist to localStorage",
+        "On user.setTheme(t): apply locally + UPDATE profiles.theme",
+        "Logout clears lastSyncedUserId"
+      ]
+    },
+    {
+      "name": "Beta access gate",
+      "steps": [
+        "betaAccessGuard runs before authGuard on protected routes",
+        "If environment.requiresBetaAccess=false → bypass entirely",
+        "Else check localStorage['propza_beta_access'] === 'granted'; redirect to /beta-access if missing",
+        "BetaAccessComponent collects 6 digits → btoa(code) === environment.betaAccessCodeHash → set localStorage flag → navigate to /login"
+      ]
+    },
+    {
+      "name": "Add property + tenant + (optional) initial payment",
+      "steps": [
+        "AddPropertyModalComponent.save() — validates required fields based on `occupied` checkbox",
+        "If occupied + leaseFile: upload to Supabase Storage bucket 'leases' at path {userId}/{ts}_{name}",
+        "INSERT properties { owner_id, name, address, rent_amount, status, currency='ZAR', lease_url }",
+        "If occupied: INSERT tenancies (legacy) and tenants (current model) with derived rent_status via RentDueService",
+        "If `currentlyPaid` checked: INSERT payments for current period (skips if already exists)",
+        "SupabaseService.triggerRefreshAll() → all services refresh"
+      ]
+    },
+    {
+      "name": "Data export",
+      "steps": [
+        "Settings → Export My Data → parallel SELECT * FROM properties|payments|tenancies (scoped by owner_id, except payments which uses owner_id that DOES NOT EXIST on payments — see latent bug)",
+        "JSON.stringify + Blob download as propza-export.json"
+      ]
+    },
+    {
+      "name": "Account deletion",
+      "steps": [
+        "DeleteAccountModalComponent collects confirmation text 'delete' + checkbox",
+        "AuthService.deleteAccount() → supabase.rpc('delete_current_user')",
+        "If success → signOut → navigate to /register"
+      ]
+    }
+  ],
+
+  "constraints": [
+    "Billing is monthly-only in current product surface (RentDueService); RentHelperService retains weekly helpers as dead/parallel code.",
+    "Currency is hard-coded to ZAR throughout (Intl.NumberFormat 'en-ZA', 'currency: ZAR').",
+    "Timezone is hard-coded to UTC+2 (Africa/Johannesburg) — no DST handling needed for ZA.",
+    "All Angular components must be standalone — no NgModules allowed.",
+    "Strict TypeScript: noPropertyAccessFromIndexSignature, strictTemplates, strictInjectionParameters.",
+    "No NgModules → all imports via standalone components' imports array.",
+    "Bundle budgets: initial warn 2MB / error 3MB, anyComponentStyle warn 15kB / error 25kB.",
+    "No backend API exists — all data operations go directly from the browser to Supabase. Logic that cannot be client-side (e.g. account deletion, mass scheduled jobs) must live as Postgres RPC functions.",
+    "Service worker is production-only.",
+    "Auth state is the source of truth in signals; older RxJS BehaviorSubjects in PropertyService/TenantService should not be mixed with signals in templates without takeUntilDestroyed/async pipe.",
+    "Sensitive operations rely on Supabase RLS — any new table must enable RLS and add owner-scoped policies.",
+    "All user input passed to Supabase must go through SanitizationService.",
+    "Mobile/desktop split for Settings is component-level (separate component trees) — not just CSS.",
+    "Detail views (property/:id, tenant/:id) use router state 'backUrl' for back-button context. ScrollRestoreService caches positions per cleanPath.",
+    "Toast service expects all toasts to be created via show()/success()/error()/warning()/info().",
+    "Confirmation modals: use ConfirmationModalService.confirm() (returns Promise<boolean>) instead of window.confirm."
+  ],
+
+  "architectural_issues": [
+    {
+      "id": "ISSUE-001",
+      "severity": "high",
+      "title": "Schema drift between migrations and runtime",
+      "description": "Migration 001_properties_table.sql declares status IN ('available','occupied','maintenance') with rent_frequency, bedrooms, bathrooms, size_sqm, property_type, and rent_amount INTEGER. Runtime uses status IN ('vacant','occupied'), references owner_id, name, currency, lease_url, tenant — none present in the migration. The tenants migration omits deposit_amount which is read/written by the app. The tenancies and profiles tables are used heavily but have NO migration in the repo.",
+      "impact": "Anyone re-creating the project from migrations cannot run the app. New developers cannot trust the SQL files. Future migrations risk conflicting with hand-applied changes.",
+      "remediation": "Add migrations 008+: drop legacy properties columns, add owner_id/name/currency/lease_url/tenant/notes, alter status check, create profiles table with id+full_name+theme+notifications_enabled, create tenancies table (or deprecate), alter tenants to add deposit_amount."
+    },
+    {
+      "id": "ISSUE-002",
+      "severity": "high",
+      "title": "Stale, permissive RLS policies likely still active",
+      "description": "Migrations 001 and 003 created RLS policies using only `auth.uid() IS NOT NULL`, meaning every authenticated user could read every row. Migration 004 created correct owner-scoped policies but never DROP'd the old ones. Postgres evaluates policies as OR — if both sets exist, the permissive ones win.",
+      "impact": "Potential tenant-data leakage across customers if the permissive policies were ever applied to production.",
+      "remediation": "Run `DROP POLICY IF EXISTS \"Users can view their own properties\" ON properties; DROP POLICY ... \"Users can insert their own properties\" ...` etc. for every legacy policy. Verify with `SELECT * FROM pg_policies WHERE schemaname='public'`."
+    },
+    {
+      "id": "ISSUE-003",
+      "severity": "high",
+      "title": "Beta access gate is trivially bypassable",
+      "description": "BetaAccessService uses btoa() (base64 encoding) — labeled 'hash' — and stores the result in localStorage. Anyone can run `localStorage.setItem('propza_beta_access','granted')` in DevTools, or reverse atob() the hash.",
+      "impact": "Beta gate is friction-only, not security. Acceptable IF that's intentional; dangerous if treated as access control.",
+      "remediation": "If gate is truly intended as access control: move validation server-side (Supabase RPC) or rely on Supabase auth allow-lists. Otherwise, rename 'hash' to 'code' and document it as soft friction."
+    },
+    {
+      "id": "ISSUE-004",
+      "severity": "high",
+      "title": "Dev credentials hard-coded and committed",
+      "description": "scripts/replace-env-vars.js inlines `https://szmsslujuqdrsgogzaaw.supabase.co` and a JWT anon key as the dev fallback. These ship in the public repo.",
+      "impact": "Project URL and anon key are public. The anon key is low-impact by Supabase design (subject to RLS), but coupling makes accidental promotion to other envs easier and is poor hygiene.",
+      "remediation": "Remove hard-coded fallbacks, fail loudly if NG_APP_* are missing, document required local setup in README."
+    },
+    {
+      "id": "ISSUE-005",
+      "severity": "medium",
+      "title": "Two overlapping rent-status services",
+      "description": "RentDueService (monthly-only, ZA TZ-safe, comprehensive) and RentHelperService (monthly+weekly, older). Components mix both — some call only RentHelper, some only RentDue, some both. PropertyDetail and TenantDetail components carry per-component map functions converting TenantStatus → RentStatus.",
+      "impact": "Inconsistency risk in rent status displayed across screens; double the surface area to maintain.",
+      "remediation": "Consolidate into a single RentService. Move all status enums, label/color maps, period helpers into one module. Delete the weekly branch from RentHelper if monthly is the contract."
+    },
+    {
+      "id": "ISSUE-006",
+      "severity": "medium",
+      "title": "Direct Supabase calls from components",
+      "description": "PropertyDetailComponent, TenantDetailComponent, AddPropertyModalComponent, AddTenantModalComponent and both Settings components call `supabase.supabase.from('tenancies'|'tenants'|'payments'|'profiles')` directly, instead of routing through PropertyService/TenantService.",
+      "impact": "Side effects bypass the service-level cache and refresh choreography. Easy to introduce drift between observable state and actual DB rows. Hard to unit-test components.",
+      "remediation": "Add the missing service methods (e.g. ProfileService for profiles, TenancyService or merge into TenantService). Forbid `supabase.from(...)` outside core/services via a lint rule."
+    },
+    {
+      "id": "ISSUE-007",
+      "severity": "medium",
+      "title": "All routes eagerly loaded",
+      "description": "app.routes.ts statically imports every page component including settings (mobile+desktop), property detail, tenant detail, payments, dashboard, auth pages, all settings modals.",
+      "impact": "Inflated initial bundle. Already hitting the 2MB warning budget (ng-bootstrap + Bootstrap + Lottie are heavy).",
+      "remediation": "Switch each top-level route to `loadComponent: () => import('./...').then(m => m.X)`. Especially: settings split, all settings modals (open via NgbModal — can be lazy via dynamic import), tenant/property detail."
+    },
+    {
+      "id": "ISSUE-008",
+      "severity": "medium",
+      "title": "Latent bug: payments.owner_id does not exist",
+      "description": "SettingsDesktopComponent.exportMyData() and SettingsMobileComponent.exportMyData() query `payments.eq('owner_id', user.id)`. The payments table has no owner_id column (RLS scopes via property_id → owner_id join).",
+      "impact": "Export returns zero payments. Silent data loss in the user export feature.",
+      "remediation": "Either add owner_id (denormalized) to payments and backfill, or change the query to `.in('property_id', userPropertyIds)` (the same pattern PropertyService.loadPayments uses)."
+    },
+    {
+      "id": "ISSUE-009",
+      "severity": "medium",
+      "title": "Legacy tenancies table coexists with tenants",
+      "description": "Both `tenancies` (with start_date, end_date, rent_due_day) and `tenants` (with lease_start_date, lease_end_date, rent_due_date) are written by AddPropertyModalComponent and deleted by PropertyDetailComponent/TenantService. Status calculations now use only tenants.",
+      "impact": "Double-writes risk inconsistency. Reads from tenancies are mostly dead but still occur (PropertyDetail loadPropertyDetails).",
+      "remediation": "Migrate any remaining tenancies reads to tenants, then drop the table and remove insert paths."
+    },
+    {
+      "id": "ISSUE-010",
+      "severity": "medium",
+      "title": "Profiles table not provisioned by repo",
+      "description": "AuthService, ThemeService, AuthenticatedShellComponent, Settings all SELECT/UPDATE `profiles` (id, full_name, theme, notifications_enabled). No migration creates the table or its RLS row creation trigger. 004 adds policies only `IF EXISTS`.",
+      "impact": "Fresh Supabase project will silently 404/error on profile queries. New developers can't reproduce locally.",
+      "remediation": "Add migration: CREATE TABLE public.profiles (id uuid PRIMARY KEY REFERENCES auth.users, full_name text, theme text CHECK (theme IN ('light','dark')) DEFAULT 'light', notifications_enabled boolean DEFAULT false). Add trigger on auth.users insert to bootstrap a profile row."
+    },
+    {
+      "id": "ISSUE-011",
+      "severity": "low",
+      "title": "Translation file is monolithic (1828 lines)",
+      "description": "Single object literal in translation.service.ts holds all four languages and every UI string. Adds to JS bundle even for users on a single language.",
+      "remediation": "Split into per-language JSON loaded via fetch, or migrate to @angular/localize XLIFF compile-time translations."
+    },
+    {
+      "id": "ISSUE-012",
+      "severity": "low",
+      "title": "Hard-coded 4-second preloader",
+      "description": "AppComponent uses setTimeout(4000) to dismiss the preloader regardless of how fast the app boots. Causes UX delay on fast networks.",
+      "remediation": "Dismiss as soon as `auth.waitForSession()` resolves OR after a minimum (e.g. 800ms) — whichever is later."
+    },
+    {
+      "id": "ISSUE-013",
+      "severity": "low",
+      "title": "Console suppression in main.ts hides errors",
+      "description": "main.ts overrides console.error to filter Navigator LockManager + apple-mobile-web-app-capable warnings. Pattern can mask other errors and complicates debugging.",
+      "remediation": "Use Supabase client option `debug: false` (already done) and remove the global console wrapper. Address the apple-mobile-web-app-capable deprecation in index.html (use `mobile-web-app-capable` only)."
+    },
+    {
+      "id": "ISSUE-014",
+      "severity": "low",
+      "title": "Storage bucket policies are not version-controlled",
+      "description": "`leases` bucket is required for AddPropertyModal/AddTenantModal but no SQL/policy file exists.",
+      "remediation": "Add a migration that creates the bucket and policies via `storage.create_bucket` and INSERT into `storage.policies` (or document via supabase config)."
+    },
+    {
+      "id": "ISSUE-015",
+      "severity": "low",
+      "title": "No CI/error monitoring",
+      "description": "No GitHub Actions, no Sentry, no test coverage gate. Specs are scaffolds.",
+      "remediation": "Add a minimal CI (lint + build + ng test --no-watch --code-coverage). Wire Sentry into ErrorService.handleError()."
+    },
+    {
+      "id": "ISSUE-016",
+      "severity": "low",
+      "title": "ng-bootstrap + Bootstrap + Tailwind together",
+      "description": "Three CSS systems load simultaneously (ng-bootstrap requires Bootstrap CSS, Tailwind provides utility classes, plus per-component SCSS). Bootstrap CSS alone is ~150 KB minified.",
+      "remediation": "If Tailwind is the design system going forward, replace ng-bootstrap modal/popover with headless Angular CDK Overlay equivalents and drop Bootstrap CSS."
+    },
+    {
+      "id": "ISSUE-017",
+      "severity": "info",
+      "title": "Two settings components instead of responsive single",
+      "description": "SettingsComponent picks between SettingsDesktopComponent (385 LOC) and SettingsMobileComponent (1145 LOC). Both implement the same features twice. SettingsMobile carries extensive scroll-restoration debug scaffolding.",
+      "remediation": "Long-term: unify into one component driven by CSS responsive design and minimal feature flags. Short-term: extract shared logic (loadProfile, modal openers, exportMyData) into a SettingsCoreService."
+    }
+  ],
+
+  "architecture_decisions": [
+    {
+      "id": "AD-001",
+      "decision": "No separate backend — Angular SPA talks to Supabase directly.",
+      "rationale": "Faster iteration; offload auth/db/storage to a managed BaaS; PWA-friendly because all logic runs client-side."
+    },
+    {
+      "id": "AD-002",
+      "decision": "Fully standalone Angular 18 (no NgModules).",
+      "rationale": "Smaller per-route bundles, simpler dependency graph, aligns with Angular team's recommended direction."
+    },
+    {
+      "id": "AD-003",
+      "decision": "Hybrid state: Signals for auth/theme/UI state, BehaviorSubjects for collections (properties, tenants, payments).",
+      "rationale": "Signals work well for primitives consumed in templates with autotracking. BehaviorSubjects integrate cleanly with combineLatest for derived dashboard views."
+    },
+    {
+      "id": "AD-004",
+      "decision": "Cross-service refresh bus via SupabaseService.refreshAll$.",
+      "rationale": "Avoids services needing to know about each other while still letting one mutation (e.g. delete tenant) trigger fan-out refreshes."
+    },
+    {
+      "id": "AD-005",
+      "decision": "Custom translation service instead of @angular/localize compile-time i18n.",
+      "rationale": "Runtime language switching without separate language builds. Cost: heavier translation bundle."
+    },
+    {
+      "id": "AD-006",
+      "decision": "Custom static dev server (scripts/dev-server.js) at port 4201 instead of `ng serve`.",
+      "rationale": "Tests the production-style bundle locally (same code path as Vercel)."
+    },
+    {
+      "id": "AD-007",
+      "decision": "All routes eagerly loaded in a single flat routes file.",
+      "rationale": "Simpler to reason about. (Cost: see ISSUE-007.)"
+    },
+    {
+      "id": "AD-008",
+      "decision": "RentDueService is the authoritative pure-function status engine (monthly, ZA timezone).",
+      "rationale": "Centralize fragile date math. RentHelperService remains for backward compatibility but should be deprecated."
+    },
+    {
+      "id": "AD-009",
+      "decision": "Per-component SCSS plus Tailwind utility classes.",
+      "rationale": "Component encapsulation for complex layouts, Tailwind for fast prototyping. Tailwind theme.extend.colors maps CSS variables for dark theme."
+    },
+    {
+      "id": "AD-010",
+      "decision": "View transitions enabled at the router level (withViewTransitions).",
+      "rationale": "Cheap polish on supported browsers (Chrome 111+)."
+    },
+    {
+      "id": "AD-011",
+      "decision": "PWA only in production builds.",
+      "rationale": "Avoid stale assets during local development."
+    }
+  ],
+
+  "build_and_deploy": {
+    "build_targets": {
+      "development": "ng build --configuration development (no optimization, source maps)",
+      "production": "ng build --configuration production (optimization, namedChunks off, service worker on, file replacement of environment.ts with environment.prod.ts)"
+    },
+    "file_replacements_prod": [
+      { "replace": "src/environments/environment.ts", "with": "src/environments/environment.prod.ts" }
+    ],
+    "output_paths": {
+      "browser": "dist/propza/browser",
+      "vercel_output_dir": "dist/propza/browser"
+    },
+    "spa_fallback": "vercel.json rewrites /(.*) → /index.html"
+  },
+
+  "feature_inventory_summary": {
+    "feature_pages_count": 12,
+    "feature_modal_components_count": 12,
+    "feature_card_components_count": 2,
+    "shared_components_count": 8,
+    "core_services_count": 14,
+    "guards_count": 3,
+    "core_models_count": 3,
+    "supabase_migrations_count": 7,
+    "supabase_tables_known": ["properties", "tenants", "payments", "tenancies", "profiles"],
+    "rpc_functions_known": ["delete_current_user"],
+    "storage_buckets_known": ["leases"]
+  },
+
+  "agent_navigation_hints": {
+    "where_to_add_a_new_page": "src/app/features/<feature>/pages/<page>/, then register in src/app/app.routes.ts inside the AuthenticatedShellComponent children array (or top level if public). Set data.mobileShellTitle.",
+    "where_to_add_a_new_service": "src/app/core/services/<name>.service.ts with @Injectable({ providedIn: 'root' }). If it owns a collection, expose properties$/loading$ BehaviorSubjects AND subscribe to SupabaseService.refreshAll$.",
+    "where_to_add_a_new_supabase_table": "Add SQL migration in supabase-migrations/00X_<name>.sql, ALWAYS enable RLS and add owner-scoped SELECT/INSERT/UPDATE/DELETE policies. Add TS model in src/app/core/models/, export from src/app/core/models/index.ts.",
+    "where_to_add_a_new_translation": "src/app/core/services/translation.service.ts — add key with all four languages (en, af, zu, xh).",
+    "where_to_change_theme_tokens": "tailwind.config.js (theme.extend.colors uses CSS variables) + src/styles.scss for the actual variable definitions (dark vs light).",
+    "how_to_open_a_modal": "Inject NgbModal + PropzaModalOptionsService; call this.modal.open(MyComponent, this.modalOptions.createEntityFlow()) for forms, or .authAuxiliaryModal() for small dialogs.",
+    "how_to_show_a_toast": "Inject ToastService; call .success/.error/.warning/.info(title, message?).",
+    "how_to_confirm_an_action": "Inject ConfirmationModalService; `const ok = await this.confirmationService.confirm({ title, message, type: 'danger' });`.",
+    "how_to_run_locally": "Set NG_APP_* in .env.local (see env.example), then `npm run start` (dev build + static serve on :4201). Use `npm run kill` to free the port.",
+    "how_to_deploy": "Push to a Vercel-integrated branch. Vercel runs `npm run build:vercel` which generates env files then `ng build --configuration production`. Output: dist/propza/browser. SPA rewrites set in vercel.json."
+  }
+}

@@ -18,7 +18,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.scss']
+  styleUrl: './reset-password.component.scss'
 })
 export class ResetPasswordComponent implements OnInit, OnDestroy {
   form;
