@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { LoggerService } from './logger.service';
 import { SupabaseService } from './supabase.service';
+import { SupabaseMutationHelper } from './supabase-mutation.helper';
 import { Property, Payment } from '../models/property.model';
 
 export type { Property, Payment };
@@ -11,17 +13,21 @@ export type { Property, Payment };
 export class PropertyService {
   private propertiesSubject = new BehaviorSubject<Property[]>([]);
   public properties$ = this.propertiesSubject.asObservable();
-  
+
   private paymentsSubject = new BehaviorSubject<Payment[]>([]);
   public payments$ = this.paymentsSubject.asObservable();
-  
+
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
 
   /** After the first authenticated load finishes, empty lists refetch silently (no blocking skeleton). */
   private propertiesInitialLoadDone = false;
 
-  constructor(private supabaseService: SupabaseService) {
+  constructor(
+    private supabaseService: SupabaseService,
+    private mutation: SupabaseMutationHelper,
+    private logger: LoggerService
+  ) {
     this.supabaseService.refreshAll$.subscribe(() => this.refreshAll());
     this.loadProperties().then(() => this.loadPayments());
   }
@@ -36,8 +42,7 @@ export class PropertyService {
     let completedAuthenticatedFetch = false;
 
     try {
-      const { data: userData } = await this.supabaseService.supabase.auth.getUser();
-      const userId = userData.user?.id;
+      const userId = await this.mutation.getUserIdOrNull();
 
       if (!userId) {
         this.propertiesSubject.next([]);
@@ -71,13 +76,13 @@ export class PropertyService {
         .order('address');
 
       if (error) {
-        console.error('Error loading properties:', error);
+        this.logger.error('Error loading properties:', error);
         this.propertiesSubject.next([]);
       } else {
         this.propertiesSubject.next(data || []);
       }
     } catch (error) {
-      console.error('Error loading properties:', error);
+      this.logger.error('Error loading properties:', error);
       this.propertiesSubject.next([]);
     } finally {
       this.loadingSubject.next(false);
@@ -89,8 +94,7 @@ export class PropertyService {
 
   async loadPayments(): Promise<void> {
     try {
-      const { data: userData } = await this.supabaseService.supabase.auth.getUser();
-      const userId = userData.user?.id;
+      const userId = await this.mutation.getUserIdOrNull();
 
       if (!userId) {
         this.paymentsSubject.next([]);
@@ -110,13 +114,13 @@ export class PropertyService {
         .order('payment_date', { ascending: false });
 
       if (error) {
-        console.error('Error loading payments:', error);
+        this.logger.error('Error loading payments:', error);
         this.paymentsSubject.next([]);
       } else {
         this.paymentsSubject.next(data || []);
       }
     } catch (error) {
-      console.error('Error loading payments:', error);
+      this.logger.error('Error loading payments:', error);
       this.paymentsSubject.next([]);
     }
   }
@@ -138,72 +142,36 @@ export class PropertyService {
   }
 
   async addProperty(property: Partial<Property>): Promise<void> {
-    try {
-      const { data: userData } = await this.supabaseService.supabase.auth.getUser();
-      const userId = userData.user?.id;
-
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
-
-      const { error } = await this.supabaseService.supabase
+    const userId = await this.mutation.requireUserId();
+    await this.mutation.runMutation(
+      'PropertyService.addProperty',
+      () => this.supabaseService.supabase
         .from('properties')
-        .insert([{
-          ...property,
-          owner_id: userId
-        }]);
-
-      if (error) {
-        console.error('Error adding property:', error);
-        throw error;
-      }
-
-      // Refresh the properties list
-      await this.loadProperties();
-    } catch (error) {
-      console.error('Error adding property:', error);
-      throw error;
-    }
+        .insert([{ ...property, owner_id: userId }]),
+      () => this.loadProperties()
+    );
   }
 
   async updateProperty(id: string, updates: Partial<Property>): Promise<void> {
-    try {
-      const { error } = await this.supabaseService.supabase
+    await this.mutation.runMutation(
+      'PropertyService.updateProperty',
+      () => this.supabaseService.supabase
         .from('properties')
         .update(updates)
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error updating property:', error);
-        throw error;
-      }
-
-      // Refresh the properties list
-      await this.loadProperties();
-    } catch (error) {
-      console.error('Error updating property:', error);
-      throw error;
-    }
+        .eq('id', id),
+      () => this.loadProperties()
+    );
   }
 
   async deleteProperty(id: string): Promise<void> {
-    try {
-      const { error } = await this.supabaseService.supabase
+    await this.mutation.runMutation(
+      'PropertyService.deleteProperty',
+      () => this.supabaseService.supabase
         .from('properties')
         .delete()
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error deleting property:', error);
-        throw error;
-      }
-
-      // Refresh the properties list
-      await this.loadProperties();
-    } catch (error) {
-      console.error('Error deleting property:', error);
-      throw error;
-    }
+        .eq('id', id),
+      () => this.loadProperties()
+    );
   }
 
   async addPayment(payment: Omit<Payment, 'id' | 'created_at'>): Promise<void> {
@@ -215,65 +183,40 @@ export class PropertyService {
         .single();
 
       if (error) {
-        console.error('Error adding payment:', error);
-        // Convert Supabase error to a more informative Error object
-        const errorMessage = error.message || error.details || error.hint || 'Unknown error when creating payment';
-        const enhancedError = new Error(errorMessage);
-        (enhancedError as any).code = error.code;
-        (enhancedError as any).details = error.details;
-        (enhancedError as any).hint = error.hint;
-        throw enhancedError;
+        this.logger.error('PropertyService.addPayment:', error);
+        throw this.mutation.mapPostgrestError(error, 'Unknown error when creating payment');
       }
 
-      // Refresh payments list
+      void data;
       await this.loadPayments();
     } catch (error) {
-      console.error('Error adding payment:', error);
+      this.logger.error('PropertyService.addPayment:', error);
       throw error;
     }
   }
 
   async updatePayment(id: string, updates: Partial<Payment>): Promise<void> {
-    try {
-      const { error } = await this.supabaseService.supabase
+    await this.mutation.runMutation(
+      'PropertyService.updatePayment',
+      () => this.supabaseService.supabase
         .from('payments')
         .update(updates)
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error updating payment:', error);
-        throw error;
-      }
-
-      // Refresh payments list
-      await this.loadPayments();
-    } catch (error) {
-      console.error('Error updating payment:', error);
-      throw error;
-    }
+        .eq('id', id),
+      () => this.loadPayments()
+    );
   }
 
   async deletePayment(id: string): Promise<void> {
-    try {
-      const { error } = await this.supabaseService.supabase
+    await this.mutation.runMutation(
+      'PropertyService.deletePayment',
+      () => this.supabaseService.supabase
         .from('payments')
         .delete()
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error deleting payment:', error);
-        throw error;
-      }
-
-      // Refresh payments list
-      await this.loadPayments();
-    } catch (error) {
-      console.error('Error deleting payment:', error);
-      throw error;
-    }
+        .eq('id', id),
+      () => this.loadPayments()
+    );
   }
 
-  // Helper method to refresh data
   async refreshProperties(): Promise<void> {
     await this.loadProperties();
   }
@@ -282,7 +225,6 @@ export class PropertyService {
     await this.loadPayments();
   }
 
-  // Refresh both properties and payments
   async refreshAll(): Promise<void> {
     await Promise.all([
       this.loadProperties(),
@@ -290,4 +232,3 @@ export class PropertyService {
     ]);
   }
 }
-

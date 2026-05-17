@@ -11,6 +11,7 @@ import { RentDueService } from '../../../../core/services/rent-due.service';
 import { TranslationService } from '../../../../core/services/translation.service';
 import { SanitizationService } from '../../../../core/services/sanitization.service';
 import { ToastService } from '../../../../shared/components/toast/toast.service';
+import { optionalEmailValidator, optionalPhoneValidator } from '../../../../shared/validators/app-validators';
 
 @Component({
   selector: 'app-add-tenant-modal',
@@ -30,23 +31,8 @@ export class AddTenantModalComponent implements OnInit, OnDestroy {
   private sanitizer = inject(SanitizationService);
   private toast = inject(ToastService);
 
-  // Optional email validator: only validates format if a value is provided
-  optionalEmailValidator = (control: any) => {
-    const value = control.value;
-    if (!value || value.trim() === '') {
-      return null; // Empty is valid (optional field)
-    }
-    return Validators.email(control); // Validate format if provided
-  };
-
-  // Optional phone validator: only validates format if a value is provided
-  optionalPhoneValidator = (control: any) => {
-    const value = control.value;
-    if (!value || value.trim() === '') {
-      return null; // Empty is valid (optional field)
-    }
-    return Validators.pattern(/^\+27\s?\d{2}\s?\d{3}\s?\d{4}$/)(control); // Validate format if provided
-  };
+  readonly optionalEmailValidator = optionalEmailValidator;
+  readonly optionalPhoneValidator = optionalPhoneValidator;
 
   vacantProperties: Array<{ id: string; name: string; address: string; rent_amount: number }> = [];
   loading = false;

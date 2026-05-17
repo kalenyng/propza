@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { BaseMailtoReportComponent } from '../../../../shared/components/mailto-report/base-mailto-report';
 
 @Component({
   selector: 'app-feature-request-modal',
@@ -11,42 +12,18 @@ import { TranslationService } from '../../../../core/services/translation.servic
   templateUrl: './feature-request-modal.component.html',
   styleUrl: './feature-request-modal.component.scss'
 })
-export class FeatureRequestModalComponent {
-  @Input() userEmail: string = '';
-
+export class FeatureRequestModalComponent extends BaseMailtoReportComponent {
   featureTitle = '';
   featureDescription = '';
-  submitting = false;
 
-  constructor(
-    public activeModal: NgbActiveModal,
-    public translate: TranslationService
-  ) {}
-
-  close(): void {
-    this.activeModal.close();
+  constructor(activeModal: NgbActiveModal, translate: TranslationService) {
+    super(activeModal, translate);
   }
 
   async submitRequest(): Promise<void> {
     if (!this.featureTitle.trim() || !this.featureDescription.trim()) return;
-    
-    this.submitting = true;
-    
-    try {
-      // Create feature request
-      const request = `Feature Request: ${this.featureTitle.trim()}\n\n`;
-      const description = `Description:\n${this.featureDescription.trim()}\n\n`;
-      const userInfo = `---\nUser: ${this.userEmail}\nDate: ${new Date().toLocaleString()}\nApp Version: 1.0.0`;
-      
-      const subject = 'Feature Request - Propza App';
-      const body = `${request}${description}${userInfo}`;
-      
-      // Open email client
-      window.location.href = `mailto:kalenyoung03@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      
-      this.activeModal.close();
-    } finally {
-      this.submitting = false;
-    }
+    const request = `Feature Request: ${this.featureTitle.trim()}\n\n`;
+    const description = `Description:\n${this.featureDescription.trim()}\n\n`;
+    await this.sendMailto('Feature Request - Propza App', `${request}${description}${this.buildUserInfo()}`);
   }
 }

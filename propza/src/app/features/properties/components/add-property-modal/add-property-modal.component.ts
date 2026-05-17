@@ -8,6 +8,7 @@ import { RentHelperService } from '../../../../core/services/rent-helper.service
 import { RentDueService } from '../../../../core/services/rent-due.service';
 import { SanitizationService } from '../../../../core/services/sanitization.service';
 import { ToastService } from '../../../../shared/components/toast/toast.service';
+import { optionalEmailValidator } from '../../../../shared/validators/app-validators';
 
 @Component({
   selector: 'app-add-property-modal',
@@ -26,14 +27,7 @@ export class AddPropertyModalComponent {
   private sanitizer = inject(SanitizationService);
   private toast = inject(ToastService);
 
-  // Optional email validator: only validates format if a value is provided
-  optionalEmailValidator = (control: any) => {
-    const value = control.value;
-    if (!value || value.trim() === '') {
-      return null; // Empty is valid (optional field)
-    }
-    return Validators.email(control); // Validate format if provided
-  };
+  readonly optionalEmailValidator = optionalEmailValidator;
 
   loading = false;
   leaseFile?: File;

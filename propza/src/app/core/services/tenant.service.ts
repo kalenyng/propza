@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { LoggerService } from './logger.service';
 import { SupabaseService } from './supabase.service';
+import { SupabaseMutationHelper } from './supabase-mutation.helper';
 import { Tenant } from '../models/tenant.model';
 
 export type { Tenant };
@@ -17,7 +19,11 @@ export class TenantService {
   /** After the first authenticated load finishes, empty lists refetch silently (no blocking skeleton). */
   private tenantsInitialLoadDone = false;
 
-  constructor(private supabaseService: SupabaseService) {
+  constructor(
+    private supabaseService: SupabaseService,
+    private mutation: SupabaseMutationHelper,
+    private logger: LoggerService
+  ) {
     this.supabaseService.refreshAll$.subscribe(() => this.refreshTenants());
     this.loadTenants();
   }
@@ -31,8 +37,7 @@ export class TenantService {
     let completedAuthenticatedFetch = false;
 
     try {
-      const { data: userData } = await this.supabaseService.supabase.auth.getUser();
-      const userId = userData.user?.id;
+      const userId = await this.mutation.getUserIdOrNull();
 
       if (!userId) {
         this.tenantsSubject.next([]);
@@ -52,13 +57,13 @@ export class TenantService {
         .order('rent_due_date', { ascending: true });
 
       if (error) {
-        console.error('Error loading tenants:', error);
+        this.logger.error('Error loading tenants:', error);
         this.tenantsSubject.next([]);
       } else {
         this.tenantsSubject.next(data || []);
       }
     } catch (error) {
-      console.error('Error loading tenants:', error);
+      this.logger.error('Error loading tenants:', error);
       this.tenantsSubject.next([]);
     } finally {
       this.loadingSubject.next(false);
@@ -98,71 +103,49 @@ export class TenantService {
         `)
         .single();
 
-      if (error) {
-        console.error('Error adding tenant:', error);
-        throw error;
-      }
-
-      // Refresh the tenants list
+      this.mutation.checkError(error, 'TenantService.addTenant');
+      void data;
       await this.loadTenants();
     } catch (error) {
-      console.error('Error adding tenant:', error);
+      this.logger.error('TenantService.addTenant:', error);
       throw error;
     }
   }
 
   async updateTenant(id: string, updates: Partial<Tenant>): Promise<void> {
-    try {
-      const { error } = await this.supabaseService.supabase
+    await this.mutation.runMutation(
+      'TenantService.updateTenant',
+      () => this.supabaseService.supabase
         .from('tenants')
         .update(updates)
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error updating tenant:', error);
-        throw error;
-      }
-
-      // Refresh the tenants list
-      await this.loadTenants();
-    } catch (error) {
-      console.error('Error updating tenant:', error);
-      throw error;
-    }
+        .eq('id', id),
+      () => this.loadTenants()
+    );
   }
 
   async deleteTenant(id: string): Promise<void> {
     try {
-      // Get tenant to find property_id before deleting
       const tenant = this.getTenantById(id);
       const propertyId = tenant?.property_id;
 
-      // Delete tenant
       const { error } = await this.supabaseService.supabase
         .from('tenants')
         .delete()
         .eq('id', id);
 
-      if (error) {
-        console.error('Error deleting tenant:', error);
-        throw error;
-      }
+      this.mutation.checkError(error, 'TenantService.deleteTenant');
 
-      // Update property status to vacant and clear tenant name
       if (propertyId) {
         await this.supabaseService.supabase
           .from('properties')
-          .update({
-            status: 'vacant',
-            tenant: null
-          })
+          .update({ status: 'vacant', tenant: null })
           .eq('id', propertyId);
       }
 
       // Signal all services to refresh — properties need updating too after tenant deletion
       this.supabaseService.triggerRefreshAll();
     } catch (error) {
-      console.error('Error deleting tenant:', error);
+      this.logger.error('TenantService.deleteTenant:', error);
       throw error;
     }
   }
@@ -177,7 +160,6 @@ export class TenantService {
     };
   }
 
-  // Helper method to refresh data
   async refreshTenants(): Promise<void> {
     await this.loadTenants();
   }
