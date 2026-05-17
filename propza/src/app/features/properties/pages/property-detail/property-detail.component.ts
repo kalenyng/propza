@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SupabaseService } from '../../../../core/services/supabase.service';
@@ -17,7 +17,6 @@ import { AddTenantModalComponent } from '../../../tenants/components/add-tenant-
 import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { PropzaModalOptionsService } from '../../../../core/services/propza-modal-options.service';
 import { MobileShellTitleService } from '../../../../core/services/mobile-shell-title.service';
-import { ScrollRestoreService } from '../../../../core/services/scroll-restore.service';
 
 // Extended Property interface with additional fields for detail view
 interface Property extends Omit<PropertyData, 'tenants'> {
@@ -45,11 +44,14 @@ interface TenantData {
 @Component({
   selector: 'app-property-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './property-detail.component.html',
   styleUrl: './property-detail.component.scss'
 })
 export class PropertyDetailComponent implements OnInit, OnDestroy {
+  /** For template: `window.history.back()` with strictTemplates. */
+  protected readonly window = window;
+
   property: Property | null = null;
   tenancy: Tenancy | null = null;
   tenantData: TenantData | null = null;
@@ -127,15 +129,12 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   paymentMethod: string = 'cash';
   paymentNotes: string = '';
   editingPaymentId: string | null = null;
-
-  /** When set via router `state`, `goBack` returns here (e.g. from tenant detail). */
-  private backUrl: string | null = null;
-
+  /** When false, only the latest payment row is shown (see `visiblePayments`). */
+  paymentHistoryExpanded = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location,
     private supabase: SupabaseService,
     private propertyService: PropertyService,
     private tenantService: TenantService,
@@ -146,13 +145,8 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationModalService,
     private toast: ToastService,
     private modalOptions: PropzaModalOptionsService,
-    private mobileShellTitleSvc: MobileShellTitleService,
-    private scrollRestore: ScrollRestoreService
-  ) {
-    const nav = this.router.getCurrentNavigation();
-    const state = nav?.extras?.state as { backUrl?: string } | undefined;
-    this.backUrl = state?.backUrl?.trim() ? state.backUrl.trim() : null;
-  }
+    private mobileShellTitleSvc: MobileShellTitleService
+  ) {}
 
   ngOnInit(): void {
     this.propertyId = this.route.snapshot.paramMap.get('id') || '';
@@ -785,23 +779,6 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  goBack(): void {
-    if (this.backUrl) {
-      this.scrollRestore.flagRestoreFor(this.backUrl.split('?')[0]);
-      void this.router.navigateByUrl(this.backUrl);
-      return;
-    }
-    this.location.back();
-  }
-
-  goToTenant(): void {
-    if (this.tenantData?.id) {
-      void this.router.navigate(['/tenant', this.tenantData.id], {
-        state: { backUrl: `/property/${this.propertyId}` }
-      });
-    }
-  }
-
   async openAddTenantModal(): Promise<void> {
     const modalRef = this.modalService.open(AddTenantModalComponent, this.modalOptions.createEntityFlow());
 
@@ -829,6 +806,14 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** Payment rows in history (newest first; collapsed shows one). */
+  get visiblePayments(): Payment[] {
+    if (this.payments.length <= 1 || this.paymentHistoryExpanded) {
+      return this.payments;
+    }
+    return this.payments.slice(0, 1);
+  }
+
   formatMoney(amount: number, currency: string): string {
     const locale = currency === 'ZAR' ? 'en-ZA' : 'en-US';
     const code = currency === 'ZAR' ? 'ZAR' : currency;
@@ -844,17 +829,14 @@ export class PropertyDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Check if lease is ending within 3 months
+   * Lease ending within the next 30 days (matches tenant detail / layout parity spec).
    */
-  isLeaseEndingSoon(leaseEndDate: string): boolean {
+  isLeaseEndingSoon(leaseEndDate: string | null | undefined): boolean {
     if (!leaseEndDate) return false;
-    
     const today = new Date();
     const endDate = new Date(leaseEndDate);
-    const threeMonthsFromNow = new Date();
-    threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
-    
-    return endDate <= threeMonthsFromNow && endDate >= today;
+    const daysUntilEnd = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return daysUntilEnd > 0 && daysUntilEnd <= 30;
   }
 
   /**

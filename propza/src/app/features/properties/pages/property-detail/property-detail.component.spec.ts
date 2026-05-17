@@ -13,7 +13,7 @@ import { ConfirmationModalService } from '../../../../core/services/confirmation
 import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { PropzaModalOptionsService } from '../../../../core/services/propza-modal-options.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Location } from '@angular/common';
+import { MobileShellTitleService } from '../../../../core/services/mobile-shell-title.service';
 
 describe('PropertyDetailComponent', () => {
   let component: PropertyDetailComponent;
@@ -28,7 +28,6 @@ describe('PropertyDetailComponent', () => {
   let mockTranslationService: jasmine.SpyObj<TranslationService>;
   let mockConfirmationService: jasmine.SpyObj<ConfirmationModalService>;
   let mockModalService: jasmine.SpyObj<NgbModal>;
-  let mockLocation: jasmine.SpyObj<Location>;
   let mockToastService: jasmine.SpyObj<ToastService>;
   let mockModalOptions: jasmine.SpyObj<PropzaModalOptionsService>;
 
@@ -136,7 +135,6 @@ describe('PropertyDetailComponent', () => {
       result: Promise.resolve()
     } as any);
 
-    mockLocation = jasmine.createSpyObj('Location', ['back']);
     mockToastService = jasmine.createSpyObj('ToastService', ['error', 'warning', 'info', 'success', 'show']);
     mockModalOptions = jasmine.createSpyObj('PropzaModalOptionsService', ['createEntityFlow']);
     mockModalOptions.createEntityFlow.and.returnValue({ size: 'lg', centered: true, backdrop: 'static' });
@@ -162,9 +160,15 @@ describe('PropertyDetailComponent', () => {
         { provide: TranslationService, useValue: mockTranslationService },
         { provide: ConfirmationModalService, useValue: mockConfirmationService },
         { provide: NgbModal, useValue: mockModalService },
-        { provide: Location, useValue: mockLocation },
         { provide: ToastService, useValue: mockToastService },
-        { provide: PropzaModalOptionsService, useValue: mockModalOptions }
+        { provide: PropzaModalOptionsService, useValue: mockModalOptions },
+        {
+          provide: MobileShellTitleService,
+          useValue: jasmine.createSpyObj('MobileShellTitleService', [
+            'setMobileTitleOverride',
+            'clearMobileTitleOverride'
+          ])
+        }
       ]
     }).compileComponents();
 
@@ -179,18 +183,5 @@ describe('PropertyDetailComponent', () => {
 
   it('should initialize with property ID from route', () => {
     expect(component.propertyId).toBe('test-property-id');
-  });
-
-  it('should use Location.back when goBack is called without router state', () => {
-    component.goBack();
-    expect(mockLocation.back).toHaveBeenCalled();
-    expect(mockRouter.navigateByUrl).not.toHaveBeenCalled();
-  });
-
-  it('should navigate to backUrl when provided via router state', () => {
-    (component as unknown as { backUrl: string }).backUrl = '/tenant/test-tenant';
-    component.goBack();
-    expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/tenant/test-tenant');
-    expect(mockLocation.back).not.toHaveBeenCalled();
   });
 });

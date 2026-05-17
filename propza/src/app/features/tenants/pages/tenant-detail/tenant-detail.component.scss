@@ -4,6 +4,13 @@
   min-width: 0;
 }
 
+/* Header link duplicates Contact Details on desktop; scoped here so encapsulation wins over .detail-cross-link */
+@media (min-width: 1024px) {
+  .tenant-detail-header-cross-link {
+    display: none !important;
+  }
+}
+
 .tenant-detail-header .app-inner-title {
   min-width: 0;
 }
@@ -13,9 +20,9 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: $spacing-sm;
+  gap: var(--space-sm);
   margin: calc(-1 * var(--space-lg)) calc(-1 * var(--space-lg)) var(--space-md);
-  padding: $spacing-md var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
   border-bottom: 1px solid var(--border-soft);
   background: transparent;
 }
@@ -36,8 +43,6 @@
 .error {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   min-height: 50vh;
   gap: $spacing-md;
 
@@ -47,6 +52,12 @@
   }
 }
 
+.error {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 .error p {
   font-size: $font-size-lg;
 }
@@ -54,10 +65,10 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--border-subtle);
-  border-top-color: var(--text-muted);
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
+  border: 3px solid color-mix(in srgb, var(--border-subtle) 80%, transparent 20%);
+  border-top-color: var(--color-accent-500);
+  border-radius: var(--radius-pill);
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
@@ -67,32 +78,41 @@
 .detail-panel-toolbar .back-btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
+  justify-content: center;
+  gap: 0;
   padding: var(--space-sm) var(--space-xl);
   border-radius: var(--radius-md);
   font-size: 1rem;
   font-weight: 600;
   background: transparent;
   color: var(--text-strong);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-subtle);
   cursor: pointer;
-  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
   -webkit-tap-highlight-color: transparent;
   min-height: 36px;
+
+  &.back-btn--icon {
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
 
   &:active {
     transform: scale(0.98);
   }
 
-  svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
+  .back-btn__chevron {
+    pointer-events: none;
+    display: block;
+    width: 22px;
+    height: 22px;
   }
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background: color-mix(in srgb, var(--border) 18%, transparent 82%);
+      background: color-mix(in srgb, var(--border-subtle) 20%, transparent 80%);
       border-color: var(--border-strong);
     }
   }
@@ -105,11 +125,12 @@
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: 1px solid var(--border);
-  border-radius: $border-radius-sm;
-  color: var(--text-strong);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast),
+    transform var(--transition-fast);
   -webkit-tap-highlight-color: transparent;
 
   &:active {
@@ -118,12 +139,13 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background: color-mix(in srgb, var(--card) 92%, var(--text) 8%);
+      background: color-mix(in srgb, var(--border-subtle) 20%, transparent 80%);
       border-color: var(--border-strong);
+      color: var(--text-strong);
     }
 
     &.danger:hover {
-      background: color-mix(in srgb, var(--color-danger-500) 8%, transparent 92%);
+      background: color-mix(in srgb, var(--color-danger-500) 12%, transparent 88%);
       border-color: var(--color-danger-500);
       color: var(--color-danger-500);
     }
@@ -132,26 +154,70 @@
 
 // ── Content ──────────────────────────────────────────────────
 .content {
-  padding: $spacing-md $spacing-lg;
+  padding: var(--space-md);
   display: flex;
   flex-direction: column;
-  gap: $spacing-md;
+  gap: var(--space-md);
 }
 
-.property-link-text {
-  &.clickable {
-    cursor: pointer;
-    color: var(--color-success-500);
-    transition: color var(--transition-fast);
+.detail-cross-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  max-width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-strong);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast),
+    transform var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
 
-    &:hover {
-      color: var(--color-success-600);
-      text-decoration: underline;
-    }
+  &:hover {
+    background: color-mix(in srgb, var(--border-subtle) 14%, transparent 86%);
+    border-color: var(--border-strong);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  .detail-cross-link__text {
+    min-width: 0;
+    text-align: start;
+  }
+
+  .detail-cross-link__chevron {
+    flex-shrink: 0;
+    stroke: currentColor;
+    color: var(--text-muted);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+  }
+
+  &:hover .detail-cross-link__chevron {
+    transform: translateX(3px);
+    color: var(--text-strong);
   }
 }
 
-// ── Status Badges — unified with global .status-pill standard ─
+a.detail-cross-link {
+  color: var(--text-strong);
+}
+
+button.detail-cross-link {
+  appearance: none;
+  font: inherit;
+  font-weight: 500;
+  text-align: start;
+}
+
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -262,30 +328,79 @@
 // ── Section Cards ────────────────────────────────────────────
 .section-card {
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-panel);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
   overflow: hidden;
 }
 
 .section-header {
-  padding: $spacing-md $spacing-lg;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   h2 {
-    font-size: $font-size-lg;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--text-strong);
     margin: 0;
-    line-height: $line-height;
+    line-height: 1.4;
   }
 }
 
 .section-content {
-  padding: $spacing-lg;
+  padding: var(--space-lg);
+  position: relative;
+}
+
+.rent-overview .section-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+// Contact Details — same stack + bottom action pattern as property “Current Tenant”
+.contact-details-content {
+  position: relative;
+}
+
+.tenant-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.tenant-info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.tenant-info-item .detail-label {
+  margin: 0;
+}
+
+.tenant-info-item .detail-value {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.tenant-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-subtle);
+  width: 100%;
+}
+
+.muted-placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
 }
 
 // ── Rent / Deposit ───────────────────────────────────────────
@@ -333,6 +448,14 @@
   &:last-child {
     border-bottom: none;
   }
+
+  &--stacked {
+    align-items: flex-start;
+
+    .contact-label {
+      padding-top: 2px;
+    }
+  }
 }
 
 .contact-label {
@@ -345,6 +468,14 @@
   font-size: $font-size-md;
   color: var(--text-strong);
   font-weight: 500;
+
+  &--stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    min-width: 0;
+  }
 }
 
 // ── Detail Grid ──────────────────────────────────────────────
@@ -374,37 +505,8 @@
   font-size: $font-size-md;
   color: var(--text-strong);
   font-weight: 500;
-
-  &.property-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: color var(--transition-fast);
-
-    &.clickable {
-      cursor: pointer;
-      color: var(--color-success-500);
-
-      &:hover {
-        color: var(--color-success-600);
-        text-decoration: underline;
-
-        .link-arrow {
-          transform: translateX(2px) translateY(-2px);
-        }
-      }
-    }
-  }
 }
 
-.link-arrow {
-  width: 14px;
-  height: 14px;
-  stroke: currentColor;
-  transition: transform var(--transition-base);
-}
-
-// ── Metric Cards ─────────────────────────────────────────────
 .metric-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -442,64 +544,144 @@
   font-style: italic;
 }
 
-// ── Payments List ────────────────────────────────────────────
-.empty-payments {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-2xl) var(--space-lg);
-  color: var(--text-soft);
-  font-size: 0.875rem;
-  text-align: center;
+.vacancy-warning {
+  border: 2px solid var(--color-warning-500);
+
+  .section-header {
+    background: color-mix(in srgb, var(--color-warning-500) 20%, transparent 80%);
+    border-bottom-color: color-mix(in srgb, var(--color-warning-500) 28%, transparent 72%);
+
+    h2 {
+      color: var(--color-warning-500);
+    }
+  }
 }
 
-.payments-list {
+.vacancy-message {
+  font-size: 1rem;
+  color: var(--text-strong);
+  margin: 0;
+
+  strong {
+    font-weight: 700;
+    color: var(--color-warning-500);
+  }
+}
+
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-2xs) var(--space-sm);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-strong);
+  font-size: 0.9rem;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--text-strong);
+    border-color: var(--text-strong);
+    color: var(--bg);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// ── Payment list (aligned with property detail) ──────────────
+.payment-list {
   display: flex;
   flex-direction: column;
-  gap: $spacing-sm;
+  gap: 12px;
 }
 
 .payment-item {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: $spacing-md;
-  background: color-mix(in srgb, var(--bg) 97%, var(--text) 3%);
-  border-radius: $border-radius-sm;
-  border: 1px solid var(--border);
-  gap: $spacing-md;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  gap: 16px;
 }
 
-.payment-info {
+.payment-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.payment-date {
-  font-size: $font-size-md;
-  font-weight: 600;
-  color: var(--text-strong);
-}
-
-.payment-method {
-  font-size: $font-size-sm;
-  color: var(--text-muted);
-  text-transform: capitalize;
-}
-
-.payment-amount-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
+  gap: 6px;
+  min-width: 0;
 }
 
 .payment-amount {
   font-size: $font-size-lg;
   font-weight: 700;
   color: var(--text-strong);
+}
+
+.payment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: $font-size-sm;
+  color: var(--text-muted);
+}
+
+.payment-date {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.payment-method,
+.payment-period {
+  text-transform: capitalize;
+}
+
+.payment-separator {
+  color: var(--text-soft);
+  user-select: none;
+}
+
+.payment-notes {
+  margin: 4px 0 0;
+  font-size: $font-size-sm;
+  color: var(--text-muted);
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.payment-list-toggle {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xs) var(--space-sm);
+  font-family: inherit;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: var(--text-strong);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+
+  &:hover {
+    background: var(--text-strong);
+    border-color: var(--text-strong);
+    color: var(--bg);
+  }
 }
 
 .payment-status {
@@ -579,6 +761,12 @@
 }
 
 // ── Notes ────────────────────────────────────────────────────
+.empty-text {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
 .notes-text {
   font-size: $font-size-md;
   color: var(--text-strong);
@@ -618,8 +806,7 @@
     }
   }
 
-  .payment-item,
-  .payment-amount-info {
+  .payment-item {
     flex-direction: column;
     align-items: flex-start;
   }

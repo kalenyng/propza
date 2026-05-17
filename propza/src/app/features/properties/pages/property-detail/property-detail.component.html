@@ -41,11 +41,10 @@
       <section class="app-inner-widget--primary">
         <div class="app-inner-panel property-detail-panel">
           <div class="detail-panel-toolbar">
-            <button type="button" class="back-btn" (click)="goBack()">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <button type="button" class="back-btn back-btn--icon" (click)="window.history.back()" aria-label="Go back">
+              <svg class="back-btn__chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              All properties
             </button>
             @if (property) {
               <div class="detail-panel-toolbar-actions">
@@ -69,7 +68,7 @@
           @if (loading) {
             <div class="loading">
               <div class="spinner"></div>
-              <p>Loading property details...</p>
+              <p>Loading details…</p>
             </div>
           } @else if (property) {
     @if (!editing) {
@@ -79,6 +78,14 @@
         <div class="section-card rent-overview">
           <div class="section-header">
             <h2>Rent Overview</h2>
+            @if (displayStatus === 'Occupied' && tenantData) {
+              <span
+                class="status-badge-inline detail-status-pill-mobile-only"
+                [class]="statusColor">
+                <span class="status-dot"></span>
+                {{ statusLabel }}
+              </span>
+            }
           </div>
           <div class="section-content">
             <!-- Top row: Monthly rent and status -->
@@ -88,15 +95,11 @@
                 <span class="rent-frequency">Monthly Rent</span>
               </div>
               @if (displayStatus === 'Occupied' && tenantData) {
-                <div class="rent-status-wrapper">
-                  <span class="status-badge-inline" [class]="statusColor">
-                    <span class="status-dot"></span>
-                    {{ statusLabel }}
-                  </span>
-                  @if (tenantData.rent_due_date) {
-                    <span class="next-due-date">Next due: {{ tenantData.rent_due_date | date:'dd MMM yyyy' }}</span>
-                  }
-                </div>
+                @if (tenantData.rent_due_date) {
+                  <div class="rent-status-wrapper rent-status-wrapper--due-only">
+                    <span class="next-due-date">Next rent due: {{ tenantData.rent_due_date | date:'dd MMM yyyy' }}</span>
+                  </div>
+                }
               }
             </div>
 
@@ -183,7 +186,7 @@
                 <!-- Payment List -->
                 @if (payments.length > 0) {
                   <div class="payment-list">
-                    @for (payment of payments; track payment.id) {
+                    @for (payment of visiblePayments; track payment.id) {
                       <div class="payment-item">
                         <div class="payment-main">
                           <div class="payment-amount">{{ formatMoney(payment.amount, property.currency) }}</div>
@@ -213,6 +216,15 @@
                       </div>
                     }
                   </div>
+                  @if (payments.length > 1) {
+                    <button
+                      type="button"
+                      class="payment-list-toggle"
+                      [attr.aria-expanded]="paymentHistoryExpanded"
+                      (click)="paymentHistoryExpanded = !paymentHistoryExpanded">
+                      {{ paymentHistoryExpanded ? 'Show less' : 'Show more' }}
+                    </button>
+                  }
                 } @else {
                   <p class="empty-text">No payments recorded yet</p>
                 }
@@ -223,8 +235,8 @@
 
         <!-- 4. Current Tenant -->
         <div class="section-card">
-          <div class="section-header">
-            <h2>Current Tenant</h2>
+                    <div class="section-header">
+                      <h2>Current Tenant</h2>
             @if (displayStatus === 'Vacant') {
               <button class="btn-add" (click)="openAddTenantModal()">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -248,12 +260,6 @@
           </div>
           <div class="section-content">
             @if (tenantData?.name) {
-              @if (tenantStatus) {
-                <span class="status-badge-inline small tenant-status-badge" [class]="statusColor">
-                  <span class="status-dot"></span>
-                  {{ statusLabel }}
-                </span>
-              }
               <div class="tenant-info-grid">
                 <div class="tenant-info-item">
                   <span class="detail-label">Name</span>
@@ -274,12 +280,17 @@
               </div>
               @if (tenantData?.id) {
                 <div class="tenant-actions">
-                  <button class="btn-view-tenant" (click)="goToTenant()">
-                    View Tenant Details
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M5 3H3C2.46957 3 1.96086 3.21071 1.58579 3.58579C1.21071 3.96086 1 4.46957 1 5V11C1 11.5304 1.21071 12.0391 1.58579 12.4142C1.96086 12.7893 2.46957 13 3 13H9C9.53043 13 10.0391 12.7893 10.4142 12.4142C10.7893 12.0391 11 11.5304 11 11V9M8 1H13M13 1V6M13 1L5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </button>
+                  <div class="detail-nav-stack">
+                    @if (property.address || property.name) {
+                      <p class="detail-property-address">{{ property.address || property.name }}</p>
+                    }
+                    <button type="button" class="detail-cross-link" [routerLink]="['/tenant', tenantData?.id]">
+                      <span class="detail-cross-link__text">View Tenant</span>
+                      <svg class="detail-cross-link__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               }
             } @else {

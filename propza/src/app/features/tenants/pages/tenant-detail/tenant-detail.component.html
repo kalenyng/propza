@@ -4,15 +4,22 @@
       @if (tenant) {
         <div class="detail-header-title-block">
           <h1>{{ tenantHeaderTitle }}</h1>
-          @if (propertyName || propertyAddress) {
-            <p class="detail-header-subtitle">
-              <span
-                class="property-link-text"
-                (click)="goToProperty()"
-                [class.clickable]="tenant.property_id">
-                {{ propertyName || propertyAddress }}
-              </span>
-            </p>
+          @if (tenant.property_id) {
+            <div class="detail-header-subtitle detail-nav-stack">
+              @if (propertyAddress || propertyName) {
+                <p class="detail-property-address">{{ propertyAddress || propertyName }}</p>
+              }
+              <a
+                class="detail-cross-link detail-cross-link--subtitle tenant-detail-header-cross-link"
+                [routerLink]="['/property', tenant.property_id]">
+                <span class="detail-cross-link__text">View Property</span>
+                <svg class="detail-cross-link__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
+          } @else if (propertyName || propertyAddress) {
+            <p class="detail-header-subtitle">{{ propertyName || propertyAddress }}</p>
           }
         </div>
       } @else {
@@ -48,11 +55,10 @@
       <section class="app-inner-widget--primary">
         <div class="app-inner-panel tenant-detail-panel">
           <div class="detail-panel-toolbar">
-            <button type="button" class="back-btn" (click)="goBack()">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <button type="button" class="back-btn back-btn--icon" (click)="window.history.back()" aria-label="Go back">
+              <svg class="back-btn__chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              Back to tenants
             </button>
             @if (tenant) {
               <div class="detail-panel-toolbar-actions">
@@ -76,16 +82,24 @@
           @if (loading) {
             <div class="loading">
               <div class="spinner"></div>
-              <p>Loading tenant details...</p>
+              <p>Loading details…</p>
             </div>
           } @else if (tenant) {
             @if (!editing) {
               <!-- View Mode -->
               <div class="content">
-                <!-- Monthly Rent & Deposit -->
-                <div class="section-card rent-deposit-card">
+                <!-- Rent overview -->
+                <div class="section-card rent-overview">
                   <div class="section-header">
-                    <h2>Monthly Rent & Deposit</h2>
+                    <h2>Rent Overview</h2>
+                    @if (statusLabel) {
+                      <span
+                        class="status-badge-inline detail-status-pill-mobile-only"
+                        [class]="statusColor">
+                        <span class="status-dot"></span>
+                        {{ statusLabel }}
+                      </span>
+                    }
                   </div>
                   <div class="section-content">
                     <div class="rent-deposit-grid">
@@ -100,7 +114,7 @@
                       @if (tenant.rent_due_date) {
                         <div class="rent-deposit-item next-due-highlight">
                           <span class="detail-label">Next Due Date</span>
-                          <span class="detail-value-large">{{ formattedRentDueDate }}</span>
+                          <span class="detail-value-large">{{ tenant.rent_due_date | date:'dd MMM yyyy' }}</span>
                         </div>
                       }
                     </div>
@@ -114,81 +128,135 @@
                   </div>
                   <div class="section-content">
                     @if (payments.length === 0) {
-                      <div class="empty-payments">
-                        <p>No payments recorded yet</p>
-                      </div>
+                      <p class="empty-text">No payments recorded yet</p>
                     } @else {
-                      <div class="payments-list">
-                        @for (payment of payments; track payment.id) {
+                      <div class="payment-list">
+                        @for (payment of visiblePayments; track payment.id) {
                           <div class="payment-item">
-                            <div class="payment-info">
-                              <span class="payment-date">{{ formatPaymentDate(payment.payment_date) }}</span>
-                              <span class="payment-method">{{ payment.payment_method || 'Cash' }}</span>
-                            </div>
-                            <div class="payment-amount-info">
-                              <span class="payment-amount">{{ formatPaymentAmount(payment.amount) }}</span>
+                            <div class="payment-main">
+                              <div class="payment-amount">{{ formatMoney(payment.amount, paymentCurrency) }}</div>
+                              <div class="payment-meta">
+                                <span class="payment-date">{{ payment.payment_date | date:'dd MMM yyyy' }}</span>
+                                <span class="payment-separator">•</span>
+                                <span class="payment-method">{{ (payment.payment_method || 'cash') | titlecase }}</span>
+                                <span class="payment-separator">•</span>
+                                <span class="payment-period">{{ payment.period }}</span>
+                              </div>
+                              @if (payment.notes) {
+                                <p class="payment-notes">{{ payment.notes }}</p>
+                              }
                             </div>
                           </div>
                         }
+                      </div>
+                      @if (payments.length > 1) {
+                        <button
+                          type="button"
+                          class="payment-list-toggle"
+                          [attr.aria-expanded]="paymentHistoryExpanded"
+                          (click)="paymentHistoryExpanded = !paymentHistoryExpanded">
+                          {{ paymentHistoryExpanded ? 'Show less' : 'Show more' }}
+                        </button>
+                      }
+                    }
+                  </div>
+                </div>
+
+                <!-- Contact Details -->
+                <div class="section-card">
+                  <div class="section-header">
+                    <h2>Contact Details</h2>
+                  </div>
+                  <div class="section-content contact-details-content">
+                    <div class="tenant-info-grid">
+                      <div class="tenant-info-item">
+                        <span class="detail-label">Name</span>
+                        <span class="detail-value">{{ tenant.name || '—' }}</span>
+                      </div>
+
+                      @if (tenant.email) {
+                        <div class="tenant-info-item">
+                          <span class="detail-label">Email</span>
+                          <span class="detail-value">{{ tenant.email }}</span>
+                        </div>
+                      } @else {
+                        <div class="tenant-info-item">
+                          <span class="detail-label">Email</span>
+                          <span class="detail-value muted-placeholder">No email provided</span>
+                        </div>
+                      }
+                      @if (tenant.phone) {
+                        <div class="tenant-info-item">
+                          <span class="detail-label">Phone</span>
+                          <span class="detail-value">{{ tenant.phone }}</span>
+                        </div>
+                      } @else {
+                        <div class="tenant-info-item">
+                          <span class="detail-label">Phone</span>
+                          <span class="detail-value muted-placeholder">No phone provided</span>
+                        </div>
+                      }
+                    </div>
+
+                    @if (tenant.property_id) {
+                      <div class="tenant-actions">
+                        <div class="detail-nav-stack">
+                          @if (propertyAddress || propertyName) {
+                            <p class="detail-property-address">{{ propertyAddress || propertyName }}</p>
+                          }
+                          <button type="button" class="detail-cross-link" [routerLink]="['/property', tenant.property_id]">
+                            <span class="detail-cross-link__text">View Property</span>
+                            <svg class="detail-cross-link__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                              <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    } @else if (propertyName || propertyAddress) {
+                      <div class="tenant-actions">
+                        <p class="detail-property-address">{{ propertyName || propertyAddress }}</p>
                       </div>
                     }
                   </div>
                 </div>
 
-                <!-- 4. Contact Information -->
+                <!-- Lease Details -->
                 <div class="section-card">
                   <div class="section-header">
-                    <h2>Contact Information</h2>
-                  </div>
-                  <div class="section-content">
-                    <div class="contact-table">
-                      <div class="contact-row">
-                        <span class="contact-label">Email</span>
-                        <span class="contact-value">{{ tenant.email || 'No email provided' }}</span>
-                      </div>
-                      <div class="contact-row">
-                        <span class="contact-label">Phone</span>
-                        <span class="contact-value">{{ tenant.phone || 'No phone provided' }}</span>
-                      </div>
-                      <div class="contact-row">
-                        <span class="contact-label">Property</span>
-                        <span class="contact-value property-link" (click)="goToProperty()" [class.clickable]="tenant.property_id">
-                          {{ propertyName || propertyAddress }}
-                          @if (tenant.property_id) {
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="link-arrow">
-                              <path d="M5 3H3C2.46957 3 1.96086 3.21071 1.58579 3.58579C1.21071 3.96086 1 4.46957 1 5V11C1 11.5304 1.21071 12.0391 1.58579 12.4142C1.96086 12.7893 2.46957 13 3 13H9C9.53043 13 10.0391 12.7893 10.4142 12.4142C10.7893 12.0391 11 11.5304 11 11V9M8 1H13M13 1V6M13 1L5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                          }
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 5. Lease Information -->
-                <div class="section-card">
-                  <div class="section-header">
-                    <h2>Lease Information</h2>
+                    <h2>Lease Details</h2>
                   </div>
                   <div class="section-content">
                     <div class="lease-info-grid">
                       <div class="lease-info-item">
                         <span class="detail-label">Lease Start</span>
-                        <span class="detail-value">{{ formattedLeaseStart }}</span>
+                        <span class="detail-value">{{ tenant.lease_start_date | date:'dd MMM yyyy' }}</span>
                       </div>
                       <div class="lease-info-item">
                         <span class="detail-label">Lease End</span>
-                        <span class="detail-value">{{ formattedLeaseEnd }}</span>
+                        <span class="detail-value">{{ tenant.lease_end_date ? (tenant.lease_end_date | date:'dd MMM yyyy') : 'Ongoing' }}</span>
                       </div>
                       <div class="lease-info-item">
                         <span class="detail-label">Next Rent Due</span>
-                        <span class="detail-value">{{ formattedRentDueDate }}</span>
+                        <span class="detail-value">{{ tenant.rent_due_date | date:'dd MMM yyyy' }}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <!-- 6. Send Rent Reminder -->
+                @if (tenant && tenant.lease_end_date && isLeaseEndingSoon(tenant.lease_end_date)) {
+                  <div class="section-card vacancy-warning">
+                    <div class="section-header">
+                      <h2>⚠️ Upcoming Vacancy</h2>
+                    </div>
+                    <div class="section-content">
+                      <p class="vacancy-message">
+                        Lease ending soon: <strong>{{ tenant.lease_end_date | date:'dd MMM yyyy' }}</strong>
+                      </p>
+                    </div>
+                  </div>
+                }
+
+                <!-- Rent Reminder -->
                 <div class="section-card reminder-card">
                   <div class="section-header">
                     <h2>Rent Reminder</h2>
@@ -213,46 +281,33 @@
                 </div>
 
                 <!-- Notes -->
-                @if (tenant.notes) {
-                  <div class="section-card">
-                    <div class="section-header">
-                      <h2>Notes</h2>
-                    </div>
-                    <div class="section-content">
-                      <p class="notes-text">{{ tenant.notes }}</p>
-                    </div>
+                <div class="section-card">
+                  <div class="section-header">
+                    <h2>Notes</h2>
+                    <button type="button" class="btn-add" (click)="startEdit()" [disabled]="saving || deleting">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                      {{ tenant.notes ? 'Edit' : 'Add' }} Notes
+                    </button>
                   </div>
-                }
+                  <div class="section-content">
+                    @if (tenant.notes) {
+                      <p class="notes-text">{{ tenant.notes }}</p>
+                    } @else {
+                      <p class="empty-text">No notes added</p>
+                    }
+                  </div>
+                </div>
               </div>
             } @else {
               <!-- Edit Mode -->
               <div class="content editing">
                 <div class="edit-form">
-                  <div class="section-card">
+                  <!-- Rent Overview -->
+                  <div class="section-card rent-overview">
                     <div class="section-header">
-                      <h2>Basic Information</h2>
-                    </div>
-                    <div class="section-content">
-                      <div class="form-grid">
-                        <div class="form-group">
-                          <label for="name">Full Name *</label>
-                          <input type="text" id="name" [(ngModel)]="editName" placeholder="Tenant's full name">
-                        </div>
-                        <div class="form-group">
-                          <label for="email">Email</label>
-                          <input type="email" id="email" [(ngModel)]="editEmail" placeholder="tenant@example.com">
-                        </div>
-                        <div class="form-group">
-                          <label for="phone">Phone</label>
-                          <input type="tel" id="phone" [(ngModel)]="editPhone" placeholder="+27 71 234 5678">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="section-card">
-                    <div class="section-header">
-                      <h2>Financial Details</h2>
+                      <h2>Rent Overview</h2>
                     </div>
                     <div class="section-content">
                       <div class="form-grid">
@@ -272,9 +327,33 @@
                     </div>
                   </div>
 
+                  <!-- Contact Details -->
                   <div class="section-card">
                     <div class="section-header">
-                      <h2>Lease Dates</h2>
+                      <h2>Contact Details</h2>
+                    </div>
+                    <div class="section-content">
+                      <div class="form-grid">
+                        <div class="form-group">
+                          <label for="name">Full Name *</label>
+                          <input type="text" id="name" [(ngModel)]="editName" placeholder="Tenant's full name">
+                        </div>
+                        <div class="form-group">
+                          <label for="email">Email</label>
+                          <input type="email" id="email" [(ngModel)]="editEmail" placeholder="tenant@example.com">
+                        </div>
+                        <div class="form-group">
+                          <label for="phone">Phone</label>
+                          <input type="tel" id="phone" [(ngModel)]="editPhone" placeholder="+27 71 234 5678">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Lease Details -->
+                  <div class="section-card">
+                    <div class="section-header">
+                      <h2>Lease Details</h2>
                     </div>
                     <div class="section-content">
                       <div class="form-grid">
@@ -290,9 +369,10 @@
                     </div>
                   </div>
 
+                  <!-- Notes -->
                   <div class="section-card">
                     <div class="section-header">
-                      <h2>Additional Notes</h2>
+                      <h2>Notes</h2>
                     </div>
                     <div class="section-content">
                       <div class="form-group">

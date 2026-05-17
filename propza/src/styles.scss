@@ -1633,10 +1633,52 @@ select,
   box-sizing: border-box;
 }
 
-/* Property / tenant detail: no in-page top header (mobile title = shell hero; desktop = panel only).  */
-.property-detail-header.app-inner-header,
-.tenant-detail-header.app-inner-header {
-  display: none !important;
+/* Property / tenant detail panels: address line + cross-link stack */
+.detail-nav-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  min-width: 0;
+  width: 100%;
+}
+
+.detail-header-title-block .detail-nav-stack {
+  margin-top: 4px;
+}
+
+.detail-property-address {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+  font-weight: 500;
+  max-width: 100%;
+}
+
+.detail-cross-link--subtitle {
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* Detail pages: status in section header on mobile only; desktop uses shell/detail header pill. */
+.detail-status-pill-mobile-only {
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .detail-status-pill-mobile-only {
+    display: none !important;
+  }
+}
+
+/* Property / tenant detail: on mobile the shell green hero shows the title
+   (MobileShellTitleService). On desktop the hero is hidden — show in-page header. */
+@media (max-width: 1023px) {
+  .property-detail-header.app-inner-header,
+  .tenant-detail-header.app-inner-header {
+    display: none !important;
+  }
 }
 
 /* Mobile: shell owns hero title; pages keep toolbars only */
@@ -2237,6 +2279,21 @@ select,
 
   .app-inner-header::before {
     display: none;
+  }
+
+  /* Detail pages: strip list-page chrome from header; keep title + status pill only */
+  .property-detail-header .property-detail-header-ghost-hide,
+  .tenant-detail-header .tenant-detail-header-ghost-hide {
+    display: none !important;
+  }
+
+  .property-detail-header-ghost,
+  .tenant-detail-header-ghost {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    flex-shrink: 0;
   }
 
   .app-inner-title p {

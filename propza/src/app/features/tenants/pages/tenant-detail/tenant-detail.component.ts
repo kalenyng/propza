@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +12,6 @@ import { RentHelperService, RentStatus } from '../../../../core/services/rent-he
 import { RentDueService, TenantStatus } from '../../../../core/services/rent-due.service';
 import { ConfirmationModalService } from '../../../../core/services/confirmation-modal.service';
 import { MobileShellTitleService } from '../../../../core/services/mobile-shell-title.service';
-import { ScrollRestoreService } from '../../../../core/services/scroll-restore.service';
 
 interface Payment {
   id: string;
@@ -29,11 +28,14 @@ interface Payment {
 @Component({
   selector: 'app-tenant-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './tenant-detail.component.html',
   styleUrl: './tenant-detail.component.scss'
 })
 export class TenantDetailComponent implements OnInit, OnDestroy {
+  /** For template: `window.history.back()` with strictTemplates. */
+  protected readonly window = window;
+
   tenant: Tenant | null = null;
   payments: Payment[] = [];
   propertyName: string = '';
@@ -44,9 +46,8 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
   tenantId: string = '';
   saving = false;
   deleting = false;
-
-  /** When set via router `state`, `goBack` returns here (e.g. from property detail). */
-  private backUrl: string | null = null;
+  /** When false, only the latest payment row is shown (see `visiblePayments`). */
+  paymentHistoryExpanded = false;
 
   private destroy$ = new Subject<void>();
 
@@ -64,7 +65,6 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location,
     private tenantService: TenantService,
     private propertyService: PropertyService,
     private supabase: SupabaseService,
@@ -72,13 +72,8 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
     public translate: TranslationService,
     private rentDueService: RentDueService,
     private confirmationService: ConfirmationModalService,
-    private mobileShellTitleSvc: MobileShellTitleService,
-    private scrollRestore: ScrollRestoreService
-  ) {
-    const nav = this.router.getCurrentNavigation();
-    const state = nav?.extras?.state as { backUrl?: string } | undefined;
-    this.backUrl = state?.backUrl?.trim() ? state.backUrl.trim() : null;
-  }
+    private mobileShellTitleSvc: MobileShellTitleService
+  ) {}
 
   ngOnInit(): void {
     this.tenantId = this.route.snapshot.paramMap.get('id') || '';
@@ -227,33 +222,6 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
     }).format(this.tenant.deposit_amount);
   }
 
-  get formattedLeaseStart(): string {
-    if (!this.tenant?.lease_start_date) return 'No start date';
-    return new Date(this.tenant.lease_start_date).toLocaleDateString('en-ZA', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  }
-
-  get formattedLeaseEnd(): string {
-    if (!this.tenant?.lease_end_date) return 'No end date';
-    return new Date(this.tenant.lease_end_date).toLocaleDateString('en-ZA', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  }
-
-  get formattedRentDueDate(): string {
-    if (!this.tenant?.rent_due_date) return 'Not set';
-    return new Date(this.tenant.rent_due_date).toLocaleDateString('en-ZA', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  }
-
   get statusLabel(): string {
     if (!this.tenant) return '';
     
@@ -369,37 +337,41 @@ export class TenantDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  goBack(): void {
-    if (this.backUrl) {
-      this.scrollRestore.flagRestoreFor(this.backUrl.split('?')[0]);
-      void this.router.navigateByUrl(this.backUrl);
-      return;
+  /**
+   * Lease ending within the next 30 days (aligned with property detail).
+   */
+  isLeaseEndingSoon(leaseEndDate: string | null | undefined): boolean {
+    if (!leaseEndDate) return false;
+    const today = new Date();
+    const endDate = new Date(leaseEndDate);
+    const daysUntilEnd = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return daysUntilEnd > 0 && daysUntilEnd <= 30;
+  }
+
+  /** Matches property detail payment list currency. */
+  get paymentCurrency(): string {
+    return this.property?.currency || 'ZAR';
+  }
+
+  /** Payment rows in history (newest first; collapsed shows one). */
+  get visiblePayments(): Payment[] {
+    if (this.payments.length <= 1 || this.paymentHistoryExpanded) {
+      return this.payments;
     }
-    this.location.back();
+    return this.payments.slice(0, 1);
   }
 
-  goToProperty(): void {
-    if (this.tenant?.property_id) {
-      void this.router.navigate(['/property', this.tenant.property_id], {
-        state: { backUrl: `/tenant/${this.tenantId}` }
-      });
+  formatMoney(amount: number, currency: string): string {
+    const locale = currency === 'ZAR' ? 'en-ZA' : 'en-US';
+    const code = currency === 'ZAR' ? 'ZAR' : currency;
+    try {
+      return new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: code,
+        maximumFractionDigits: 0
+      }).format(amount ?? 0);
+    } catch {
+      return `${currency === 'ZAR' ? 'R' : ''}${(amount ?? 0).toLocaleString(locale)}`;
     }
-  }
-
-  formatPaymentDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('en-ZA', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
-  }
-
-  formatPaymentAmount(amount: number): string {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
   }
 }
